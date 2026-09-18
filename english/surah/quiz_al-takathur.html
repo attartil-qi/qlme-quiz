@@ -342,7 +342,7 @@
 <div class="wrap">
   <header class="top">
     <h1>Qur'anic Arabic Quiz</h1>
-    <p>Al-Takāthur &middot; Al-'Asr &middot; Al-Kawthar</p>
+    <p id="headerSubtitle">Al-Takāthur &middot; Al-'Asr &middot; Al-Kawthar</p>
   </header>
 
   <!-- START SCREEN -->
@@ -480,6 +480,18 @@ const surahOptionsEl = document.getElementById('surahOptions');
 const surahKeys = Object.keys(SURAHS);
 const isSingleSurah = surahKeys.length === 1;
 let selectedSurahKey = isSingleSurah ? surahKeys[0] : null;
+
+const headerSubtitleEl = document.getElementById('headerSubtitle');
+if(isSingleSurah){
+  const s = SURAHS[surahKeys[0]];
+  headerSubtitleEl.textContent = `${s.englishName} — ${s.subtitle}`;
+} else {
+  headerSubtitleEl.textContent = Object.values(SURAHS).map(s=>{
+    // Use just the name portion before " (" — e.g. "Al-Takāthur" from "Surah Al-Takāthur (102)"
+    const m = s.englishName.match(/^Surah (.+?) \(/);
+    return m ? m[1] : s.englishName;
+  }).join(' \u00b7 ');
+}
 
 if(isSingleSurah){
   document.getElementById('surahFieldLabel').textContent = 'Surah';
