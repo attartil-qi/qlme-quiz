@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasrif Quiz — عبد (Form I)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  @font-face{
+    font-family:'UthmanicHafs';
+    src:url('https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2');
+    font-display:swap;
+  }
+  :root{
+    --parchment:#faf5e6;
+    --parchment-deep:#f2ead4;
+    --teal:#1f7a72;
+    --teal-dark:#155c56;
+    --gold:#b8912f;
+    --gold-light:#e8d8a8;
+    --emerald:#0d3b34;
+    --correct:#2e7d46;
+    --correct-bg:#e5f3e8;
+    --incorrect:#a33636;
+    --incorrect-bg:#fbe9e7;
+    --shadow: 0 4px 18px rgba(13,59,52,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Lora', serif;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+    color:var(--emerald);
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .arabic{font-family:'UthmanicHafs','Amiri', serif;}
+  header.top{
+    text-align:center;
+    padding:22px 18px 26px;
+    border-bottom:3px solid var(--gold);
+    margin-bottom:22px;
+  }
+  header.top h1{color:var(--emerald);font-size:1.6rem;margin:0 0 6px;letter-spacing:0.3px;}
+  header.top .root-badge{
+    display:inline-block;font-family:'UthmanicHafs','Amiri',serif;font-size:2rem;color:var(--teal-dark);
+    background:#fff;border:2px solid var(--gold);border-radius:12px;padding:6px 22px;
+    margin-top:6px;box-shadow: var(--shadow);
+  }
+  header.top p.sub{color:#5b6b63;font-size:0.95rem;margin-top:10px;}
+  .card{
+    background:#fffdf8;border:1px solid var(--gold-light);border-radius:14px;
+    box-shadow:var(--shadow);padding:22px 22px 24px;margin-bottom:18px;
+  }
+  #intro .stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:18px 0;}
+  #intro .stat{background:var(--parchment-deep);border:1px solid var(--gold-light);border-radius:10px;padding:10px 16px;text-align:center;min-width:110px;}
+  #intro .stat b{display:block;color:var(--teal-dark);font-size:1.3rem;}
+  #intro .stat span{font-size:0.78rem;color:#5b6b63;}
+  .student-info{
+    display:flex;flex-direction:column;gap:14px;max-width:320px;margin:20px auto 4px;
+  }
+  .student-info label{
+    text-align:left;font-size:0.82rem;font-weight:700;color:var(--emerald);
+    text-transform:uppercase;letter-spacing:0.4px;
+  }
+  .student-info input[type="text"]{
+    display:block;width:100%;margin-top:5px;padding:10px 12px;
+    border:1.5px solid var(--gold-light);border-radius:8px;
+    font-family:'Lora',serif;font-size:0.95rem;color:var(--emerald);background:#fff;
+    box-sizing:border-box;
+  }
+  .student-info input[type="text"]:focus{outline:none;border-color:var(--teal);}
+  .submit-status{
+    text-align:center;font-size:0.85rem;color:#5b6b63;margin:4px 0 18px;min-height:20px;
+  }
+  .submit-status.ok{color:var(--correct);font-weight:600;}
+  .submit-status.warn{color:#96721f;font-weight:600;}
+  .btn{
+    display:inline-block;background:var(--teal);color:#fff;border:none;border-radius:10px;
+    padding:13px 26px;font-family:'Lora',serif;font-size:1rem;font-weight:600;cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:hover{background:var(--teal-dark);}
+  .btn:active{transform:scale(0.98);}
+  .btn.gold{background:var(--gold);}
+  .btn.gold:hover{background:#96721f;}
+  .btn:disabled{background:#ccc;cursor:not-allowed;}
+  .btn-row{text-align:center;margin-top:20px;}
+  .progress-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:0.85rem;color:var(--teal-dark);font-weight:600;}
+  .progress-bar{flex:1;height:8px;background:var(--parchment-deep);border-radius:6px;overflow:hidden;border:1px solid var(--gold-light);}
+  .progress-fill{height:100%;background:linear-gradient(90deg, var(--gold), var(--teal));transition:width .3s ease;}
+  .ayah-ref{font-size:0.82rem;color:var(--gold);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;}
+  .ayah-box{
+    direction:rtl;font-family:'UthmanicHafs','Amiri', serif;font-size:1.85rem;line-height:2.5;text-align:center;
+    color:var(--emerald);background:var(--parchment-deep);border:1px solid var(--gold-light);
+    border-radius:10px;padding:18px 14px;margin-bottom:18px;
+  }
+  .ayah-box .target-word{color:var(--teal-dark);border-bottom:3px dotted var(--gold);padding-bottom:2px;}
+  .gloss-title{font-size:0.82rem;text-transform:uppercase;letter-spacing:0.5px;color:#5b6b63;margin:6px 0 8px;font-weight:700;}
+  .gloss-table{display:flex;flex-wrap:wrap;gap:8px;direction:rtl;margin-bottom:20px;}
+  .gloss-item{background:#fff;border:1px solid var(--gold-light);border-radius:8px;padding:6px 10px;text-align:center;min-width:64px;}
+  .gloss-item.blank{border:2px dashed var(--teal);background:#eef7f6;}
+  .gloss-item .ar{font-family:'UthmanicHafs','Amiri',serif;font-size:1.2rem;color:var(--emerald);}
+  .gloss-item .tr{font-size:0.72rem;color:#6a7a72;direction:ltr;margin-top:2px;}
+  .gloss-item.blank .tr{color:var(--teal-dark);font-weight:700;}
+  .part{margin-bottom:22px;}
+  .part-label{font-weight:700;color:var(--emerald);margin-bottom:4px;font-size:0.98rem;display:flex;align-items:center;gap:8px;}
+  .part-sub{font-size:0.82rem;color:#6a7a72;margin-bottom:10px;}
+  .part-label .tag{background:var(--teal);color:#fff;font-size:0.68rem;padding:2px 8px;border-radius:20px;letter-spacing:0.4px;text-transform:uppercase;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option{
+    border:1.5px solid var(--gold-light);background:#fff;border-radius:9px;padding:11px 14px;
+    cursor:pointer;font-size:0.96rem;display:flex;align-items:center;gap:10px;
+    transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--teal);}
+  .option input{accent-color:var(--teal);}
+  .option.correct{background:var(--correct-bg);border-color:var(--correct);color:var(--correct);font-weight:600;}
+  .option.incorrect{background:var(--incorrect-bg);border-color:var(--incorrect);color:var(--incorrect);font-weight:600;}
+  .option.locked{cursor:default;}
+  .explain{margin-top:10px;background:var(--parchment-deep);border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.88rem;color:#3f4e47;display:none;}
+  .explain.show{display:block;}
+  /* ---- assistive word-breakdown mode ---- */
+  .assist-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .assist-btn{
+    padding:8px 16px;font-size:0.82rem;background:#fff;color:var(--teal-dark);
+    border:1.5px solid var(--teal);border-radius:8px;font-family:'Lora',serif;font-weight:600;cursor:pointer;
+  }
+  .assist-btn:hover:not(:disabled){background:var(--parchment-deep);}
+  .assist-btn:disabled{background:#f2efe6;color:#9aa39c;border-color:#ddd6c2;cursor:default;}
+  #assistLegend{display:flex;gap:6px;flex-wrap:wrap;}
+  .legend-chip{
+    display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;
+    border:1.5px solid currentColor;
+  }
+  .morph-harf{color:#a3771f;font-weight:700;}
+  .morph-fiil{color:var(--teal-dark);font-weight:700;}
+  .morph-pronoun{color:#7a4f8a;font-weight:700;}
+  .legend-chip.morph-harf{background:#faf1d9;}
+  .legend-chip.morph-fiil{background:#e8f3f1;}
+  .legend-chip.morph-pronoun{background:#f2e9f4;}
+  #results .score-circle{
+    width:150px;height:150px;border-radius:50%;border:10px solid var(--gold-light);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    margin:10px auto 20px;background:#fff;
+  }
+  #results .score-circle b{font-size:2.1rem;color:var(--teal-dark);}
+  #results .score-circle span{font-size:0.78rem;color:#5b6b63;}
+  .review-item{border-bottom:1px solid var(--gold-light);padding:10px 0;font-size:0.9rem;}
+  .review-item .ref{color:var(--gold);font-weight:700;}
+  .review-item .status-ok{color:var(--correct);font-weight:700;}
+  .review-item .status-bad{color:var(--incorrect);font-weight:700;}
+  .hidden{display:none !important;}
+  footer{text-align:center;color:#8a9990;font-size:0.78rem;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Tasrif Quiz</h1>
+    <div class="root-badge">ع - ب - د</div>
+    <p class="sub">AtTartil · Form I practice — for each ayah, choose the translation that captures the correct <b>tense &amp; doer</b>, then identify the <b>word type</b> (ṣarf).</p>
+  </header>
+
+  <!-- INTRO -->
+  <div id="intro" class="card">
+    <p style="text-align:center;color:#3f4e47;">Every word in this quiz comes from the <span class="arabic" style="font-size:1.3rem;">عبد</span> root, Form I only (فعل ماضي / مضارع / أمر, and its nominal relatives: اسم فاعل, مصدر, اسم). Since the root meaning repeats throughout, the quiz does not re-test vocabulary — instead, each translation option changes the <b>person</b> and/or <b>tense</b>, so picking correctly means you've identified the doer (الفاعل) and tense from the Arabic form itself. Several ayāt also carry an <b>attached pronoun</b> — as a verb's object (e.g. اعْبُدْهُ, "worship Him") or a noun's possessor (e.g. عِبَادِي, "My slaves") — so picking correctly there means translating that pronoun too.</p>
+    <div class="stats">
+      <div class="stat"><b>10</b><span>Questions per attempt</span></div>
+      <div class="stat"><b>23</b><span>Question pool</span></div>
+      <div class="stat"><b>⟳</b><span>Reshuffled each attempt</span></div>
+    </div>
+    <div class="student-info">
+      <label>Name
+        <input type="text" id="studentName" placeholder="e.g. Ahmad bin Ali" autocomplete="name">
+      </label>
+      <label>Class
+        <input type="text" id="studentClass" placeholder="e.g. QLME 22" autocomplete="off">
+      </label>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="startQuiz()">Begin Quiz</button></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="hidden">
+    <div class="progress-wrap">
+      <span id="qCounter">Question 1 / 10</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div class="btn-row">
+      <button class="btn" id="checkBtn" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn gold hidden" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="card hidden">
+    <h2 style="text-align:center;color:var(--emerald);margin-top:0;" id="resultsHeading">Quiz Complete</h2>
+    <div class="score-circle"><b id="scorePct">0%</b><span id="scoreFrac">0 / 0 points</span></div>
+    <div id="submitStatus" class="submit-status"></div>
+    <div id="reviewList"></div>
+    <div class="btn-row"><button class="btn" onclick="startQuiz()">Try Again — New Shuffle</button></div>
+  </div>
+
+  <footer>AtTartil · Where Qur'anic Knowledge Transforms Lives</footer>
+</div>
+
+<script>
+/* ============ QUESTION BANK — Form I only, 14 items ============ */
+const BANK = [
+{
+  ref:"1:5", surah:"Al-Fātiḥah",
+  ayah:"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+  gloss:[{ar:"إِيَّاكَ",tr:"You (alone)"},{ar:"نَعْبُدُ",target:true},{ar:"وَإِيَّاكَ",tr:"and You (alone)"},{ar:"نَسْتَعِينُ",tr:"we ask for help"}],
+  targetWord:"نَعْبُدُ",
+  morphemes:[{text:"نَعْبُدُ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["we worship","you all worship","he worshipped","(all of you) worship!"],correct:0,
+      note:"نَعْبُدُ is فعل مضارع (present tense) with the hidden pronoun نحن as its فاعل — the ـُ ending and ن prefix mark 1st person plural, present tense: 'we worship'."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"نَعْبُدُ begins with a mudāriʿ letter (ن) and follows the mudāriʿ pattern — it is a فعل مضارع."}
+},
+{
+  ref:"2:21", surah:"Al-Baqarah",
+  ayah:"يَا أَيُّهَا النَّاسُ اعْبُدُوا رَبَّكُمُ الَّذِي خَلَقَكُمْ",
+  gloss:[{ar:"يَا أَيُّهَا",tr:"O"},{ar:"النَّاسُ",tr:"mankind"},{ar:"اعْبُدُوا",target:true},{ar:"رَبَّكُمُ",tr:"your Lord"},{ar:"الَّذِي",tr:"the One Who"},{ar:"خَلَقَكُمْ",tr:"created you"}],
+  targetWord:"اعْبُدُوا",
+  morphemes:[{text:"اعْبُدُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["(all of you) worship!","we worship","he worshipped","(you) worship!"],correct:0,
+      note:"اعْبُدُوا is فعل أمر with واو الجماعة — a command addressed to a group: 'worship! (all of you)', matching أَيُّهَا النَّاس."},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","اسم مفعول (passive participle/done-to noun)","مصدر (verbal noun)"],correct:0,
+      note:"اعْبُدُوا opens with hamzat al-waṣl and ends with واو الجماعة — the classic shape of a فعل أمر."}
+},
+{
+  ref:"5:60", surah:"Al-Māʾidah",
+  ayah:"وَجَعَلَ مِنْهُمُ الْقِرَدَةَ وَالْخَنَازِيرَ وَعَبَدَ الطَّاغُوتَ",
+  gloss:[{ar:"وَجَعَلَ",tr:"and He made"},{ar:"مِنْهُمُ",tr:"among them"},{ar:"الْقِرَدَةَ",tr:"the apes"},{ar:"وَالْخَنَازِيرَ",tr:"and the swine"},{ar:"وَعَبَدَ",target:true},{ar:"الطَّاغُوتَ",tr:"the false god (ṭāghūt)"}],
+  targetWord:"عَبَدَ",
+  morphemes:[{text:"وَ",type:"harf"},{text:"عَبَدَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and he worshipped","and they worship","and (you) worship!","and we worshipped"],correct:0,
+      note:"عَبَدَ is on the bare فَعَلَ pattern (past tense), with the hidden pronoun هو as its فاعل, referring to the one cursed and transformed earlier in the ayah."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"عَبَدَ carries fatḥah throughout with no mudāriʿ letter or command shape — the base فعل ماضي (Form I)."}
+},
+{
+  ref:"15:99", surah:"Al-Ḥijr",
+  ayah:"وَاعْبُدْ رَبَّكَ حَتَّىٰ يَأْتِيَكَ الْيَقِينُ",
+  gloss:[{ar:"وَاعْبُدْ",target:true},{ar:"رَبَّكَ",tr:"your Lord"},{ar:"حَتَّىٰ",tr:"until"},{ar:"يَأْتِيَكَ",tr:"comes to you"},{ar:"الْيَقِينُ",tr:"the certainty (death)"}],
+  targetWord:"اعْبُدْ",
+  morphemes:[{text:"وَ",type:"harf"},{text:"اعْبُدْ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and (you) worship!","and (all of you) worship!","and you worship","and he worshipped"],correct:0,
+      note:"اعْبُدْ ends in sukūn with no group ending — a singular command. The hidden فاعل is أنتَ, addressing the Prophet ﷺ directly."},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","اسم فاعل (active participle/do-er noun)","مصدر (verbal noun)"],correct:0,
+      note:"اعْبُدْ ends with sukūn (jazm) on the دال — the mark of a singular فعل أمر."}
+},
+{
+  ref:"16:35", surah:"An-Naḥl",
+  ayah:"وَقَالَ الَّذِينَ أَشْرَكُوا لَوْ شَاءَ اللَّهُ مَا عَبَدْنَا مِنْ دُونِهِ مِنْ شَيْءٍ",
+  gloss:[{ar:"وَقَالَ",tr:"and said"},{ar:"الَّذِينَ أَشْرَكُوا",tr:"those who associated partners"},{ar:"لَوْ شَاءَ",tr:"if had willed"},{ar:"اللَّهُ",tr:"Allah"},{ar:"مَا",tr:"not"},{ar:"عَبَدْنَا",target:true},{ar:"مِنْ دُونِهِ",tr:"besides Him"},{ar:"مِنْ شَيْءٍ",tr:"anything"}],
+  targetWord:"عَبَدْنَا",
+  morphemes:[{text:"عَبَدْنَا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["we would have worshipped","we worship","they worshipped","(all of you) worship!"],correct:0,
+      note:"عَبَدْنَا attaches ـنَا directly to the past-tense stem عَبَدَ — past tense, 1st person plural: 'we worshipped'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","اسم مفعول (passive participle/done-to noun)"],correct:0,
+      note:"The ـنَا subject-suffix attaches straight onto the past-tense stem — this pattern only occurs with فعل ماضي."}
+},
+{
+  ref:"17:1", surah:"Al-Isrāʾ",
+  ayah:"سُبْحَانَ الَّذِي أَسْرَىٰ بِعَبْدِهِ لَيْلًا",
+  gloss:[{ar:"سُبْحَانَ الَّذِي",tr:"Exalted is He Who"},{ar:"أَسْرَىٰ",tr:"took (by night)"},{ar:"بِعَبْدِهِ",target:true},{ar:"لَيْلًا",tr:"by night"}],
+  targetWord:"عَبْدِهِ",
+  morphemes:[{text:"بِ",type:"harf"},{text:"عَبْدِ",type:"ism"},{text:"هِ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["His servant","My servant","Your servant","Their servant"],correct:0,
+      note:"عَبْدِهِ carries the ـهِ suffix — the 3rd person masc. singular possessive pronoun, 'His', referring to Allah and His servant, the Prophet ﷺ."},
+  p2:{opts:["اسم (noun, singular)","اسم فاعل (active participle/do-er noun)","فعل ماضي (past-tense verb)","مصدر (verbal noun)"],correct:0,
+      note:"عَبْد is not built on a derived pattern like فاعل or مفعول — it is a plain اسم (base noun) meaning 'slave/servant', singular, here with a possessive pronoun attached."}
+},
+{
+  ref:"21:53", surah:"Al-Anbiyāʾ",
+  ayah:"قَالُوا وَجَدْنَا آبَاءَنَا لَهَا عَابِدِينَ",
+  gloss:[{ar:"قَالُوا",tr:"they said"},{ar:"وَجَدْنَا",tr:"we found"},{ar:"آبَاءَنَا",tr:"our forefathers"},{ar:"لَهَا",tr:"to them (the idols)"},{ar:"عَابِدِينَ",target:true}],
+  targetWord:"عَابِدِينَ",
+  morphemes:[{text:"عَابِدِينَ",type:"ism"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they were worshippers","we were worshippers","you all were worshippers","I was a worshipper"],correct:0,
+      note:"عَابِدِينَ is accusative, agreeing with آبَاءَنَا ('our forefathers') — it describes them, not the speakers themselves."},
+  p2:{opts:["اسم فاعل (active participle/do-er noun)","فعل مضارع (present-tense verb)","اسم مفعول (passive participle/done-to noun)","مصدر (verbal noun)"],correct:0,
+      note:"عَابِدِينَ follows the فَاعِل pattern (plural of عَابِد) — the shape of the اسم فاعل, 'those who do the worshipping'."}
+},
+{
+  ref:"43:45", surah:"Az-Zukhruf",
+  ayah:"أَجَعَلْنَا مِنْ دُونِ الرَّحْمَٰنِ آلِهَةً يُعْبَدُونَ",
+  gloss:[{ar:"أَجَعَلْنَا",tr:"Have We made"},{ar:"مِنْ دُونِ الرَّحْمَٰنِ",tr:"besides the Most Merciful"},{ar:"آلِهَةً",tr:"gods"},{ar:"يُعْبَدُونَ",target:true}],
+  targetWord:"يُعْبَدُونَ",
+  morphemes:[{text:"يُعْبَدُونَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they are worshipped","he is worshipped","they worshipped","(you) worship them!"],correct:0,
+      note:"يُعْبَدُونَ is present-tense and passive (ḍammah on the first letter), with واو الجماعة marking هم — referring back to آلِهَةً, 'the gods (that) are worshipped'."},
+  p2:{opts:["فعل مضارع مبني للمجهول (passive present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم مفعول (passive participle/done-to noun)"],correct:0,
+      note:"يُعْبَدُونَ opens with ḍammah on ي rather than fatḥah — the mark of a mudāriʿ verb built for the unnamed doer (مبني للمجهول)."}
+},
+{
+  ref:"19:65", surah:"Maryam",
+  ayah:"رَبُّ السَّمَاوَاتِ وَالْأَرْضِ وَمَا بَيْنَهُمَا فَاعْبُدْهُ وَاصْطَبِرْ لِعِبَادَتِهِ",
+  gloss:[{ar:"رَبُّ السَّمَاوَاتِ وَالْأَرْضِ",tr:"Lord of the heavens and earth"},{ar:"وَمَا بَيْنَهُمَا",tr:"and what is between them"},{ar:"فَاعْبُدْهُ",tr:"so worship Him"},{ar:"وَاصْطَبِرْ",tr:"and be steadfast"},{ar:"لِعِبَادَتِهِ",target:true}],
+  targetWord:"عِبَادَتِهِ",
+  morphemes:[{text:"لِ",type:"harf"},{text:"عِبَادَتِ",type:"ism"},{text:"هِ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["for His worship","for their worship","for your worship","for our worship"],correct:0,
+      note:"عِبَادَتِهِ carries the ـهِ suffix, 'His' — a maṣdar has no فاعل of its own, so the pronoun attached to it plays that role instead."},
+  p2:{opts:["مصدر (verbal noun)","اسم فاعل (active participle/do-er noun)","فعل أمر (command/imperative verb)","اسم (noun, singular)"],correct:0,
+      note:"عِبَادَة is the مصدر of عَبَدَ — it names the abstract action 'worship' itself rather than a doer or receiver."}
+},
+{
+  ref:"39:2", surah:"Az-Zumar",
+  ayah:"إِنَّا أَنْزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ فَاعْبُدِ اللَّهَ مُخْلِصًا لَهُ الدِّينَ",
+  gloss:[{ar:"إِنَّا أَنْزَلْنَا",tr:"Indeed We have sent down"},{ar:"إِلَيْكَ",tr:"to you"},{ar:"الْكِتَابَ",tr:"the Book"},{ar:"بِالْحَقِّ",tr:"in truth"},{ar:"فَاعْبُدِ",target:true},{ar:"اللَّهَ",tr:"Allah"},{ar:"مُخْلِصًا",tr:"sincerely"},{ar:"لَهُ الدِّينَ",tr:"to Him in devotion"}],
+  targetWord:"اعْبُدِ",
+  morphemes:[{text:"فَ",type:"harf"},{text:"اعْبُدِ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so (you) worship!","so (all of you) worship!","so you worship","so he worshipped"],correct:0,
+      note:"فَاعْبُدِ is a singular command (no group ending) — the hidden فاعل is أنتَ, addressing the Prophet ﷺ."},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"اعْبُدِ carries the hamzat al-waṣl and command shape after فَ — a singular فعل أمر."}
+},
+{
+  ref:"12:40", surah:"Yūsuf",
+  ayah:"إِنِ الْحُكْمُ إِلَّا لِلَّهِ أَمَرَ أَلَّا تَعْبُدُوا إِلَّا إِيَّاهُ",
+  gloss:[{ar:"إِنِ الْحُكْمُ إِلَّا لِلَّهِ",tr:"The judgement is only for Allah"},{ar:"أَمَرَ",tr:"He has commanded"},{ar:"أَلَّا",tr:"that not"},{ar:"تَعْبُدُوا",target:true},{ar:"إِلَّا إِيَّاهُ",tr:"except Him"}],
+  targetWord:"تَعْبُدُوا",
+  morphemes:[{text:"تَعْبُدُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["you all worship","(all of you) worship!","he worships","we worship"],correct:0,
+      note:"تَعْبُدُوا starts with the mudāriʿ letter ت and keeps واو الجماعة — present tense, 2nd person plural, subjunctive after أَلَّا: 'you all worship'."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, after أَلَّا)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"أَلَّا is أَنْ + لَا — أَنْ is what triggers نصب here. تَعْبُدُوا drops the ن of رفع while keeping واو الجماعة — it stays a فعل مضارع, just in the manṣūb (light) state."}
+},
+{
+  ref:"38:45", surah:"Ṣād",
+  ayah:"وَاذْكُرْ عِبَادَنَا إِبْرَاهِيمَ وَإِسْحَاقَ وَيَعْقُوبَ",
+  gloss:[{ar:"وَاذْكُرْ",tr:"And remember"},{ar:"عِبَادَنَا",target:true},{ar:"إِبْرَاهِيمَ",tr:"Abraham"},{ar:"وَإِسْحَاقَ",tr:"and Isaac"},{ar:"وَيَعْقُوبَ",tr:"and Jacob"}],
+  targetWord:"عِبَادَنَا",
+  morphemes:[{text:"عِبَادَ",type:"ism"},{text:"نَا",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["Our slaves","My slaves","Your slaves","His slaves"],correct:0,
+      note:"عِبَادَنَا carries the ـنَا suffix, the 1st person plural (royal 'We') possessive pronoun — 'Our slaves', spoken by Allah."},
+  p2:{opts:["اسم (noun, plural)","اسم فاعل (active participle/do-er noun)","مصدر (verbal noun)","فعل مضارع (present-tense verb)"],correct:0,
+      note:"عِبَاد is a broken plural (جمع تكسير) of عَبْد — not a derived pattern like فاعل or مفعول, so it remains اسم (base noun), here plural."}
+},
+{
+  ref:"66:5", surah:"At-Taḥrīm",
+  ayah:"مُسْلِمَاتٍ مُؤْمِنَاتٍ قَانِتَاتٍ تَائِبَاتٍ عَابِدَاتٍ",
+  gloss:[{ar:"مُسْلِمَاتٍ",tr:"submissive women"},{ar:"مُؤْمِنَاتٍ",tr:"believing women"},{ar:"قَانِتَاتٍ",tr:"devoutly obedient women"},{ar:"تَائِبَاتٍ",tr:"repentant women"},{ar:"عَابِدَاتٍ",target:true}],
+  targetWord:"عَابِدَاتٍ",
+  morphemes:[{text:"عَابِدَاتٍ",type:"ism"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they were worshippers","we were worshippers","you all were worshippers","I was a worshipper"],correct:0,
+      note:"عَابِدَاتٍ is one of five participles describing the possible wives mentioned earlier in the sūrah — third person, feminine plural."},
+  p2:{opts:["اسم فاعل (active participle/do-er noun, feminine plural)","اسم مفعول (passive participle/done-to noun)","مصدر (verbal noun)","فعل ماضي (past-tense verb)"],correct:0,
+      note:"عَابِدَات is the feminine sound plural of عَابِدَة, on the فَاعِل pattern — women who actively perform worship, hence اسم فاعل."}
+},
+{
+  ref:"9:31", surah:"At-Tawbah",
+  ayah:"وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا إِلَٰهًا وَاحِدًا",
+  gloss:[{ar:"وَمَا أُمِرُوا",tr:"And they were not commanded"},{ar:"إِلَّا",tr:"except"},{ar:"لِ",tr:"so that"},{ar:"يَعْبُدُوا",target:true},{ar:"إِلَٰهًا",tr:"one God"},{ar:"وَاحِدًا",tr:"(who is) One"}],
+  targetWord:"يَعْبُدُوا",
+  morphemes:[{text:"يَعْبُدُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so that they worship","so that we worship","so that you all worship","and they worshipped"],correct:0,
+      note:"يَعْبُدُوا starts with the mudāriʿ letter ي and keeps واو الجماعة — present tense, 3rd person plural, subjunctive after لِ: 'so that they worship'."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, after لِ)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"لِ (lām of purpose) puts the following mudāriʿ verb in the منصوب state — يَعْبُدُوا keeps واو الجماعة but drops the ن, remaining a فعل مضارع."}
+},
+{
+  ref:"11:123", surah:"Hūd",
+  ayah:"وَإِلَيْهِ يُرْجَعُ الْأَمْرُ كُلُّهُ فَاعْبُدْهُ وَتَوَكَّلْ عَلَيْهِ",
+  gloss:[{ar:"وَإِلَيْهِ",tr:"And to Him"},{ar:"يُرْجَعُ",tr:"is returned"},{ar:"الْأَمْرُ كُلُّهُ",tr:"the matter, all of it"},{ar:"فَاعْبُدْهُ",target:true},{ar:"وَتَوَكَّلْ",tr:"and put your trust"},{ar:"عَلَيْهِ",tr:"in Him"}],
+  targetWord:"اعْبُدْهُ",
+  morphemes:[{text:"فَ",type:"harf"},{text:"اعْبُدْ",type:"fiil"},{text:"هُ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so (you) worship Him!","so (you) worship me!","so (all of you) worship Him!","so he worshipped Him"],correct:0,
+      note:"فَاعْبُدْهُ ends in sukūn with no group ending — a singular command (أنتَ, hidden). The attached ـهُ is the object pronoun 'Him', referring back to Allah: 'so (you) worship Him!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"اعْبُدْ carries sukūn (jazm) on the دال — the mark of the singular فعل أمر; the ـهُ attached afterward is simply the object pronoun, not part of the verb's own conjugation."}
+},
+{
+  ref:"6:102", surah:"Al-Anʿām",
+  ayah:"ذَٰلِكُمُ اللَّهُ رَبُّكُمْ لَا إِلَٰهَ إِلَّا هُوَ خَالِقُ كُلِّ شَيْءٍ فَاعْبُدُوهُ",
+  gloss:[{ar:"ذَٰلِكُمُ اللَّهُ رَبُّكُمْ",tr:"That is Allah, your Lord"},{ar:"لَا إِلَٰهَ إِلَّا هُوَ",tr:"there is no god but Him"},{ar:"خَالِقُ كُلِّ شَيْءٍ",tr:"Creator of all things"},{ar:"فَاعْبُدُوهُ",target:true}],
+  targetWord:"اعْبُدُوهُ",
+  morphemes:[{text:"فَ",type:"harf"},{text:"اعْبُدُو",type:"fiil"},{text:"هُ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so (all of you) worship Him!","so (you) worship Him!","so (all of you) worship them!","so you all worship Him"],correct:0,
+      note:"فَاعْبُدُوهُ carries واو الجماعة (أنتم, plural command) plus the object pronoun ـهُ, 'Him': 'so (all of you) worship Him!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","مصدر (verbal noun)"],correct:0,
+      note:"اعْبُدُوا carries واو الجماعة, marking the plural command; the trailing ـهُ is the object pronoun attached after it."}
+},
+{
+  ref:"20:14", surah:"Ṭā Hā",
+  ayah:"إِنَّنِي أَنَا اللَّهُ لَا إِلَٰهَ إِلَّا أَنَا فَاعْبُدْنِي وَأَقِمِ الصَّلَاةَ لِذِكْرِي",
+  gloss:[{ar:"إِنَّنِي أَنَا اللَّهُ",tr:"Indeed, I am Allah"},{ar:"لَا إِلَٰهَ إِلَّا أَنَا",tr:"there is no god but Me"},{ar:"فَاعْبُدْنِي",target:true},{ar:"وَأَقِمِ الصَّلَاةَ",tr:"and establish prayer"},{ar:"لِذِكْرِي",tr:"for My remembrance"}],
+  targetWord:"اعْبُدْنِي",
+  morphemes:[{text:"فَ",type:"harf"},{text:"اعْبُدْ",type:"fiil"},{text:"نِي",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so (you) worship Me!","so (you) worship Him!","so (all of you) worship Me!","so you worship Me"],correct:0,
+      note:"فَاعْبُدْنِي is a singular command (أنتَ, hidden, no group ending) with the object pronoun ـنِي, 'Me' — Allah speaking in the first person: 'so (you) worship Me!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"اعْبُدْ ends in sukūn — singular فعل أمر; ـنِي is the 1st person object pronoun attached to it, 'Me'."}
+},
+{
+  ref:"36:61", surah:"Yā-Sīn",
+  ayah:"وَأَنِ اعْبُدُونِي هَٰذَا صِرَاطٌ مُسْتَقِيمٌ",
+  gloss:[{ar:"وَأَنِ",tr:"and that"},{ar:"اعْبُدُونِي",target:true},{ar:"هَٰذَا صِرَاطٌ مُسْتَقِيمٌ",tr:"this is a straight path"}],
+  targetWord:"اعْبُدُونِي",
+  morphemes:[{text:"اعْبُدُو",type:"fiil"},{text:"نِي",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["(all of you) worship Me!","(all of you) worship Him!","(you) worship Me!","you all worship Me"],correct:0,
+      note:"اعْبُدُونِي carries واو الجماعة (أنتم, plural command) plus the object pronoun ـنِي, 'Me': '(all of you) worship Me!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","مصدر (verbal noun)"],correct:0,
+      note:"اعْبُدُوا carries واو الجماعة, marking the plural command 'you all'; ـنِي is the 1st person object pronoun, 'Me'."}
+},
+{
+  ref:"39:3", surah:"Az-Zumar",
+  ayah:"مَا نَعْبُدُهُمْ إِلَّا لِيُقَرِّبُونَا إِلَى اللَّهِ زُلْفَىٰ",
+  gloss:[{ar:"مَا",tr:"Not"},{ar:"نَعْبُدُهُمْ",target:true},{ar:"إِلَّا",tr:"except"},{ar:"لِيُقَرِّبُونَا",tr:"that they may bring us near"},{ar:"إِلَى اللَّهِ",tr:"to Allah"},{ar:"زُلْفَىٰ",tr:"in nearness"}],
+  targetWord:"نَعْبُدُهُمْ",
+  morphemes:[{text:"نَعْبُدُ",type:"fiil"},{text:"هُمْ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["we worship them","we worship him","they worship them","we worshipped them"],correct:0,
+      note:"نَعْبُدُ carries the hidden subject نحن ('we') and the object pronoun ـهُمْ, 'them' — present tense throughout: 'we worship them'."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"نَعْبُدُ begins with the mudāriʿ letter ن — present tense; ـهُمْ attached afterward is simply the object pronoun 'them', not part of the tense marking."}
+},
+{
+  ref:"39:17", surah:"Az-Zumar",
+  ayah:"وَالَّذِينَ اجْتَنَبُوا الطَّاغُوتَ أَنْ يَعْبُدُوهَا",
+  gloss:[{ar:"وَالَّذِينَ",tr:"And those who"},{ar:"اجْتَنَبُوا",tr:"avoided"},{ar:"الطَّاغُوتَ",tr:"the false gods (ṭāghūt)"},{ar:"أَنْ",tr:"that"},{ar:"يَعْبُدُوهَا",target:true}],
+  targetWord:"يَعْبُدُوهَا",
+  morphemes:[{text:"يَعْبُدُو",type:"fiil"},{text:"هَا",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["that they worship it","that they worship him","that we worship it","that they worshipped it"],correct:0,
+      note:"يَعْبُدُوهَا carries واو الجماعة (هم, 'they') plus the object pronoun ـهَا, 'it' — referring back to الطَّاغُوت."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, after أَنْ)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"أَنْ puts the following mudāriʿ verb in the منصوب state — يَعْبُدُوا keeps واو الجماعة but drops the ن; the trailing ـهَا is the object pronoun, unaffected by the verb's own iʿrāb."}
+},
+{
+  ref:"43:20", surah:"Az-Zukhruf",
+  ayah:"وَقَالُوا لَوْ شَاءَ الرَّحْمَٰنُ مَا عَبَدْنَاهُمْ",
+  gloss:[{ar:"وَقَالُوا",tr:"And they said"},{ar:"لَوْ شَاءَ الرَّحْمَٰنُ",tr:"If the Most Merciful had willed"},{ar:"مَا",tr:"not"},{ar:"عَبَدْنَاهُمْ",target:true}],
+  targetWord:"عَبَدْنَاهُمْ",
+  morphemes:[{text:"عَبَدْنَا",type:"fiil"},{text:"هُمْ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["we (would not) have worshipped them","we (would not) have worshipped him","they (would not) have worshipped them","we do not worship them"],correct:0,
+      note:"عَبَدْنَاهُمْ carries two attached pronouns: ـنَا is the subject ('we'), and ـهُمْ is the object ('them') — 'we (would not) have worshipped them'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"The ـنَا subject-suffix attaches straight onto the past-tense stem عَبَدَ — this pattern only occurs with فعل ماضي; ـهُمْ is then added as the object."}
+},
+{
+  ref:"17:53", surah:"Al-Isrāʾ",
+  ayah:"وَقُلْ لِعِبَادِي يَقُولُوا الَّتِي هِيَ أَحْسَنُ",
+  gloss:[{ar:"وَقُلْ",tr:"And say"},{ar:"لِعِبَادِي",target:true},{ar:"يَقُولُوا",tr:"that they say"},{ar:"الَّتِي هِيَ أَحْسَنُ",tr:"that which is best"}],
+  targetWord:"عِبَادِي",
+  morphemes:[{text:"لِ",type:"harf"},{text:"عِبَادِ",type:"ism"},{text:"ي",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["to My slaves","to His slaves","to your slaves","to their slaves"],correct:0,
+      note:"عِبَادِي carries the ـِي suffix — the 1st person singular possessive pronoun, 'My', with Allah speaking of His servants."},
+  p2:{opts:["اسم (noun, plural)","اسم فاعل (active participle/do-er noun)","مصدر (verbal noun)","فعل مضارع (present-tense verb)"],correct:0,
+      note:"عِبَاد is the broken plural of عَبْد — not a derived pattern like فاعل or مفعول, so it remains اسم (base noun), here plural, with a possessive pronoun attached."}
+},
+{
+  ref:"5:118", surah:"Al-Māʾidah",
+  ayah:"إِنْ تُعَذِّبْهُمْ فَإِنَّهُمْ عِبَادُكَ وَإِنْ تَغْفِرْ لَهُمْ فَإِنَّكَ أَنْتَ الْعَزِيزُ الْحَكِيمُ",
+  gloss:[{ar:"إِنْ تُعَذِّبْهُمْ",tr:"If You punish them"},{ar:"فَإِنَّهُمْ",tr:"then indeed they (are)"},{ar:"عِبَادُكَ",target:true},{ar:"وَإِنْ تَغْفِرْ لَهُمْ",tr:"and if You forgive them"},{ar:"فَإِنَّكَ أَنْتَ",tr:"then indeed You (are)"},{ar:"الْعَزِيزُ الْحَكِيمُ",tr:"the Almighty, the Wise"}],
+  targetWord:"عِبَادُكَ",
+  morphemes:[{text:"عِبَادُ",type:"ism"},{text:"كَ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["Your slaves","His slaves","My slaves","their slaves"],correct:0,
+      note:"عِبَادُكَ carries the ـكَ suffix — the 2nd person masc. singular possessive pronoun, 'Your', within the disciples' prayer to Allah."},
+  p2:{opts:["اسم (noun, plural)","اسم فاعل (active participle/do-er noun)","مصدر (verbal noun)","فعل ماضي (past-tense verb)"],correct:0,
+      note:"عِبَاد is the broken plural of عَبْد — plain اسم, here plural, with the possessive pronoun 'Your' attached."}
+}
+];
+
+/* ============ ENGINE ============ */
+let quiz = [];
+let current = 0;
+let answers = [];
+let checked = false;
+let assistiveOn = false;
+let studentName = '';
+let studentClass = '';
+
+/* ⚠️ TEACHER SETUP REQUIRED ⚠️
+   Paste your Google Apps Script Web App URL below (see setup instructions
+   provided separately) to have quiz results auto-submitted to your Google
+   Sheet. Until this is set, results still display normally on-screen —
+   they just won't be recorded anywhere else. */
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxusRSFY0PIc48Yz1BMZ7RznvyHVxzog-zzRTxQtSgHNrcIVT5Qcac8lH1PkoGYaq2O5Q/exec";
+
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildOptionShuffle(optsArr, correctIdx){
+  const idxArr = optsArr.map((_,i)=>i);
+  const shuffled = shuffleArr(idxArr);
+  return { order: shuffled, newCorrect: shuffled.indexOf(correctIdx) };
+}
+
+function morphClass(type){
+  if(type==='harf') return 'morph-harf';
+  if(type==='pronoun') return 'morph-pronoun';
+  return 'morph-fiil';
+}
+function morphRoleLabel(type){
+  return {harf:'Ḥarf', fiil:"Fi'l", ism:'Ism', pronoun:'Ḍamīr (attached pronoun)'}[type] || type;
+}
+function buildMorphSpans(morphemes){
+  return morphemes.map(m=>`<span class="${morphClass(m.type)}">${m.text}</span>`).join('');
+}
+function buildLegendChips(morphemes){
+  const seen = [];
+  morphemes.forEach(m=>{ if(!seen.includes(m.type)) seen.push(m.type); });
+  return seen.map(t=>`<span class="legend-chip ${morphClass(t)}">${morphRoleLabel(t)}</span>`).join('');
+}
+
+function startQuiz(){
+  const nameVal = document.getElementById('studentName').value.trim();
+  const classVal = document.getElementById('studentClass').value.trim();
+  if(!nameVal || !classVal){
+    alert('Please enter your name and class before starting.');
+    return;
+  }
+  studentName = nameVal;
+  studentClass = classVal;
+
+  quiz = shuffleArr(BANK).slice(0,10).map(q=>{
+    const p1Shuf = buildOptionShuffle(q.p1.opts, q.p1.correct);
+    const p2Shuf = buildOptionShuffle(q.p2.opts, q.p2.correct);
+    return {...q, p1Shuf, p2Shuf};
+  });
+  current = 0;
+  answers = quiz.map(()=>({p1:null,p2:null}));
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  checked = false;
+  assistiveOn = false;
+  const q = quiz[current];
+  document.getElementById('qCounter').textContent = `Question ${current+1} / ${quiz.length}`;
+  document.getElementById('progressFill').style.width = `${((current+1)/quiz.length)*100}%`;
+
+  const hasBreakdown = q.morphemes && q.morphemes.length > 1;
+
+  let glossHtml = '';
+  q.gloss.forEach(w=>{
+    if(w.target){
+      glossHtml += `<div class="gloss-item blank"><div class="ar">${w.ar}</div><div class="tr">?</div></div>`;
+    } else {
+      glossHtml += `<div class="gloss-item"><div class="ar">${w.ar}</div><div class="tr">${w.tr}</div></div>`;
+    }
+  });
+
+  function optionsHtml(name, optsArr, order, chosen, part){
+    return order.map((origIdx,pos)=>{
+      const label = optsArr[origIdx];
+      return `<label class="option" data-part="${part}" data-idx="${pos}">
+        <input type="radio" name="${name}" value="${pos}" ${chosen===pos?'checked':''} onchange="selectOption('${part}',${pos})">
+        <span>${label}</span>
+      </label>`;
+    }).join('');
+  }
+
+  document.getElementById('questionCard').innerHTML = `
+    <div class="ayah-ref">Sūrah ${q.surah} — ${q.ref}</div>
+    <div class="ayah-box">${q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`)}</div>
+    <div class="assist-row">
+      <button class="btn assist-btn" id="assistBtn" onclick="toggleAssistive()" ${hasBreakdown?'':'disabled title="This word has no separate attached ḥarf or pronoun to break down."'}>
+        ${hasBreakdown ? '🔍 Show Word Breakdown' : 'No attachments to break down'}
+      </button>
+      <span id="assistLegend"></span>
+    </div>
+    <div class="gloss-title">Word-by-word (target word's translation withheld)</div>
+    <div class="gloss-table">${glossHtml}</div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Part 1</span>${q.p1Label}</div>
+      <div class="options" id="p1Options">
+        ${optionsHtml('p1', q.p1.opts, q.p1Shuf.order, answers[current].p1, 'p1')}
+      </div>
+      <div class="explain" id="p1Explain">${q.p1.note}</div>
+    </div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Part 2</span>What type of word is it? (تصريف)</div>
+      <div class="options" id="p2Options">
+        ${optionsHtml('p2', q.p2.opts, q.p2Shuf.order, answers[current].p2, 'p2')}
+      </div>
+      <div class="explain" id="p2Explain">${q.p2.note}</div>
+    </div>
+  `;
+
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function toggleAssistive(){
+  const q = quiz[current];
+  if(!q.morphemes || q.morphemes.length<=1) return;
+  assistiveOn = !assistiveOn;
+  updateAssistiveDisplay();
+}
+
+function updateAssistiveDisplay(){
+  const q = quiz[current];
+  const fullToken = q.gloss.find(w=>w.target).ar;
+  const ayahBoxEl = document.querySelector('.ayah-box');
+  const blankArEl = document.querySelector('.gloss-item.blank .ar');
+  const legendEl = document.getElementById('assistLegend');
+  const btn = document.getElementById('assistBtn');
+
+  if(assistiveOn && q.morphemes && q.morphemes.length>1){
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(fullToken, buildMorphSpans(q.morphemes));
+    if(blankArEl) blankArEl.innerHTML = buildMorphSpans(q.morphemes);
+    if(legendEl) legendEl.innerHTML = buildLegendChips(q.morphemes);
+    if(btn) btn.innerHTML = '✕ Hide Word Breakdown';
+  } else {
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`);
+    if(blankArEl) blankArEl.innerHTML = fullToken;
+    if(legendEl) legendEl.innerHTML = '';
+    if(btn && q.morphemes && q.morphemes.length>1) btn.innerHTML = '🔍 Show Word Breakdown';
+  }
+}
+
+function selectOption(part, pos){
+  if(checked) return;
+  answers[current][part] = pos;
+}
+
+function checkAnswers(){
+  const q = quiz[current];
+  if(answers[current].p1===null || answers[current].p2===null){
+    alert('Please answer both parts before checking.');
+    return;
+  }
+  checked = true;
+
+  function markPart(part, shuf, containerId, explainId){
+    const chosenPos = answers[current][part];
+    const container = document.getElementById(containerId);
+    const opts = container.querySelectorAll('.option');
+    opts.forEach((el,pos)=>{
+      el.classList.add('locked');
+      if(pos === shuf.newCorrect) el.classList.add('correct');
+      else if(pos === chosenPos) el.classList.add('incorrect');
+    });
+    document.getElementById(explainId).classList.add('show');
+    return chosenPos === shuf.newCorrect;
+  }
+
+  let pts = 0;
+  if(markPart('p1', q.p1Shuf, 'p1Options', 'p1Explain')) pts++;
+  if(markPart('p2', q.p2Shuf, 'p2Options', 'p2Explain')) pts++;
+
+  quiz[current]._earned = pts;
+  quiz[current]._max = 2;
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  if(current < quiz.length-1){
+    current++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults(){
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+
+  const scoreTotal = quiz.reduce((s,q)=>s+(q._earned||0),0);
+  const scoreMax = quiz.reduce((s,q)=>s+(q._max||0),0);
+  const pct = scoreMax ? Math.round((scoreTotal/scoreMax)*100) : 0;
+
+  document.getElementById('resultsHeading').textContent = `Well done, ${studentName}!`;
+  document.getElementById('scorePct').textContent = pct+'%';
+  document.getElementById('scoreFrac').textContent = `${scoreTotal} / ${scoreMax} points`;
+
+  let html = '';
+  const detailParts = [];
+  quiz.forEach((q,i)=>{
+    const full = q._earned === q._max;
+    html += `<div class="review-item">
+      <span class="ref">${i+1}. Sūrah ${q.surah} ${q.ref}</span> — <span class="arabic">${q.targetWord}</span>
+      — <span class="${full?'status-ok':'status-bad'}">${q._earned}/${q._max}</span>
+    </div>`;
+    detailParts.push(`${q.ref} (${q._earned}/${q._max})`);
+  });
+  document.getElementById('reviewList').innerHTML = html;
+
+  lastSubmitPayload = {
+    name: studentName,
+    className: studentClass,
+    score: scoreTotal,
+    scoreMax: scoreMax,
+    percentage: pct,
+    details: detailParts.join('; '),
+    submittedAt: new Date().toISOString()
+  };
+  submitResult(lastSubmitPayload);
+}
+
+let lastSubmitPayload = null;
+
+async function submitResult(data){
+  const statusEl = document.getElementById('submitStatus');
+  if(!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.indexOf('PASTE_YOUR') !== -1){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.textContent = '⚠️ Result not submitted — Google Sheet link has not been set up yet.';
+    }
+    return;
+  }
+  if(statusEl){
+    statusEl.className = 'submit-status';
+    statusEl.textContent = '⏳ Submitting result…';
+  }
+  try{
+    await fetch(SHEET_WEBAPP_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    });
+    if(statusEl){
+      statusEl.className = 'submit-status ok';
+      statusEl.textContent = '✅ Result submitted.';
+    }
+  }catch(err){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.innerHTML = '⚠️ Could not submit result — check your internet connection. <button class="btn gold" style="padding:5px 12px;font-size:0.78rem;" onclick="retrySubmit()">Retry</button>';
+    }
+  }
+}
+
+function retrySubmit(){
+  if(lastSubmitPayload) submitResult(lastSubmitPayload);
+}
+</script>
+</body>
+</html>
