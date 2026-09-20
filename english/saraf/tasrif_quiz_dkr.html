@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasrif Quiz — ذكر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  @font-face{
+    font-family:'UthmanicHafs';
+    src:url('https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2');
+    font-display:swap;
+  }
+  :root{
+    --parchment:#faf5e6;
+    --parchment-deep:#f2ead4;
+    --teal:#1f7a72;
+    --teal-dark:#155c56;
+    --gold:#b8912f;
+    --gold-light:#e8d8a8;
+    --emerald:#0d3b34;
+    --correct:#2e7d46;
+    --correct-bg:#e5f3e8;
+    --incorrect:#a33636;
+    --incorrect-bg:#fbe9e7;
+    --shadow: 0 4px 18px rgba(13,59,52,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Lora', serif;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+    color:var(--emerald);
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .arabic{font-family:'UthmanicHafs','Amiri', serif;}
+  header.top{
+    text-align:center;
+    padding:22px 18px 26px;
+    border-bottom:3px solid var(--gold);
+    margin-bottom:22px;
+  }
+  header.top h1{color:var(--emerald);font-size:1.6rem;margin:0 0 6px;letter-spacing:0.3px;}
+  header.top .root-badge{
+    display:inline-block;font-family:'UthmanicHafs','Amiri',serif;font-size:2rem;color:var(--teal-dark);
+    background:#fff;border:2px solid var(--gold);border-radius:12px;padding:6px 22px;
+    margin-top:6px;box-shadow: var(--shadow);
+  }
+  header.top p.sub{color:#5b6b63;font-size:0.95rem;margin-top:10px;}
+  .card{
+    background:#fffdf8;border:1px solid var(--gold-light);border-radius:14px;
+    box-shadow:var(--shadow);padding:22px 22px 24px;margin-bottom:18px;
+  }
+  #intro .stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:18px 0;}
+  #intro .stat{background:var(--parchment-deep);border:1px solid var(--gold-light);border-radius:10px;padding:10px 16px;text-align:center;min-width:110px;}
+  #intro .stat b{display:block;color:var(--teal-dark);font-size:1.3rem;}
+  #intro .stat span{font-size:0.78rem;color:#5b6b63;}
+  .student-info{
+    display:flex;flex-direction:column;gap:14px;max-width:320px;margin:20px auto 4px;
+  }
+  .student-info label{
+    text-align:left;font-size:0.82rem;font-weight:700;color:var(--emerald);
+    text-transform:uppercase;letter-spacing:0.4px;
+  }
+  .student-info input[type="text"]{
+    display:block;width:100%;margin-top:5px;padding:10px 12px;
+    border:1.5px solid var(--gold-light);border-radius:8px;
+    font-family:'Lora',serif;font-size:0.95rem;color:var(--emerald);background:#fff;
+    box-sizing:border-box;
+  }
+  .student-info input[type="text"]:focus{outline:none;border-color:var(--teal);}
+  .level-choice{
+    display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:22px;
+  }
+  .level-card{
+    flex:1 1 220px;max-width:260px;background:var(--parchment-deep);
+    border:1.5px solid var(--gold-light);border-radius:12px;padding:16px 16px 18px;text-align:center;
+  }
+  .level-card h3{margin:0 0 6px;color:var(--emerald);font-size:1rem;}
+  .level-card p{margin:0 0 14px;font-size:0.82rem;color:#5b6b63;line-height:1.4;}
+  .submit-status{
+    text-align:center;font-size:0.85rem;color:#5b6b63;margin:4px 0 18px;min-height:20px;
+  }
+  .submit-status.ok{color:var(--correct);font-weight:600;}
+  .submit-status.warn{color:#96721f;font-weight:600;}
+  .btn{
+    display:inline-block;background:var(--teal);color:#fff;border:none;border-radius:10px;
+    padding:13px 26px;font-family:'Lora',serif;font-size:1rem;font-weight:600;cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:hover{background:var(--teal-dark);}
+  .btn:active{transform:scale(0.98);}
+  .btn.gold{background:var(--gold);}
+  .btn.gold:hover{background:#96721f;}
+  .btn:disabled{background:#ccc;cursor:not-allowed;}
+  .btn-row{text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .progress-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:0.85rem;color:var(--teal-dark);font-weight:600;}
+  .progress-bar{flex:1;height:8px;background:var(--parchment-deep);border-radius:6px;overflow:hidden;border:1px solid var(--gold-light);}
+  .progress-fill{height:100%;background:linear-gradient(90deg, var(--gold), var(--teal));transition:width .3s ease;}
+  .ayah-ref{font-size:0.82rem;color:var(--gold);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;}
+  .ayah-box{
+    direction:rtl;font-family:'UthmanicHafs','Amiri', serif;font-size:1.85rem;line-height:2.5;text-align:center;
+    color:var(--emerald);background:var(--parchment-deep);border:1px solid var(--gold-light);
+    border-radius:10px;padding:18px 14px;margin-bottom:18px;
+  }
+  .ayah-box .target-word{color:var(--teal-dark);border-bottom:3px dotted var(--gold);padding-bottom:2px;}
+  .gloss-title{font-size:0.82rem;text-transform:uppercase;letter-spacing:0.5px;color:#5b6b63;margin:6px 0 8px;font-weight:700;}
+  .gloss-table{display:flex;flex-wrap:wrap;gap:8px;direction:rtl;margin-bottom:20px;}
+  .gloss-item{background:#fff;border:1px solid var(--gold-light);border-radius:8px;padding:6px 10px;text-align:center;min-width:64px;}
+  .gloss-item.blank{border:2px dashed var(--teal);background:#eef7f6;}
+  .gloss-item .ar{font-family:'UthmanicHafs','Amiri',serif;font-size:1.2rem;color:var(--emerald);}
+  .gloss-item .tr{font-size:0.72rem;color:#6a7a72;direction:ltr;margin-top:2px;}
+  .gloss-item.blank .tr{color:var(--teal-dark);font-weight:700;}
+  .part{margin-bottom:22px;}
+  .part-label{font-weight:700;color:var(--emerald);margin-bottom:4px;font-size:0.98rem;display:flex;align-items:center;gap:8px;}
+  .part-sub{font-size:0.82rem;color:#6a7a72;margin-bottom:10px;}
+  .part-label .tag{background:var(--teal);color:#fff;font-size:0.68rem;padding:2px 8px;border-radius:20px;letter-spacing:0.4px;text-transform:uppercase;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option{
+    border:1.5px solid var(--gold-light);background:#fff;border-radius:9px;padding:11px 14px;
+    cursor:pointer;font-size:0.96rem;display:flex;align-items:center;gap:10px;
+    transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--teal);}
+  .option input{accent-color:var(--teal);}
+  .option.correct{background:var(--correct-bg);border-color:var(--correct);color:var(--correct);font-weight:600;}
+  .option.incorrect{background:var(--incorrect-bg);border-color:var(--incorrect);color:var(--incorrect);font-weight:600;}
+  .option.locked{cursor:default;}
+  .explain{margin-top:10px;background:var(--parchment-deep);border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.88rem;color:#3f4e47;display:none;}
+  .explain.show{display:block;}
+  .assist-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .assist-btn{
+    padding:8px 16px;font-size:0.82rem;background:#fff;color:var(--teal-dark);
+    border:1.5px solid var(--teal);border-radius:8px;font-family:'Lora',serif;font-weight:600;cursor:pointer;
+  }
+  .assist-btn:hover:not(:disabled){background:var(--parchment-deep);}
+  .assist-btn:disabled{background:#f2efe6;color:#9aa39c;border-color:#ddd6c2;cursor:default;}
+  #assistLegend{display:flex;gap:6px;flex-wrap:wrap;}
+  .legend-chip{
+    display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;
+    border:1.5px solid currentColor;
+  }
+  .morph-harf{color:#a3771f;font-weight:700;}
+  .morph-fiil{color:var(--teal-dark);font-weight:700;}
+  .morph-pronoun{color:#7a4f8a;font-weight:700;}
+  .legend-chip.morph-harf{background:#faf1d9;}
+  .legend-chip.morph-fiil{background:#e8f3f1;}
+  .legend-chip.morph-pronoun{background:#f2e9f4;}
+  #results .score-circle{
+    width:150px;height:150px;border-radius:50%;border:10px solid var(--gold-light);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    margin:10px auto 20px;background:#fff;
+  }
+  #results .score-circle b{font-size:2.1rem;color:var(--teal-dark);}
+  #results .score-circle span{font-size:0.78rem;color:#5b6b63;}
+  .review-item{border-bottom:1px solid var(--gold-light);padding:10px 0;font-size:0.9rem;}
+  .review-item .ref{color:var(--gold);font-weight:700;}
+  .review-item .status-ok{color:var(--correct);font-weight:700;}
+  .review-item .status-bad{color:var(--incorrect);font-weight:700;}
+  .hidden{display:none !important;}
+  footer{text-align:center;color:#8a9990;font-size:0.78rem;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Tasrif Quiz</h1>
+    <div class="root-badge">ذ - ك - ر</div>
+    <p class="sub">AtTartilQI · Form I practice — for each ayah, choose the translation that captures the correct <b>tense &amp; doer</b>, then identify the <b>word type</b> (ṣarf).</p>
+  </header>
+
+  <!-- INTRO -->
+  <div id="intro" class="card">
+    <p style="text-align:center;color:#3f4e47;">Every word in this quiz comes from the <span class="arabic" style="font-size:1.3rem;">ذكر</span> root, Form I only (فعل ماضي / مضارع / أمر, active and passive) and its nominal relative مصدر (ذِكْر). Since the root meaning repeats throughout, the quiz does not re-test vocabulary — instead, each translation option changes the <b>person</b>, <b>tense</b>, <b>voice</b>, or (in Level 2) the attached pronoun, so picking correctly means you've identified the grammatical form itself.</p>
+    <div class="stats">
+      <div class="stat"><b>10</b><span>Level 1 questions</span></div>
+      <div class="stat"><b>10</b><span>Level 2 questions</span></div>
+      <div class="stat"><b>⟳</b><span>Reshuffled each attempt</span></div>
+    </div>
+    <div class="student-info">
+      <label>Name
+        <input type="text" id="studentName" placeholder="e.g. Ahmad bin Ali" autocomplete="name">
+      </label>
+      <label>Class
+        <input type="text" id="studentClass" placeholder="e.g. QLME 22" autocomplete="off">
+      </label>
+    </div>
+    <div class="level-choice">
+      <div class="level-card">
+        <h3>Level 1</h3>
+        <p>Translate the verb and identify its doer (الفاعل). No attached pronouns.</p>
+        <button class="btn" onclick="startQuiz(1)">Begin Level 1</button>
+      </div>
+      <div class="level-card">
+        <h3>Level 2</h3>
+        <p>Same, but every target word also carries an attached pronoun to translate.</p>
+        <button class="btn gold" onclick="startQuiz(2)">Begin Level 2</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="hidden">
+    <div class="progress-wrap">
+      <span id="qCounter">Question 1 / 10</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div class="btn-row">
+      <button class="btn" id="checkBtn" onclick="checkAnswers()">Check Answers</button>
+      <button class="btn gold hidden" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="card hidden">
+    <h2 style="text-align:center;color:var(--emerald);margin-top:0;" id="resultsHeading">Quiz Complete</h2>
+    <div class="score-circle"><b id="scorePct">0%</b><span id="scoreFrac">0 / 0 points</span></div>
+    <div id="submitStatus" class="submit-status"></div>
+    <div id="reviewList"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="startQuiz(currentLevel)">Try Again — New Shuffle</button>
+      <button class="btn gold" onclick="goToIntro()">Choose a Different Level</button>
+    </div>
+  </div>
+
+  <footer>AtTartilQI · Where Qur'anic Knowledge Transforms Lives</footer>
+</div>
+
+<script>
+/* ============ LEVEL 1 — verb + doer only (no attached pronoun) ============ */
+const LEVEL1_BANK = [
+{
+  ref:"2:198", surah:"Al-Baqarah",
+  ayah:"فَإِذَا أَفَضْتُمْ مِنْ عَرَفَاتٍ فَاذْكُرُوا اللَّهَ عِنْدَ الْمَشْعَرِ الْحَرَامِ",
+  gloss:[{ar:"فَإِذَا أَفَضْتُمْ",tr:"So when you depart"},{ar:"مِنْ عَرَفَاتٍ",tr:"from 'Arafāt"},{ar:"فَاذْكُرُوا",target:true},{ar:"اللَّهَ",tr:"Allah"},{ar:"عِنْدَ الْمَشْعَرِ الْحَرَامِ",tr:"at al-Mash'ar al-Ḥarām"}],
+  targetWord:"اذْكُرُوا",
+  morphemes:[{text:"فَ",type:"harf"},{text:"اذْكُرُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so (all of you) remember","so (you) remember!","so you all remember","so he remembered"],correct:0,
+      note:"اذْكُرُوا carries واو الجماعة (أنتم) — a plural command; فَ is a separate conjunction: 'so remember (all of you)'."},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"اذْكُرُوا carries hamzat al-waṣl and واو الجماعة — the shape of a plural فعل أمر."}
+},
+{
+  ref:"3:41", surah:"Āl ʿImrān",
+  ayah:"وَاذْكُرْ رَبَّكَ كَثِيرًا وَسَبِّحْ بِالْعَشِيِّ وَالْإِبْكَارِ",
+  gloss:[{ar:"وَاذْكُرْ",target:true},{ar:"رَبَّكَ",tr:"your Lord"},{ar:"كَثِيرًا",tr:"much"},{ar:"وَسَبِّحْ",tr:"and glorify"},{ar:"بِالْعَشِيِّ وَالْإِبْكَارِ",tr:"in the evening and morning"}],
+  targetWord:"اذْكُرْ",
+  morphemes:[{text:"وَ",type:"harf"},{text:"اذْكُرْ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and (you) remember!","and (all of you) remember!","and you remember","and he remembered"],correct:0,
+      note:"اذْكُرْ ends in sukūn with no group ending — a singular command (أنتَ, hidden): 'and remember!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","مصدر (verbal noun)"],correct:0,
+      note:"اذْكُرْ carries sukūn (jazm) on the ر — the mark of a singular فعل أمر."}
+},
+{
+  ref:"3:135", surah:"Āl ʿImrān",
+  ayah:"وَالَّذِينَ إِذَا فَعَلُوا فَاحِشَةً أَوْ ظَلَمُوا أَنْفُسَهُمْ ذَكَرُوا اللَّهَ",
+  gloss:[{ar:"وَالَّذِينَ",tr:"And those who"},{ar:"إِذَا فَعَلُوا فَاحِشَةً",tr:"when they commit an immorality"},{ar:"أَوْ ظَلَمُوا أَنْفُسَهُمْ",tr:"or wrong themselves"},{ar:"ذَكَرُوا",target:true},{ar:"اللَّهَ",tr:"Allah"}],
+  targetWord:"ذَكَرُوا",
+  morphemes:[{text:"ذَكَرُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they remembered","they remember","he remembered","we remembered"],correct:0,
+      note:"ذَكَرُوا carries واو الجماعة on the past-tense stem — past tense, 3rd person plural: 'they remembered'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"ذَكَرُوا shows fatḥah throughout with واو الجماعة attached — a فعل ماضي."}
+},
+{
+  ref:"3:191", surah:"Āl ʿImrān",
+  ayah:"الَّذِينَ يَذْكُرُونَ اللَّهَ قِيَامًا وَقُعُودًا وَعَلَىٰ جُنُوبِهِمْ",
+  gloss:[{ar:"الَّذِينَ",tr:"Those who"},{ar:"يَذْكُرُونَ",target:true},{ar:"اللَّهَ",tr:"Allah"},{ar:"قِيَامًا وَقُعُودًا",tr:"standing and sitting"},{ar:"وَعَلَىٰ جُنُوبِهِمْ",tr:"and lying on their sides"}],
+  targetWord:"يَذْكُرُونَ",
+  morphemes:[{text:"يَذْكُرُونَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they remember","they remembered","he remembers","they are remembered"],correct:0,
+      note:"يَذْكُرُونَ opens with the mudāriʿ letter ي and keeps واو الجماعة — present tense, 3rd person plural: 'they remember'."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"يَذْكُرُونَ opens with a mudāriʿ letter and takes ḍammah — an active present-tense verb."}
+},
+{
+  ref:"6:118", surah:"Al-Anʿām",
+  ayah:"فَكُلُوا مِمَّا ذُكِرَ اسْمُ اللَّهِ عَلَيْهِ",
+  gloss:[{ar:"فَكُلُوا",tr:"So eat"},{ar:"مِمَّا",tr:"from that upon which"},{ar:"ذُكِرَ",target:true},{ar:"اسْمُ اللَّهِ",tr:"the name of Allah"},{ar:"عَلَيْهِ",tr:"upon it"}],
+  targetWord:"ذُكِرَ",
+  morphemes:[{text:"ذُكِرَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["was mentioned","is mentioned","mentioned","mentions"],correct:0,
+      note:"ذُكِرَ takes ḍammah-kasrah vocalization instead of the active fatḥah-fatḥah — a passive past-tense verb: 'the name of Allah has been mentioned upon it'."},
+  p2:{opts:["فعل ماضي مبني للمجهول (passive past-tense verb)","فعل مضارع مبني للمجهول (passive present-tense verb)","فعل ماضي (active past-tense verb)","اسم مفعول (passive participle/done-to noun)"],correct:0,
+      note:"ذُكِرَ carries the passive ḍammah-kasrah pattern of a Form I verb — a passive فعل ماضي."}
+},
+{
+  ref:"6:121", surah:"Al-Anʿām",
+  ayah:"وَلَا تَأْكُلُوا مِمَّا لَمْ يُذْكَرِ اسْمُ اللَّهِ عَلَيْهِ وَإِنَّهُ لَفِسْقٌ",
+  gloss:[{ar:"وَلَا تَأْكُلُوا",tr:"And do not eat"},{ar:"مِمَّا",tr:"from that upon which"},{ar:"لَمْ",tr:"not"},{ar:"يُذْكَرِ",target:true},{ar:"اسْمُ اللَّهِ عَلَيْهِ",tr:"the name of Allah has been mentioned upon it"},{ar:"وَإِنَّهُ لَفِسْقٌ",tr:"and indeed, it is grave disobedience"}],
+  targetWord:"يُذْكَرِ",
+  morphemes:[{text:"يُذْكَرِ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["has not been mentioned","is not mentioned","was not mentioned","did not mention"],correct:0,
+      note:"يُذْكَرِ takes ḍammah on the ي — passive present tense; لَمْ before it negates and puts it in the جزم state, so the final vowel becomes kasrah instead of ḍammah: 'has not been mentioned'."},
+  p2:{opts:["فعل مضارع مجزوم مبني للمجهول (jussive (lightest) passive present-tense verb, after لَمْ)","فعل ماضي مبني للمجهول (passive past-tense verb)","فعل مضارع مبني للمجهول (passive present-tense verb, not jussive)","اسم مفعول (passive participle/done-to noun)"],correct:0,
+      note:"لَمْ is a genuine jazm-triggering particle — it puts يُذْكَرُ into the مجزوم state, shown here by the kasrah replacing ḍammah on the final letter, while the verb stays passive throughout."}
+},
+{
+  ref:"17:46", surah:"Al-Isrāʾ",
+  ayah:"وَإِذَا ذَكَرْتَ رَبَّكَ فِي الْقُرْآنِ وَحْدَهُ وَلَّوْا عَلَىٰ أَدْبَارِهِمْ نُفُورًا",
+  gloss:[{ar:"وَإِذَا",tr:"And when"},{ar:"ذَكَرْتَ",target:true},{ar:"رَبَّكَ فِي الْقُرْآنِ وَحْدَهُ",tr:"your Lord alone in the Qur'ān"},{ar:"وَلَّوْا عَلَىٰ أَدْبَارِهِمْ نُفُورًا",tr:"they turn their backs in aversion"}],
+  targetWord:"ذَكَرْتَ",
+  morphemes:[{text:"ذَكَرْتَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["you mentioned","you mention","he mentioned","we mentioned"],correct:0,
+      note:"ذَكَرْتَ attaches ـتَ to the past-tense stem ذَكَرَ — past tense, 2nd person masc. singular: 'you mentioned'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"The ـتَ subject-suffix attaches straight onto the past-tense stem — this pattern only occurs with فعل ماضي."}
+},
+{
+  ref:"22:34", surah:"Al-Ḥajj",
+  ayah:"وَلِكُلِّ أُمَّةٍ جَعَلْنَا مَنْسَكًا لِيَذْكُرُوا اسْمَ اللَّهِ عَلَىٰ مَا رَزَقَهُمْ مِنْ بَهِيمَةِ الْأَنْعَامِ",
+  gloss:[{ar:"وَلِكُلِّ أُمَّةٍ",tr:"And for every nation"},{ar:"جَعَلْنَا مَنْسَكًا",tr:"We have appointed a rite"},{ar:"لِ",tr:"so that"},{ar:"يَذْكُرُوا",target:true},{ar:"اسْمَ اللَّهِ",tr:"the name of Allah"},{ar:"عَلَىٰ مَا رَزَقَهُمْ مِنْ بَهِيمَةِ الْأَنْعَامِ",tr:"over what He has provided them of sacrificial animals"}],
+  targetWord:"يَذْكُرُوا",
+  morphemes:[{text:"يَذْكُرُوا",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["so that they mention","so that they mentioned","so that we mention","so that they are mentioned"],correct:0,
+      note:"لِ (lām of purpose) puts the following mudāriʿ verb in the منصوب state — يَذْكُرُوا keeps واو الجماعة but drops the ن: 'so that they mention'."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, after لِ)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"لِ puts the following mudāriʿ verb in the منصوب state — يَذْكُرُوا remains a فعل مضارع, just in the light (منصوب) case."}
+},
+{
+  ref:"74:56", surah:"Al-Muddaththir",
+  ayah:"وَمَا يَذْكُرُونَ إِلَّا أَنْ يَشَاءَ اللَّهُ",
+  gloss:[{ar:"وَمَا",tr:"And not"},{ar:"يَذْكُرُونَ",target:true},{ar:"إِلَّا أَنْ يَشَاءَ اللَّهُ",tr:"except that Allah wills"}],
+  targetWord:"يَذْكُرُونَ",
+  morphemes:[{text:"يَذْكُرُونَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["they pay heed","they paid heed","he pays heed","they are made to pay heed"],correct:0,
+      note:"يَذْكُرُونَ carries واو الجماعة with fatḥah — active present tense, 3rd person plural: 'they pay heed / take heed'."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"يَذْكُرُونَ opens with a mudāriʿ letter and takes fatḥah on the ك (active) — an active present-tense verb."}
+},
+{
+  ref:"87:15", surah:"Al-Aʿlā",
+  ayah:"وَذَكَرَ اسْمَ رَبِّهِ فَصَلَّىٰ",
+  gloss:[{ar:"وَذَكَرَ",target:true},{ar:"اسْمَ رَبِّهِ",tr:"the name of his Lord"},{ar:"فَصَلَّىٰ",tr:"and prayed"}],
+  targetWord:"ذَكَرَ",
+  morphemes:[{text:"وَ",type:"harf"},{text:"ذَكَرَ",type:"fiil"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and he mentioned","and they mentioned","and he mentions","and I mentioned"],correct:0,
+      note:"ذَكَرَ is on the bare فَعَلَ pattern — past tense, with the hidden pronoun هو as its فاعل: 'and he mentioned [the name of his Lord]'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"ذَكَرَ carries fatḥah throughout with no mudāriʿ letter — the base فعل ماضي (Form I)."}
+}
+];
+
+/* ============ LEVEL 2 — target words with an attached pronoun ============ */
+const LEVEL2_BANK = [
+{
+  ref:"12:42", surah:"Yūsuf",
+  ayah:"وَقَالَ لِلَّذِي ظَنَّ أَنَّهُ نَاجٍ مِنْهُمَا اذْكُرْنِي عِنْدَ رَبِّكَ",
+  gloss:[{ar:"وَقَالَ لِلَّذِي ظَنَّ",tr:"And he said to the one whom he thought"},{ar:"أَنَّهُ نَاجٍ مِنْهُمَا",tr:"would be saved of the two of them"},{ar:"اذْكُرْنِي",target:true},{ar:"عِنْدَ رَبِّكَ",tr:"to your master"}],
+  targetWord:"اذْكُرْنِي",
+  morphemes:[{text:"اذْكُرْ",type:"fiil"},{text:"نِي",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["mention me!","mention him!","mention me, all of you!","you mention me"],correct:0,
+      note:"اذْكُرْ carries the hidden subject أنتَ (singular command), and the object pronoun ـنِي, 'me' — Yūsuf (عليه السلام) speaking: 'mention me!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"اذْكُرْ ends in sukūn — a singular فعل أمر; ـنِي attached afterward is the object pronoun, not part of the verb's own conjugation."}
+},
+{
+  ref:"2:152", surah:"Al-Baqarah",
+  ayah:"فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
+  gloss:[{ar:"فَاذْكُرُونِي",tr:"So remember Me"},{ar:"أَذْكُرْكُمْ",target:true},{ar:"وَاشْكُرُوا لِي",tr:"and be grateful to Me"},{ar:"وَلَا تَكْفُرُونِ",tr:"and do not deny Me"}],
+  targetWord:"أَذْكُرْكُمْ",
+  morphemes:[{text:"أَذْكُرْ",type:"fiil"},{text:"كُمْ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["I will remember you (all)","I remembered you (all)","you will remember me","I will remember him"],correct:0,
+      note:"أَذْكُرْ carries the hidden subject أنا ('I'), and the object pronoun ـكُمْ, 'you all' — Allah's response: 'I will remember you'."},
+  p2:{opts:["فعل مضارع مجزوم (jussive (lightest) present-tense verb, as the response to a command)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"أَذْكُرْ ends in sukūn — a mudāriʿ verb in the مجزوم state because it is the جواب الطلب (response) to the preceding command اذْكُرُونِي, not because of a particle; ـكُمْ is the object pronoun attached to it."}
+},
+{
+  ref:"2:198", surah:"Al-Baqarah",
+  ayah:"فَاذْكُرُوا اللَّهَ عِنْدَ الْمَشْعَرِ الْحَرَامِ وَاذْكُرُوهُ كَمَا هَدَاكُمْ",
+  gloss:[{ar:"فَاذْكُرُوا اللَّهَ عِنْدَ الْمَشْعَرِ الْحَرَامِ",tr:"So remember Allah at al-Mash'ar al-Ḥarām"},{ar:"وَاذْكُرُوهُ",target:true},{ar:"كَمَا هَدَاكُمْ",tr:"just as He has guided you"}],
+  targetWord:"اذْكُرُوهُ",
+  morphemes:[{text:"وَ",type:"harf"},{text:"اذْكُرُو",type:"fiil"},{text:"هُ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and remember Him! (all of you)","and remember him! (all of you)","and remember Him!","and you all remember Him"],correct:0,
+      note:"اذْكُرُوا carries واو الجماعة (plural command) plus the object pronoun ـهُ, 'Him' — referring to Allah: 'and remember Him, all of you!'"},
+  p2:{opts:["فعل أمر (command/imperative verb)","فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","مصدر (verbal noun)"],correct:0,
+      note:"اذْكُرُوا carries واو الجماعة, marking the plural command; the trailing ـهُ is the object pronoun attached after it."}
+},
+{
+  ref:"18:63", surah:"Al-Kahf",
+  ayah:"فَإِنِّي نَسِيتُ الْحُوتَ وَمَا أَنْسَانِيهُ إِلَّا الشَّيْطَانُ أَنْ أَذْكُرَهُ",
+  gloss:[{ar:"فَإِنِّي نَسِيتُ الْحُوتَ",tr:"Indeed I forgot the fish"},{ar:"وَمَا أَنْسَانِيهُ إِلَّا الشَّيْطَانُ",tr:"none made me forget it except Satan"},{ar:"أَنْ",tr:"that"},{ar:"أَذْكُرَهُ",target:true}],
+  targetWord:"أَذْكُرَهُ",
+  morphemes:[{text:"أَذْكُرَ",type:"fiil"},{text:"هُ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["I mention it","I mentioned it","we mention it","I am reminded of it"],correct:0,
+      note:"أَذْكُرَ carries the hidden subject أنا ('I'), and the object pronoun ـهُ, 'it' (the fish) — after أَنْ: 'that I mention it'."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, after أَنْ)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"أَنْ puts the following mudāriʿ verb in the منصوب state — أَذْكُرَ takes fatḥah instead of ḍammah, remaining a فعل مضارع; ـهُ is the object pronoun attached to it."}
+},
+{
+  ref:"20:34", surah:"Ṭā Hā",
+  ayah:"وَنَذْكُرَكَ كَثِيرًا",
+  gloss:[{ar:"وَ",tr:"and"},{ar:"نَذْكُرَكَ",target:true},{ar:"كَثِيرًا",tr:"much"}],
+  targetWord:"نَذْكُرَكَ",
+  morphemes:[{text:"نَذْكُرَ",type:"fiil"},{text:"كَ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["and we remember You","and we remembered You","and You remember us","and we remember Him"],correct:0,
+      note:"نَذْكُرَ carries the hidden subject نحن ('we'), and the object pronoun ـكَ, 'You' — Mūsā and Hārūn (عليهما السلام) speaking to Allah: 'and we remember You'."},
+  p2:{opts:["فعل مضارع منصوب (subjunctive (light) present-tense verb, part of a purpose clause)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"نَذْكُرَ takes fatḥah on the ر instead of ḍammah — a منصوب mudāriʿ verb, here continuing a purpose clause; ـكَ is the object pronoun attached to it."}
+},
+{
+  ref:"21:60", surah:"Al-Anbiyāʾ",
+  ayah:"قَالُوا سَمِعْنَا فَتًى يَذْكُرُهُمْ يُقَالُ لَهُ إِبْرَاهِيمُ",
+  gloss:[{ar:"قَالُوا سَمِعْنَا فَتًى",tr:"They said, We heard a young man"},{ar:"يَذْكُرُهُمْ",target:true},{ar:"يُقَالُ لَهُ إِبْرَاهِيمُ",tr:"who is called Abraham [mention them]"}],
+  targetWord:"يَذْكُرُهُمْ",
+  morphemes:[{text:"يَذْكُرُ",type:"fiil"},{text:"هُمْ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["he mentions them","he mentioned them","they mention him","he mentions it"],correct:0,
+      note:"يَذْكُرُ carries the hidden subject هو ('he'), and the object pronoun ـهُمْ, 'them' (the idols) — 'a young man who mentions them [disparagingly]'."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","اسم فاعل (active participle/do-er noun)"],correct:0,
+      note:"يَذْكُرُ opens with the mudāriʿ letter ي and takes ḍammah — an active present-tense verb; ـهُمْ attached afterward is the object pronoun."}
+},
+{
+  ref:"2:235", surah:"Al-Baqarah",
+  ayah:"عَلِمَ اللَّهُ أَنَّكُمْ سَتَذْكُرُونَهُنَّ وَلَٰكِنْ لَا تُوَاعِدُوهُنَّ سِرًّا",
+  gloss:[{ar:"عَلِمَ اللَّهُ أَنَّكُمْ",tr:"Allah knows that you"},{ar:"سَتَذْكُرُونَهُنَّ",target:true},{ar:"وَلَٰكِنْ لَا تُوَاعِدُوهُنَّ سِرًّا",tr:"but do not promise them secretly"}],
+  targetWord:"تَذْكُرُونَهُنَّ",
+  morphemes:[{text:"سَ",type:"harf"},{text:"تَذْكُرُونَ",type:"fiil"},{text:"هُنَّ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["you (all) will mention them (fem.)","you (all) mentioned them (fem.)","you (all) mention them (masc.)","they will mention you"],correct:0,
+      note:"سَ is the near-future marker attached to تَذْكُرُونَ ('you all will mention'), with the object pronoun ـهُنَّ, 'them' (feminine plural, referring to widowed women mentioned earlier)."},
+  p2:{opts:["فعل مضارع (present-tense verb)","فعل ماضي (past-tense verb)","فعل أمر (command/imperative verb)","مصدر (verbal noun)"],correct:0,
+      note:"تَذْكُرُونَ carries واو الجماعة — present tense, made near-future by the attached سَ; ـهُنَّ is the feminine-plural object pronoun."}
+},
+{
+  ref:"74:55", surah:"Al-Muddaththir",
+  ayah:"فَمَنْ شَاءَ ذَكَرَهُ",
+  gloss:[{ar:"فَمَنْ شَاءَ",tr:"So whoever wills"},{ar:"ذَكَرَهُ",target:true}],
+  targetWord:"ذَكَرَهُ",
+  morphemes:[{text:"ذَكَرَ",type:"fiil"},{text:"هُ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["may remember it","may remember him","remembers it","remembered them"],correct:0,
+      note:"ذَكَرَ carries the hidden subject هو ('he'), and the object pronoun ـهُ, 'it' (the Reminder) — 'so whoever wills may remember/heed it'."},
+  p2:{opts:["فعل ماضي (past-tense verb)","فعل مضارع (present-tense verb)","فعل أمر (command/imperative verb)","اسم مفعول (passive participle/done-to noun)"],correct:0,
+      note:"ذَكَرَ shows fatḥah throughout — a فعل ماضي; ـهُ attached afterward is the object pronoun, not part of the verb's own conjugation."}
+},
+{
+  ref:"94:4", surah:"Ash-Sharḥ",
+  ayah:"وَرَفَعْنَا لَكَ ذِكْرَكَ",
+  gloss:[{ar:"وَرَفَعْنَا",tr:"And We raised"},{ar:"لَكَ",tr:"for you"},{ar:"ذِكْرَكَ",target:true}],
+  targetWord:"ذِكْرَكَ",
+  morphemes:[{text:"ذِكْرَ",type:"ism"},{text:"كَ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["your remembrance/renown","his remembrance","their remembrance","our remembrance"],correct:0,
+      note:"ذِكْرَ carries the ـكَ suffix — the 2nd person masc. singular possessive pronoun, 'your' — Allah addressing the Prophet ﷺ: 'We raised your renown'."},
+  p2:{opts:["مصدر (verbal noun)","اسم فاعل (active participle/do-er noun)","فعل ماضي (past-tense verb)","اسم (noun, singular)"],correct:0,
+      note:"ذِكْر is the مصدر (verbal noun) of ذَكَرَ — it names the abstract action 'remembrance/mention' itself, here with a possessive pronoun attached."}
+},
+{
+  ref:"21:10", surah:"Al-Anbiyāʾ",
+  ayah:"لَقَدْ أَنْزَلْنَا إِلَيْكُمْ كِتَابًا فِيهِ ذِكْرُكُمْ أَفَلَا تَعْقِلُونَ",
+  gloss:[{ar:"لَقَدْ أَنْزَلْنَا إِلَيْكُمْ كِتَابًا",tr:"We have certainly sent down to you a Book"},{ar:"فِيهِ",tr:"in which is"},{ar:"ذِكْرُكُمْ",target:true},{ar:"أَفَلَا تَعْقِلُونَ",tr:"then will you not reason"}],
+  targetWord:"ذِكْرُكُمْ",
+  morphemes:[{text:"ذِكْرُ",type:"ism"},{text:"كُمْ",type:"pronoun"}],
+  p1Label:"Translate the word",
+  p1:{opts:["your mention/repute","his mention","their mention","our mention"],correct:0,
+      note:"ذِكْرُ carries the ـكُمْ suffix — the 2nd person plural possessive pronoun, 'your' — 'in which is your mention/renown'."},
+  p2:{opts:["مصدر (verbal noun)","اسم فاعل (active participle/do-er noun)","فعل ماضي (past-tense verb)","اسم (noun, plural)"],correct:0,
+      note:"ذِكْر is the مصدر of ذَكَرَ, here with the possessive pronoun 'your' (plural) attached."}
+}
+];
+
+/* ============ ENGINE ============ */
+let quiz = [];
+let current = 0;
+let answers = [];
+let checked = false;
+let assistiveOn = false;
+let studentName = '';
+let studentClass = '';
+let currentLevel = 1;
+
+/* ⚠️ TEACHER SETUP: Google Apps Script Web App URL for auto-submitting results.
+   This quiz needs its own Sheet + deployment — see setup instructions. */
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyEjDL_8CiFojwR7AXpzjfYlhCoHfZJRtKnvv2X0T1X73ldNPhgj-iM48N7iHGZYL1-/exec";
+
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildOptionShuffle(optsArr, correctIdx){
+  const idxArr = optsArr.map((_,i)=>i);
+  const shuffled = shuffleArr(idxArr);
+  return { order: shuffled, newCorrect: shuffled.indexOf(correctIdx) };
+}
+
+function morphClass(type){
+  if(type==='harf') return 'morph-harf';
+  if(type==='pronoun') return 'morph-pronoun';
+  return 'morph-fiil';
+}
+function morphRoleLabel(type){
+  return {harf:'Ḥarf', fiil:"Fi'l", ism:'Ism', pronoun:'Ḍamīr (attached pronoun)'}[type] || type;
+}
+function buildMorphSpans(morphemes){
+  return morphemes.map(m=>`<span class="${morphClass(m.type)}">${m.text}</span>`).join('');
+}
+function buildLegendChips(morphemes){
+  const seen = [];
+  morphemes.forEach(m=>{ if(!seen.includes(m.type)) seen.push(m.type); });
+  return seen.map(t=>`<span class="legend-chip ${morphClass(t)}">${morphRoleLabel(t)}</span>`).join('');
+}
+
+function startQuiz(level){
+  const nameVal = document.getElementById('studentName').value.trim();
+  const classVal = document.getElementById('studentClass').value.trim();
+  if(!nameVal || !classVal){
+    alert('Please enter your name and class before starting.');
+    return;
+  }
+  studentName = nameVal;
+  studentClass = classVal;
+  currentLevel = level;
+
+  const bank = level === 2 ? LEVEL2_BANK : LEVEL1_BANK;
+  quiz = shuffleArr(bank).map(q=>{
+    const p1Shuf = buildOptionShuffle(q.p1.opts, q.p1.correct);
+    const p2Shuf = buildOptionShuffle(q.p2.opts, q.p2.correct);
+    return {...q, p1Shuf, p2Shuf};
+  });
+  current = 0;
+  answers = quiz.map(()=>({p1:null,p2:null}));
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  renderQuestion();
+}
+
+function goToIntro(){
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+}
+
+function renderQuestion(){
+  checked = false;
+  assistiveOn = false;
+  const q = quiz[current];
+  document.getElementById('qCounter').textContent = `Question ${current+1} / ${quiz.length}`;
+  document.getElementById('progressFill').style.width = `${((current+1)/quiz.length)*100}%`;
+
+  const hasBreakdown = q.morphemes && q.morphemes.length > 1;
+
+  let glossHtml = '';
+  q.gloss.forEach(w=>{
+    if(w.target){
+      glossHtml += `<div class="gloss-item blank"><div class="ar">${w.ar}</div><div class="tr">?</div></div>`;
+    } else {
+      glossHtml += `<div class="gloss-item"><div class="ar">${w.ar}</div><div class="tr">${w.tr}</div></div>`;
+    }
+  });
+
+  function optionsHtml(name, optsArr, order, chosen, part){
+    return order.map((origIdx,pos)=>{
+      const label = optsArr[origIdx];
+      return `<label class="option" data-part="${part}" data-idx="${pos}">
+        <input type="radio" name="${name}" value="${pos}" ${chosen===pos?'checked':''} onchange="selectOption('${part}',${pos})">
+        <span>${label}</span>
+      </label>`;
+    }).join('');
+  }
+
+  document.getElementById('questionCard').innerHTML = `
+    <div class="ayah-ref">Level ${currentLevel} · Sūrah ${q.surah} — ${q.ref}</div>
+    <div class="ayah-box">${q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`)}</div>
+    <div class="assist-row">
+      <button class="btn assist-btn" id="assistBtn" onclick="toggleAssistive()" ${hasBreakdown?'':'disabled title="This word has no separate attached ḥarf or pronoun to break down."'}>
+        ${hasBreakdown ? '🔍 Show Word Breakdown' : 'No attachments to break down'}
+      </button>
+      <span id="assistLegend"></span>
+    </div>
+    <div class="gloss-title">Word-by-word (target word's translation withheld)</div>
+    <div class="gloss-table">${glossHtml}</div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Part 1</span>${q.p1Label}</div>
+      <div class="options" id="p1Options">
+        ${optionsHtml('p1', q.p1.opts, q.p1Shuf.order, answers[current].p1, 'p1')}
+      </div>
+      <div class="explain" id="p1Explain">${q.p1.note}</div>
+    </div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Part 2</span>What type of word is it? (تصريف)</div>
+      <div class="options" id="p2Options">
+        ${optionsHtml('p2', q.p2.opts, q.p2Shuf.order, answers[current].p2, 'p2')}
+      </div>
+      <div class="explain" id="p2Explain">${q.p2.note}</div>
+    </div>
+  `;
+
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function toggleAssistive(){
+  const q = quiz[current];
+  if(!q.morphemes || q.morphemes.length<=1) return;
+  assistiveOn = !assistiveOn;
+  updateAssistiveDisplay();
+}
+
+function updateAssistiveDisplay(){
+  const q = quiz[current];
+  const fullToken = q.gloss.find(w=>w.target).ar;
+  const ayahBoxEl = document.querySelector('.ayah-box');
+  const blankArEl = document.querySelector('.gloss-item.blank .ar');
+  const legendEl = document.getElementById('assistLegend');
+  const btn = document.getElementById('assistBtn');
+
+  if(assistiveOn && q.morphemes && q.morphemes.length>1){
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(fullToken, buildMorphSpans(q.morphemes));
+    if(blankArEl) blankArEl.innerHTML = buildMorphSpans(q.morphemes);
+    if(legendEl) legendEl.innerHTML = buildLegendChips(q.morphemes);
+    if(btn) btn.innerHTML = '✕ Hide Word Breakdown';
+  } else {
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`);
+    if(blankArEl) blankArEl.innerHTML = fullToken;
+    if(legendEl) legendEl.innerHTML = '';
+    if(btn && q.morphemes && q.morphemes.length>1) btn.innerHTML = '🔍 Show Word Breakdown';
+  }
+}
+
+function selectOption(part, pos){
+  if(checked) return;
+  answers[current][part] = pos;
+}
+
+function checkAnswers(){
+  const q = quiz[current];
+  if(answers[current].p1===null || answers[current].p2===null){
+    alert('Please answer both parts before checking.');
+    return;
+  }
+  checked = true;
+
+  function markPart(part, shuf, containerId, explainId){
+    const chosenPos = answers[current][part];
+    const container = document.getElementById(containerId);
+    const opts = container.querySelectorAll('.option');
+    opts.forEach((el,pos)=>{
+      el.classList.add('locked');
+      if(pos === shuf.newCorrect) el.classList.add('correct');
+      else if(pos === chosenPos) el.classList.add('incorrect');
+    });
+    document.getElementById(explainId).classList.add('show');
+    return chosenPos === shuf.newCorrect;
+  }
+
+  let pts = 0;
+  if(markPart('p1', q.p1Shuf, 'p1Options', 'p1Explain')) pts++;
+  if(markPart('p2', q.p2Shuf, 'p2Options', 'p2Explain')) pts++;
+
+  quiz[current]._earned = pts;
+  quiz[current]._max = 2;
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  if(current < quiz.length-1){
+    current++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+let lastSubmitPayload = null;
+
+function showResults(){
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+
+  const scoreTotal = quiz.reduce((s,q)=>s+(q._earned||0),0);
+  const scoreMax = quiz.reduce((s,q)=>s+(q._max||0),0);
+  const pct = scoreMax ? Math.round((scoreTotal/scoreMax)*100) : 0;
+
+  document.getElementById('resultsHeading').textContent = `Well done, ${studentName}! (Level ${currentLevel})`;
+  document.getElementById('scorePct').textContent = pct+'%';
+  document.getElementById('scoreFrac').textContent = `${scoreTotal} / ${scoreMax} points`;
+
+  let html = '';
+  const detailParts = [];
+  quiz.forEach((q,i)=>{
+    const full = q._earned === q._max;
+    html += `<div class="review-item">
+      <span class="ref">${i+1}. Sūrah ${q.surah} ${q.ref}</span> — <span class="arabic">${q.targetWord}</span>
+      — <span class="${full?'status-ok':'status-bad'}">${q._earned}/${q._max}</span>
+    </div>`;
+    detailParts.push(`${q.ref} (${q._earned}/${q._max})`);
+  });
+  document.getElementById('reviewList').innerHTML = html;
+
+  lastSubmitPayload = {
+    name: studentName,
+    className: studentClass,
+    level: currentLevel,
+    score: scoreTotal,
+    scoreMax: scoreMax,
+    percentage: pct,
+    details: detailParts.join('; '),
+    submittedAt: new Date().toISOString()
+  };
+  submitResult(lastSubmitPayload);
+}
+
+async function submitResult(data){
+  const statusEl = document.getElementById('submitStatus');
+  if(!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.indexOf('PASTE_YOUR') !== -1){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.textContent = '⚠️ Result not submitted — Google Sheet link has not been set up yet.';
+    }
+    return;
+  }
+  if(statusEl){
+    statusEl.className = 'submit-status';
+    statusEl.textContent = '⏳ Submitting result…';
+  }
+  try{
+    await fetch(SHEET_WEBAPP_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    });
+    if(statusEl){
+      statusEl.className = 'submit-status ok';
+      statusEl.textContent = '✅ Result submitted.';
+    }
+  }catch(err){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.innerHTML = '⚠️ Could not submit result — check your internet connection. <button class="btn gold" style="padding:5px 12px;font-size:0.78rem;" onclick="retrySubmit()">Retry</button>';
+    }
+  }
+}
+
+function retrySubmit(){
+  if(lastSubmitPayload) submitResult(lastSubmitPayload);
+}
+</script>
+</body>
+</html>
