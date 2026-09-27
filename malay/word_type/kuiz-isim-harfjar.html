@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuiz: Tanda Isim &amp; Harf Jar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment:#f6efe0; --teal:#0f6b64; --gold:#c8a24a; --emerald:#0c3d33;
+  --text:#2c2a22; --card:#fffdf7; --danger:#a4342a; --good:#2f7a4f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+  }
+}
+:root[data-theme="dark"]{
+  --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100%; background:var(--parchment); color:var(--text);
+  font-family:'Lora',serif; display:flex; justify-content:center; padding:24px 14px 40px;
+}
+.arabic{font-family:'Amiri',serif; direction:rtl; unicode-bidi:embed;}
+.wrap{width:100%; max-width:640px;}
+.card{
+  background:var(--card); border:1px solid var(--gold); border-radius:14px;
+  padding:22px 20px; box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:16px;
+}
+h1{color:var(--emerald); font-size:1.5rem; margin:0 0 4px;}
+h2{color:var(--emerald); font-size:1.15rem; margin:0 0 10px;}
+.subtitle{color:var(--teal); font-weight:600; margin:0 0 18px;}
+.footer{text-align:center; color:var(--teal); font-size:.85rem; margin-top:10px; opacity:.85;}
+label.field{display:block; margin-bottom:12px; font-weight:600;}
+input[type=text]{
+  width:100%; padding:10px 12px; margin-top:5px; border:1px solid var(--gold);
+  border-radius:8px; background:var(--parchment); color:var(--text); font-family:'Lora',serif; font-size:1rem;
+}
+.btn{
+  display:inline-block; border:none; border-radius:8px; padding:11px 18px; font-family:'Lora',serif;
+  font-weight:700; font-size:1rem; cursor:pointer; margin:6px 6px 0 0; transition:opacity .15s;
+}
+.btn-primary{background:var(--teal); color:#fff;}
+.btn-gold{background:var(--gold); color:var(--emerald);}
+.btn:disabled{opacity:.5; cursor:not-allowed;}
+.btn:hover:not(:disabled){opacity:.88;}
+.start-note{background:var(--parchment); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-bottom:6px;}
+.start-note b{color:var(--emerald); font-size:1.05rem;}
+.start-note span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
+.progress-label{color:var(--teal); font-weight:600; margin-bottom:6px; font-size:.9rem;}
+.progress-track{background:var(--parchment); border:1px solid var(--gold); border-radius:99px; height:10px; overflow:hidden; margin-bottom:16px;}
+.progress-fill{background:var(--teal); height:100%; border-radius:99px; transition:width .25s ease;}
+.ayah-box{
+  background:var(--parchment); border:1px solid var(--gold); border-radius:10px; padding:16px;
+  font-size:1.4rem; text-align:center; margin-bottom:12px; line-height:2.3;
+}
+.interlinear{display:none; flex-wrap:wrap; gap:10px 14px; justify-content:center; direction:rtl;
+  background:var(--parchment); border:1px dashed var(--gold); border-radius:10px; padding:14px; margin-bottom:16px;}
+.interlinear.show{display:flex;}
+.iword{display:flex; flex-direction:column; align-items:center; min-width:54px;}
+.iword .ar{font-family:'Amiri',serif; font-size:1.2rem;}
+.iword .gl{font-family:'Lora',serif; font-size:.66rem; color:var(--teal); margin-top:2px; text-align:center; direction:ltr;}
+.toggle-link{display:inline-block; margin:0 0 14px; font-size:.85rem; color:var(--teal); cursor:pointer; text-decoration:underline;}
+.opt{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gold);
+  border-radius:8px; margin-bottom:8px; cursor:pointer; background:var(--parchment);
+}
+.opt input{transform:scale(1.2);}
+.opt.arabic-opt{font-size:1.3rem; justify-content:flex-start;}
+.opt.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.opt.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.hidden{display:none !important;}
+.result-score{font-size:2.2rem; color:var(--emerald); font-weight:700; text-align:center; margin:6px 0;}
+.result-sub{text-align:center; color:var(--teal); margin-bottom:16px;}
+.root-line{font-size:1.5rem; text-align:center; margin:2px 0 14px; color:var(--emerald);}
+.feedback{border-radius:8px; padding:10px 12px; margin:10px 0 4px; font-size:.92rem;}
+.feedback.good{background:rgba(47,122,79,.12); color:var(--good); border:1px solid var(--good);}
+.feedback.bad{background:rgba(164,52,42,.1); color:var(--danger); border:1px solid var(--danger);}
+.feedback.info{background:rgba(200,162,74,.15); color:var(--emerald); border:1px solid var(--gold); font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card" id="screen-start">
+    <h1>Kuiz: Tanda Isim &amp; Harf Jar</h1>
+    <div class="root-line arabic">عَلَامَاتُ الِاسْمِ وَحُرُوفُ الْجَرِّ</div>
+    <p class="subtitle">Pelajaran 2 — Tanda-Tanda Isim dan Harf Jar</p>
+    <label class="field">Nama
+      <input type="text" id="stuName" placeholder="Nama pelajar">
+    </label>
+    <label class="field">Kelas
+      <input type="text" id="stuClass" placeholder="Contoh: QLME 1A">
+    </label>
+    <div class="feedback bad hidden" id="startError">Sila isikan nama dan kelas terlebih dahulu.</div>
+    <div class="start-note">
+      <b>Kuiz Tanda Isim &amp; Harf Jar</b>
+      <span>15 soalan</span>
+    </div>
+    <button class="btn btn-primary" onclick="tryStartQuiz()">Mula Kuiz</button>
+  </div>
+
+  <div class="card hidden" id="screen-quiz">
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <h2 id="qPrompt"></h2>
+    <div class="ayah-box arabic hidden" id="ayahBox"></div>
+    <div class="toggle-link hidden" id="interToggle" onclick="toggleInterlinear()">Tunjuk terjemahan setiap perkataan</div>
+    <div class="interlinear" id="interlinearBox"></div>
+    <div id="optionsBox"></div>
+    <div id="feedbackBox"></div>
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">Semak Jawapan</button>
+    <button class="btn btn-gold hidden" id="nextBtn" onclick="nextQuestion()">Soalan Seterusnya →</button>
+  </div>
+
+  <div class="card hidden" id="screen-result">
+    <h2>Kuiz Selesai</h2>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="feedback info" id="submitStatus" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" onclick="retryQuiz()">Cuba Lagi</button>
+    <button class="btn btn-gold" onclick="backToStart()">Kembali</button>
+    <h2 style="margin-top:20px;">Sandaran Keputusan</h2>
+    <p style="font-size:.85rem; color:var(--teal); margin-top:-6px;">Jika keputusan tidak sampai kepada guru secara automatik, muat turun atau salin teks di bawah dan hantar secara manual.</p>
+    <button class="btn btn-gold" onclick="downloadResults()">Muat Turun Keputusan (.txt)</button>
+    <button class="btn btn-gold" onclick="copyResults()">Salin ke Papan Klip</button>
+  </div>
+
+  <div class="footer">AtTartil · Where Qur'anic Knowledge Transforms Lives</div>
+</div>
+
+<script>
+const FATIHAH6_INTERLINEAR = [
+ [["اهْدِنَا","Tunjukilah kami"],["الصِّرَاطَ","jalan"],["الْمُسْتَقِيمَ","yang lurus"]]
+];
+const BAQARAH5_INTERLINEAR = [
+ [["أُولَٰئِكَ","Mereka itulah"],["عَلَىٰ","berada di atas"],["هُدًى","petunjuk"],["مِّن","dari"],["رَّبِّهِمْ","Tuhan mereka"],["وَأُولَٰئِكَ","dan mereka itulah"],["هُمُ","mereka"],["الْمُفْلِحُونَ","orang-orang yang berjaya"]]
+];
+const MAUN_INTERLINEAR = [
+ [["أَرَأَيْتَ","Tahukah kamu"],["الَّذِي","orang yang"],["يُكَذِّبُ","mendustakan"],["بِالدِّينِ","hari pembalasan"]],
+ [["فَذَٰلِكَ","Maka itulah"],["الَّذِي","orang yang"],["يَدُعُّ","menghardik"],["الْيَتِيمَ","anak yatim"]],
+ [["وَلَا","dan tidak"],["يَحُضُّ","menganjurkan"],["عَلَىٰ","untuk"],["طَعَامِ","memberi makan"],["الْمِسْكِينِ","orang miskin"]],
+ [["فَوَيْلٌ","Maka kecelakaanlah"],["لِّلْمُصَلِّينَ","bagi orang-orang yang solat"]],
+ [["الَّذِينَ","iaitu orang-orang yang"],["هُمْ","mereka"],["عَن","daripada"],["صَلَاتِهِمْ","solat mereka"],["سَاهُونَ","lalai"]],
+ [["الَّذِينَ","orang-orang yang"],["هُمْ","mereka"],["يُرَاءُونَ","berbuat riak (menunjuk-nunjuk)"]],
+ [["وَيَمْنَعُونَ","dan mereka enggan memberi"],["الْمَاعُونَ","bantuan (barang berguna)"]]
+];
+const INTERLINEAR_MAP = {fatihah6:FATIHAH6_INTERLINEAR, baqarah5:BAQARAH5_INTERLINEAR, maun:MAUN_INTERLINEAR};
+
+// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
+// Gantikan URL di bawah dengan URL "Web App" Google Apps Script anda
+// (boleh guna skrip/helaian yang sama seperti kuiz sebelum ini, atau sediakan yang baharu).
+const CONFIG = {
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyH2xCdZYmrHIweej_3YtiEm0luGEFCVAZFgwrPXXbwApy9eVEd5CshU8GYA40nOyA/exec"
+};
+
+const QUESTIONS = [
+  {id:1, type:'single',
+   prompt:"Yang manakah BUKAN merupakan ciri-ciri isim?",
+   options:["Perkataan yang mempunyai tanwin dan ال","Perkataan yang bermula dengan م diikuti sekurang-kurangnya 3 huruf","Perkataan yang mempunyai tanwin atau ال","Perkataan yang berakhir dengan baris bawah (kasrah)"],
+   correct:[0],
+   explain:"Tanwin dan ال tidak boleh wujud serentak pada satu perkataan yang sama, jadi ini BUKAN ciri isim yang sah. Tiga pilihan lain semuanya boleh menjadi tanda sah isim."},
+  {id:2, type:'single',
+   prompt:"Apakah fungsi harf seperti مِن, إِلَى, عَن?",
+   options:["Menukar baris akhir kata kerja (fe'il) kepada kasrah","Menukar baris akhir kata nama (isim) kepada kasrah","Menukar baris awal kata nama (isim) kepada kasrah","Menukar baris awal kata kerja (fe'il) kepada kasrah"],
+   correct:[1],
+   explain:"Harf jar menjadikan isim selepasnya majrur, iaitu bertukar kepada baris bawah (kasrah) di hujung perkataan."},
+  {id:3, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧عَلَى⁩?",
+   options:["dengan","tentang","ke atas","dari"],
+   correct:[2],
+   explain:"عَلَى secara umumnya bermaksud 'ke atas' atau 'atas'."},
+  {id:4, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧فِي⁩?",
+   options:["dari","untuk","ke atas","di dalam"],
+   correct:[3],
+   explain:"فِي bermaksud 'di dalam'."},
+  {id:5, type:'multi', arabicOptions:true,
+   prompt:"Terdapat 3 isim di bawah. Pilih perkataan tersebut.",
+   options:["قُلْ","أُمَّةً","يُولَدْ","نَعْبُدُ","الصَّمَدُ","مُنتَظِرُونَ"],
+   correct:[1,4,5],
+   explain:"أُمَّةً mempunyai tanwin, الصَّمَدُ mempunyai alif lam, dan مُنتَظِرُونَ bermula dengan م diikuti beberapa huruf (pola isim fa'il). قُلْ، يُولَدْ dan نَعْبُدُ ialah fe'il."},
+  {id:6, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧بِ⁩?",
+   options:["dengan","kepada","untuk","dari"],
+   correct:[0],
+   explain:"بِ bermaksud 'dengan'."},
+  {id:7, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧إِلَى⁩?",
+   options:["dari","kepada","dengan","seperti"],
+   correct:[1],
+   explain:"إِلَى bermaksud 'kepada'."},
+  {id:8, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧عَن⁩?",
+   options:["dari","kepada","seperti","tentang"],
+   correct:[3],
+   explain:"عَن bermaksud 'tentang'."},
+  {id:9, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧مِنْ⁩?",
+   options:["siapa","dari","kepada","seperti"],
+   correct:[1],
+   explain:"مِنْ bermaksud 'dari'."},
+  {id:10, type:'single',
+   prompt:"Apakah fungsi utama 'ال'?",
+   options:["Menjadikan kata nama khusus/tertentu","Menjadikan kata nama umum","Menjadikan perkataan itu kata kerja","Menjadikan perkataan itu harf"],
+   correct:[0],
+   explain:"ال menjadikan sesuatu kata nama khusus/tertentu (makrifah)."},
+  {id:11, type:'single',
+   prompt:"Apakah maksud umum bagi ⁧لِ⁩?",
+   options:["seperti","dengan","untuk","dari"],
+   correct:[2],
+   explain:"لِ bermaksud 'untuk' atau 'bagi'."},
+  {id:12, type:'single', arabicOptions:true,
+   prompt:"Yang manakah antara berikut ialah harf jar?",
+   options:["مَا","مِنْ","ٱلْحَمْدُ","ٱلرَّحِيمِ"],
+   correct:[1],
+   explain:"مِنْ ialah harf jar (bermaksud 'dari'). مَا ialah kata tanya/nafi, manakala ٱلْحَمْدُ dan ٱلرَّحِيمِ ialah isim (ada ال)."},
+  {id:13, type:'single', interlinear:'fatihah6',
+   prompt:"Berapakah bilangan isim dalam ayat berikut (Surah Al-Fatihah, ayat 6)?",
+   ayah:"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾",
+   options:["0","1","2","3"], correct:[2],
+   explain:"الصِّرَاطَ dan الْمُسْتَقِيمَ mempunyai alif lam — jumlahnya 2. اهْدِنَا ialah kata kerja perintah dengan kata ganti nama."},
+  {id:14, type:'single', interlinear:'baqarah5',
+   prompt:"Berdasarkan tanda-tanda isim yang telah dipelajari, berapakah bilangan isim dalam ayat berikut (Surah Al-Baqarah, ayat 5)?",
+   ayah:"أُولَٰئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُولَٰئِكَ هُمُ الْمُفْلِحُونَ ﴿٥﴾",
+   options:["1","2","3","4"], correct:[2],
+   explain:"هُدًى mempunyai tanwin, رَّبِّهِمْ berakhir dengan kasrah (majrur), dan الْمُفْلِحُونَ mempunyai alif lam — jumlahnya 3."},
+  {id:15, type:'single', interlinear:'maun',
+   prompt:"Berdasarkan tanda-tanda isim yang telah dipelajari, berapakah bilangan isim dalam Surah Al-Ma'un (ayat 1–7) berikut?",
+   ayah:"أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ ﴿١﴾ فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ ﴿٢﴾ وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ ﴿٣﴾ فَوَيْلٌ لِّلْمُصَلِّينَ ﴿٤﴾ الَّذِينَ هُمْ عَن صَلَاتِهِمْ سَاهُونَ ﴿٥﴾ الَّذِينَ هُمْ يُرَاءُونَ ﴿٦﴾ وَيَمْنَعُونَ الْمَاعُونَ ﴿٧﴾",
+   options:["9","10","11","12"], correct:[3],
+   explain:"Kira setiap perkataan yang bermula dengan ال, berakhir dengan tanwin, atau berakhir dengan kasrah (majrur) sepanjang tujuh ayat ini — jumlahnya 12."}
+];
+
+let order=[], idx=0, score=0, answered=false;
+let lastResult=null;
+
+function tryStartQuiz(){
+  const name=document.getElementById('stuName').value.trim();
+  const cls=document.getElementById('stuClass').value.trim();
+  const err=document.getElementById('startError');
+  if(!name || !cls){ err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  startQuiz();
+}
+
+function startQuiz(){
+  order = QUESTIONS.slice();
+  idx=0; score=0;
+  document.getElementById('screen-start').classList.add('hidden');
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  renderQuestion();
+}
+function retryQuiz(){ startQuiz(); }
+function backToStart(){
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-start').classList.remove('hidden');
+}
+
+function toggleInterlinear(){
+  const box=document.getElementById('interlinearBox');
+  box.classList.toggle('show');
+  document.getElementById('interToggle').textContent =
+    box.classList.contains('show') ? "Sembunyikan terjemahan" : "Tunjuk terjemahan setiap perkataan";
+}
+
+function renderQuestion(){
+  answered=false;
+  const q = order[idx];
+  document.getElementById('progressLabel').textContent = `Soalan ${idx+1} / ${order.length}`;
+  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
+  document.getElementById('qPrompt').textContent = q.prompt;
+  document.getElementById('feedbackBox').innerHTML='';
+
+  const ayahBox = document.getElementById('ayahBox');
+  if(q.ayah){ ayahBox.textContent=q.ayah; ayahBox.classList.remove('hidden'); }
+  else { ayahBox.classList.add('hidden'); }
+
+  const interToggle = document.getElementById('interToggle');
+  const interBox = document.getElementById('interlinearBox');
+  interBox.classList.remove('show'); interBox.innerHTML='';
+  const interData = q.interlinear ? INTERLINEAR_MAP[q.interlinear] : null;
+  if(interData){
+    interToggle.classList.remove('hidden');
+    interToggle.textContent="Tunjuk terjemahan setiap perkataan";
+    interData.forEach(verse=>{
+      verse.forEach(([ar,gl])=>{
+        const w=document.createElement('div'); w.className='iword';
+        w.innerHTML=`<span class="ar">${ar}</span><span class="gl">${gl}</span>`;
+        interBox.appendChild(w);
+      });
+    });
+  } else {
+    interToggle.classList.add('hidden');
+  }
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const wrap=document.createElement('label');
+    wrap.className='opt'+(q.arabicOptions?' arabic-opt arabic':'');
+    wrap.id='opt-'+i;
+    const input=document.createElement('input');
+    input.type = q.type==='multi' ? 'checkbox' : 'radio';
+    input.name='q'+q.id; input.value=i;
+    const span=document.createElement('span');
+    span.textContent=opt;
+    wrap.appendChild(input); wrap.appendChild(span);
+    box.appendChild(wrap);
+  });
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled=false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q = order[idx];
+  const inputs = document.querySelectorAll(`input[name="q${q.id}"]`);
+  const selected = Array.from(inputs).filter(i=>i.checked).map(i=>parseInt(i.value));
+  const correctSet = q.correct.slice().sort().join(',');
+  const selSet = selected.slice().sort().join(',');
+  const isCorrect = selSet===correctSet && selected.length>0;
+  if(isCorrect) score++;
+
+  inputs.forEach((inp,i)=>{
+    const wrap = document.getElementById('opt-'+i);
+    if(q.correct.includes(i)) wrap.classList.add('correct');
+    else if(inp.checked) wrap.classList.add('wrong');
+    inp.disabled=true;
+  });
+
+  const fb = document.getElementById('feedbackBox');
+  fb.innerHTML = isCorrect
+    ? `<div class="feedback good">Betul!</div>`
+    : `<div class="feedback bad">${q.explain}</div>`;
+  if(q.meaning){
+    fb.innerHTML += `<div class="feedback info">Maksud ayat: ${q.meaning}</div>`;
+  }
+
+  answered=true;
+  document.getElementById('checkBtn').disabled=true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx>=order.length){ showResult(); return; }
+  renderQuestion();
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('hidden');
+  const pct = Math.round((score/order.length)*100);
+  const name = document.getElementById('stuName').value.trim();
+  const cls = document.getElementById('stuClass').value.trim();
+  document.getElementById('resultScore').textContent = `${pct}%`;
+  document.getElementById('resultSub').textContent =
+    `${score} / ${order.length} betul` + (name? ` · ${name}`:'');
+
+  lastResult = {
+    nama:name, kelas:cls,
+    skor:score, jumlah:order.length, peratus:pct,
+    masa: new Date().toLocaleString('ms-MY')
+  };
+  submitResults(lastResult);
+}
+
+function submitResults(r){
+  const statusEl = document.getElementById('submitStatus');
+  if(!CONFIG.SCRIPT_URL){
+    statusEl.textContent = "Penghantaran automatik belum disediakan oleh guru. Sila muat turun / salin keputusan di bawah.";
+    return;
+  }
+  statusEl.textContent = "Menghantar keputusan...";
+  const body = new URLSearchParams({
+    nama:r.nama, kelas:r.kelas,
+    skor:r.skor, jumlah:r.jumlah, peratus:r.peratus, masa:r.masa
+  });
+  fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', body })
+    .then(()=>{ statusEl.textContent = "Keputusan telah dihantar. (Jika guru tidak menerimanya, sila muat turun/salin sebagai sandaran.)"; })
+    .catch(()=>{ statusEl.textContent = "Gagal menghantar (tiada sambungan internet?). Sila muat turun atau salin keputusan di bawah."; });
+}
+
+function resultsText(){
+  const r = lastResult;
+  if(!r) return "";
+  return `Kuiz: Tanda Isim & Harf Jar
+Nama: ${r.nama}
+Kelas: ${r.kelas}
+Skor: ${r.skor} / ${r.jumlah} (${r.peratus}%)
+Masa: ${r.masa}`;
+}
+
+function downloadResults(){
+  const blob = new Blob([resultsText()], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `keputusan-${(lastResult.nama||'pelajar').replace(/\s+/g,'_')}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function copyResults(){
+  navigator.clipboard.writeText(resultsText()).then(()=>{
+    alert("Keputusan disalin ke papan klip.");
+  }).catch(()=>{
+    alert("Tidak dapat menyalin secara automatik. Sila salin secara manual.");
+  });
+}
+</script>
+</body>
+</html>
