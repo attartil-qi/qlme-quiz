@@ -51,12 +51,9 @@ input[type=text]{
 .btn-gold{background:var(--gold); color:var(--emerald);}
 .btn:disabled{opacity:.5; cursor:not-allowed;}
 .btn:hover:not(:disabled){opacity:.88;}
-.level-btn{
-  display:block; width:100%; text-align:left; background:var(--parchment); border:2px solid var(--teal);
-  border-radius:10px; padding:14px 16px; margin-bottom:12px; cursor:pointer; color:var(--text);
-}
-.level-btn b{color:var(--emerald); font-size:1.05rem;}
-.level-btn span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
+.start-note{background:var(--parchment); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-bottom:6px;}
+.start-note b{color:var(--emerald); font-size:1.05rem;}
+.start-note span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
 .progress-label{color:var(--teal); font-weight:600; margin-bottom:6px; font-size:.9rem;}
 .progress-track{background:var(--parchment); border:1px solid var(--gold); border-radius:99px; height:10px; overflow:hidden; margin-bottom:16px;}
 .progress-fill{background:var(--teal); height:100%; border-radius:99px; transition:width .25s ease;}
@@ -103,15 +100,11 @@ input[type=text]{
       <input type="text" id="stuClass" placeholder="Contoh: QLME 1A">
     </label>
     <div class="feedback bad hidden" id="startError">Sila isikan nama dan kelas terlebih dahulu.</div>
-    <h2>Pilih Tahap</h2>
-    <div class="level-btn" onclick="tryStartLevel(1)">
-      <b>Tahap 1 — Pemula</b>
-      <span>10 soalan (susunan dikocok) · asas isim, fe'il dan unsur ayat</span>
+    <div class="start-note">
+      <b>Kuiz Tanda-Tanda Isim</b>
+      <span>10 soalan</span>
     </div>
-    <div class="level-btn" onclick="tryStartLevel(2)">
-      <b>Tahap 2 — Pertengahan</b>
-      <span>10 soalan (susunan tetap) · mengenal pasti &amp; mengira isim dalam ayat</span>
-    </div>
+    <button class="btn btn-primary" onclick="tryStartQuiz()">Mula Kuiz</button>
   </div>
 
   <div class="card hidden" id="screen-quiz">
@@ -132,8 +125,8 @@ input[type=text]{
     <div class="result-score" id="resultScore"></div>
     <div class="result-sub" id="resultSub"></div>
     <div class="feedback info" id="submitStatus" style="margin-bottom:14px;"></div>
-    <button class="btn btn-primary" onclick="retryLevel()">Cuba Lagi</button>
-    <button class="btn btn-gold" onclick="backToStart()">Pilih Tahap Lain</button>
+    <button class="btn btn-primary" onclick="retryQuiz()">Cuba Lagi</button>
+    <button class="btn btn-gold" onclick="backToStart()">Kembali</button>
     <h2 style="margin-top:20px;">Sandaran Keputusan</h2>
     <p style="font-size:.85rem; color:var(--teal); margin-top:-6px;">Jika keputusan tidak sampai kepada guru secara automatik, muat turun atau salin teks di bawah dan hantar secara manual.</p>
     <button class="btn btn-gold" onclick="downloadResults()">Muat Turun Keputusan (.txt)</button>
@@ -144,6 +137,9 @@ input[type=text]{
 </div>
 
 <script>
+const YUALLIM_INTERLINEAR = [
+ [["وَيُعَلِّمُهُ","Dan Dia mengajarkan kepadanya"],["الْكِتَابَ","Kitab (tulisan)"],["وَالْحِكْمَةَ","dan hikmah"],["وَالتَّوْرَاةَ","dan Taurat"],["وَالْإِنجِيلَ","dan Injil"]]
+];
 const ATTIN_INTERLINEAR = [
  [["وَالتِّينِ","Demi buah tin"],["وَالزَّيْتُونِ","dan buah zaitun"]],
  [["وَطُورِ","Dan gunung"],["سِينِينَ","Sinai"]],
@@ -154,161 +150,87 @@ const ATTIN_INTERLINEAR = [
  [["فَمَا","Maka apakah"],["يُكَذِّبُكَ","yang menyebabkan kamu mendustakan"],["بَعْدُ","selepas ini"],["بِالدِّينِ","hari pembalasan"]],
  [["أَلَيْسَ","Bukankah"],["اللَّهُ","Allah"],["بِأَحْكَمِ","paling adil"],["الْحَاكِمِينَ","(kalangan) hakim-hakim"]]
 ];
-const YUALLIM_INTERLINEAR = [
- [["وَيُعَلِّمُهُ","Dan Dia mengajarkan kepadanya"],["الْكِتَابَ","Kitab (tulisan)"],["وَالْحِكْمَةَ","dan hikmah"],["وَالتَّوْرَاةَ","dan Taurat"],["وَالْإِنجِيلَ","dan Injil"]]
-];
-const ASR_INTERLINEAR = [
- [["وَالْعَصْرِ","Demi masa"]],
- [["إِنَّ","Sesungguhnya"],["الْإِنسَانَ","manusia"],["لَفِي","benar-benar dalam"],["خُسْرٍ","kerugian"]]
-];
-const IKHLAS_INTERLINEAR = [
- [["قُلْ","Katakanlah"],["هُوَ","Dialah"],["اللَّهُ","Allah"],["أَحَدٌ","Yang Maha Esa"]],
- [["اللَّهُ","Allah"],["الصَّمَدُ","tempat bergantung segala sesuatu"]]
-];
-const INTERLINEAR_MAP = {attin:ATTIN_INTERLINEAR, yuallim:YUALLIM_INTERLINEAR, asr:ASR_INTERLINEAR, ikhlas:IKHLAS_INTERLINEAR};
+const INTERLINEAR_MAP = {attin:ATTIN_INTERLINEAR, yuallim:YUALLIM_INTERLINEAR};
+
+// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
+const CONFIG = {
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwDikXvGTrTjuz8ubX4Ebe-DmZPPPYZZhA8iWsxgqg18lkRhu23Mlwtk1qWRgk7H6Y/exec"
+};
 
 const QUESTIONS = [
-  // ===== LEVEL 1 — PEMULA (dikocok setiap percubaan) =====
-  {id:1, level:1, type:'multi',
+  {id:1, type:'multi',
    prompt:"Apakah aspek asas dalam pembelajaran bahasa Al-Quran? (Pilih 5 jawapan)",
    options:["Tajwid","Nahu","Sorof","Tarannum","Balaghah","Tafsir","Qiraat","Tadabbur"],
    correct:[1,2,4,5,7],
    explain:"Aspek asas ialah Nahu, Sorof, Balaghah, Tafsir dan Tadabbur. Tajwid, Tarannum dan Qiraat berkaitan seni bacaan, bukan sebahagian daripada 5 aspek ini."},
-  {id:2, level:1, type:'single',
+  {id:2, type:'single',
    prompt:"Isim ialah ______.",
    options:["satu kata kerja","kata nama yang berkaitan dengan perbuatan dan masa","kata nama yang tiada kaitan dengan perbuatan dan masa","tiada satu pun di atas"],
    correct:[2],
    explain:"Isim tidak berubah mengikut masa — sifat inilah yang membezakannya daripada fe'il."},
-  {id:3, level:1, type:'multi',
+  {id:3, type:'multi',
    prompt:"Pilih 2 tanda isim yang telah anda pelajari.",
    options:["Ada ال di hujung perkataan","Ada ال di awal perkataan","Ada tanwin di hujung perkataan","Ada tanwin di awal perkataan","Ada kedua-dua tanwin dan ال dalam satu perkataan"],
    correct:[1,2],
    explain:"Dua tanda isim ialah ال di awal perkataan dan tanwin di hujung perkataan. Kedua-duanya tidak boleh wujud serentak pada satu perkataan."},
-  {id:4, level:1, type:'single',
+  {id:4, type:'single',
    prompt:"ال di awal sesuatu perkataan menunjukkan kata nama itu ______.",
    options:["sedikit","umum","khusus","banyak"],
    correct:[2],
    explain:"ال menjadikan sesuatu perkataan khusus/tertentu (makrifah), bukan umum."},
-  {id:5, level:1, type:'single',
+  {id:5, type:'single',
    prompt:"Apakah unsur-unsur asas sesebuah ayat?",
    options:["Harf (kata sendi)","Frasa (kumpulan perkataan)","Ayat (beberapa perkataan)","Semua pilihan di atas"],
    correct:[3],
    explain:"Ayat dibina daripada harf, yang membentuk frasa, yang seterusnya membentuk ayat."},
-  {id:6, level:1, type:'single',
+  {id:6, type:'single',
    prompt:"Setiap fe'il (kata kerja) mesti mempunyai 3 komponen ini. Apakah 3 komponen tersebut?",
    options:["Perbuatan, masa, nama","Perbuatan, masa, pelaku","Kata nama, kata sendi, perbuatan","Sifat, perbuatan, masa"],
    correct:[1],
    explain:"Fe'il mesti membawa maklumat perbuatan, masa dan pelaku (contoh: كَتَبَ = menulis + lampau + dia lelaki)."},
-  {id:7, level:1, type:'single', arabicOptions:true,
-   prompt:"Antara perkataan berikut, yang manakah isim?",
-   options:["كَتَبَ","فِي","الْقَلَمُ","يَكْتُبُ"],
-   correct:[2],
-   explain:"الْقَلَمُ ialah isim kerana mempunyai ال di awal. كَتَبَ dan يَكْتُبُ ialah fe'il, manakala فِي ialah harf."},
-  {id:8, level:1, type:'single',
-   prompt:"Tanwin ialah tanda yang terletak di ______ sesuatu perkataan.",
-   options:["awal","hujung","tengah"],
-   correct:[1],
-   explain:"Tanwin sentiasa terletak di hujung perkataan, bukan di awal atau tengah."},
-  {id:9, level:1, type:'single',
-   prompt:"أَحْمَدُ ialah nama seseorang. Ia dikira sebagai isim kerana ia ialah ______.",
-   options:["kata nama yang merujuk kepada orang, tempat atau benda","perbuatan yang telah berlaku","perbuatan yang sedang berlaku","kata sendi nama"],
-   correct:[0],
-   explain:"Isim ialah kata nama yang merujuk kepada orang, tempat atau benda — أَحْمَدُ ialah nama seseorang."},
-  {id:10, level:1, type:'single',
-   prompt:"كِتَابٌ bermaksud 'sebuah buku'. Ia dikenali sebagai isim kerana mempunyai tanda ______.",
-   options:["ال di awal perkataan","tanwin di hujung perkataan","tiada alif lam di akhir perkataan","ia sebuah kata kerja (fe'il)"],
-   correct:[1],
-   explain:"Tanwin (dua baris) di hujung كِتَابٌ menjadikannya isim."},
-
-  // ===== LEVEL 2 — PERTENGAHAN (susunan tetap, tiada kocokan) =====
-  {id:11, level:2, type:'multi',
+  {id:7, type:'multi',
    prompt:"Yang manakah BUKAN merupakan ciri fe'il? (Pilih semua yang berkenaan)",
    options:["Kata nama","Kata kerja","Terikat dengan masa (lampau/kini/perintah)","Tiada kaitan dengan perbuatan dan masa"],
    correct:[0,3],
    explain:"'Kata nama' dan 'tiada kaitan dengan perbuatan/masa' sebenarnya menerangkan isim, bukan fe'il."},
-  {id:12, level:2, type:'multi', arabicOptions:true,
+  {id:8, type:'multi', arabicOptions:true,
    prompt:"Terdapat 4 isim (kata nama) di bawah. Pilih perkataan tersebut.",
    options:["حَاسِدٍ","ٱلْعَٰلَمِينَ","ٱلنَّاسِ","نَعْبُدُ","غَاسِقٍ","أَهْدِنَا"],
    correct:[0,1,2,4],
    explain:"حَاسِدٍ dan غَاسِقٍ mempunyai tanwin. ٱلْعَٰلَمِينَ dan ٱلنَّاسِ mempunyai alif lam. نَعْبُدُ dan أَهْدِنَا ialah fe'il."},
-  {id:21, level:2, type:'single', interlinear:'asr',
-   prompt:"Berapakah bilangan isim (berdasarkan tanda ال atau tanwin) dalam ayat 1–2 Surah Al-'Asr berikut?",
-   ayah:"وَالْعَصْرِ ﴿١﴾ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ﴿٢﴾",
-   options:["1","2","3","4"], correct:[2],
-   explain:"Isim dalam ayat ini ialah الْعَصْرِ (ال), الْإِنسَانَ (ال) dan خُسْرٍ (tanwin) — jumlahnya 3."},
-  {id:22, level:2, type:'multi', arabicOptions:true, interlinear:'ikhlas',
-   prompt:"Pilih semua isim (berdasarkan tanda alif lam atau tanwin sahaja) daripada ayat 1–2 Surah Al-Ikhlas berikut.",
-   ayah:"قُلْ هُوَ اللَّهُ أَحَدٌ ﴿١﴾ اللَّهُ الصَّمَدُ ﴿٢﴾",
-   options:["قُلْ","هُوَ","اللَّهُ","أَحَدٌ","الصَّمَدُ"],
-   correct:[2,3,4],
-   explain:"اللَّهُ dan الصَّمَدُ mempunyai alif lam; أَحَدٌ mempunyai tanwin. قُلْ ialah fe'il dan هُوَ ialah kata ganti nama (dhamir)."},
-  {id:16, level:2, type:'multi', arabicOptions:true,
-   prompt:"Pilih semua isim dalam ayat berikut.",
-   ayah:"يَذْهَبُ الطَّالِبُ إِلَى الْمَدْرَسَةِ صَبَاحًا",
-   options:["يَذْهَبُ","الطَّالِبُ","إِلَى","الْمَدْرَسَةِ","صَبَاحًا"],
-   correct:[1,3,4],
-   meaning:"Pelajar itu pergi ke sekolah pada waktu pagi.",
-   explain:"الطَّالِبُ dan الْمَدْرَسَةِ mempunyai alif lam; صَبَاحًا mempunyai tanwin. يَذْهَبُ ialah fe'il dan إِلَى ialah harf."},
-  {id:18, level:2, type:'single',
-   prompt:"Mengapakah ٱلْعَٰلَمِينَ dikira sebagai isim?",
-   options:["Kerana ada ال di awal perkataan","Kerana ia perbuatan","Kerana ia harf","Kerana ada tanwin di hujung perkataan"],
-   correct:[0],
-   explain:"ٱلْعَٰلَمِينَ bermula dengan ال, maka ia isim — bukan kerana ia perbuatan atau tanwin."},
-  {id:19, level:2, type:'single',
-   prompt:"Berapakah bilangan isim dalam ayat berikut?",
-   ayah:"الْمُعَلِّمُ يَشْرَحُ الدَّرْسَ بِوُضُوحٍ",
-   options:["1","2","3","4"], correct:[2],
-   meaning:"Guru itu menerangkan pelajaran itu dengan jelas.",
-   explain:"الْمُعَلِّمُ dan الدَّرْسَ (ال) serta بِوُضُوحٍ (tanwin) ialah isim — jumlahnya 3. يَشْرَحُ ialah fe'il."},
-  {id:20, level:2, type:'single',
-   prompt:"Antara berikut, yang manakah pasangan tanda isim yang betul?",
-   options:["ال di awal + tanwin di hujung","tanwin di awal + ال di hujung","ال di hujung sahaja","Tiada tanda tetap"],
-   correct:[0],
-   explain:"Dua tanda isim ialah ال di awal ATAU tanwin di hujung — bukan sebaliknya."},
-  {id:13, level:2, type:'single', interlinear:'yuallim',
+  {id:9, type:'single', interlinear:'yuallim',
    prompt:"Berapakah bilangan isim dalam ayat berikut daripada Surah Aal-'Imran (3:48)?",
    ayah:"وَيُعَلِّمُهُ الْكِتَابَ وَالْحِكْمَةَ وَالتَّوْرَاةَ وَالْإِنجِيلَ",
    options:["1","2","3","4"], correct:[3],
    explain:"Isim dalam ayat ini ialah الْكِتَابَ، الْحِكْمَةَ، التَّوْرَاةَ dan الْإِنجِيلَ — kesemuanya bertanda ال, jumlahnya 4."},
-  {id:14, level:2, type:'single', interlinear:'attin',
+  {id:10, type:'single', interlinear:'attin',
    prompt:"Berdasarkan 2 tanda isim yang telah anda pelajari, berapakah bilangan isim dalam Surah At-Tin (ayat 1–8) berikut?",
    ayah:"وَالتِّينِ وَالزَّيْتُونِ ﴿١﴾ وَطُورِ سِينِينَ ﴿٢﴾ وَهَٰذَا الْبَلَدِ الْأَمِينِ ﴿٣﴾ لَقَدْ خَلَقْنَا الْإِنسَانَ فِي أَحْسَنِ تَقْوِيمٍ ﴿٤﴾ ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ ﴿٥﴾ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ ﴿٦﴾ فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ ﴿٧﴾ أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ ﴿٨﴾",
    options:["11","12","13","14"], correct:[2],
    explain:"Kira setiap perkataan yang mempunyai ال di awal atau tanwin di hujung sepanjang lapan ayat ini — jumlahnya 13."}
 ];
 
-// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
-// Gantikan URL di bawah dengan URL "Web App" daripada Google Apps Script anda.
-// Lihat panduan penyediaan Google Sheet di bahagian bawah mesej ini.
-const CONFIG = {
-  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwDikXvGTrTjuz8ubX4Ebe-DmZPPPYZZhA8iWsxgqg18lkRhu23Mlwtk1qWRgk7H6Y/exec"
-};
-
-let order=[], idx=0, score=0, level=1, answered=false;
+let order=[], idx=0, score=0, answered=false;
 let lastResult=null;
 
-function tryStartLevel(lv){
+function tryStartQuiz(){
   const name=document.getElementById('stuName').value.trim();
   const cls=document.getElementById('stuClass').value.trim();
   const err=document.getElementById('startError');
   if(!name || !cls){ err.classList.remove('hidden'); return; }
   err.classList.add('hidden');
-  startLevel(lv);
+  startQuiz();
 }
 
-function shuffle(a){a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
-
-function startLevel(lv){
-  level=lv;
-  const filtered = QUESTIONS.filter(q=>q.level===lv);
-  order = (lv===1) ? shuffle(filtered) : filtered;
+function startQuiz(){
+  order = QUESTIONS.slice();
   idx=0; score=0;
   document.getElementById('screen-start').classList.add('hidden');
   document.getElementById('screen-result').classList.add('hidden');
   document.getElementById('screen-quiz').classList.remove('hidden');
   renderQuestion();
 }
-function retryLevel(){ startLevel(level); }
+function retryQuiz(){ startQuiz(); }
 function backToStart(){
   document.getElementById('screen-result').classList.add('hidden');
   document.getElementById('screen-start').classList.remove('hidden');
@@ -414,10 +336,10 @@ function showResult(){
   const cls = document.getElementById('stuClass').value.trim();
   document.getElementById('resultScore').textContent = `${pct}%`;
   document.getElementById('resultSub').textContent =
-    `${score} / ${order.length} betul — Tahap ${level}` + (name? ` · ${name}`:'');
+    `${score} / ${order.length} betul` + (name? ` · ${name}`:'');
 
   lastResult = {
-    nama:name, kelas:cls, tahap:`Tahap ${level}`,
+    nama:name, kelas:cls,
     skor:score, jumlah:order.length, peratus:pct,
     masa: new Date().toLocaleString('ms-MY')
   };
@@ -432,7 +354,7 @@ function submitResults(r){
   }
   statusEl.textContent = "Menghantar keputusan...";
   const body = new URLSearchParams({
-    nama:r.nama, kelas:r.kelas, tahap:r.tahap,
+    nama:r.nama, kelas:r.kelas,
     skor:r.skor, jumlah:r.jumlah, peratus:r.peratus, masa:r.masa
   });
   fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', body })
@@ -446,7 +368,6 @@ function resultsText(){
   return `Kuiz: Tanda-Tanda Isim
 Nama: ${r.nama}
 Kelas: ${r.kelas}
-Tahap: ${r.tahap}
 Skor: ${r.skor} / ${r.jumlah} (${r.peratus}%)
 Masa: ${r.masa}`;
 }
