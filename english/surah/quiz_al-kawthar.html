@@ -222,7 +222,38 @@
   .opt.chosen{border-color:var(--teal);background:var(--teal-tint);}
   .opt.correct-flash{border-color:var(--success);background:#e2f1ee;}
   .opt.incorrect-flash{border-color:var(--danger);background:#f9e9e7;}
-  .opt:disabled{cursor:default;}
+  .opt:disabled{cursor:default;color:var(--text);}
+  .ayah-box .ar .hl{
+    background:var(--gold-tint);
+    border-bottom:3px solid var(--gold);
+    border-radius:6px;
+    padding:0 6px;
+  }
+  .ar-inline{
+    font-family:'KFGQPC Uthmanic Script HAFS','Scheherazade New','Amiri',serif;
+    font-size:1.4rem;
+    color:var(--emerald);
+    direction:rtl;
+    unicode-bidi:isolate;
+  }
+  .small-note .ar-inline{font-size:1.15rem;}
+  .nahu-group{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:12px;
+    background:#fffefb;
+  }
+  .nahu-label{
+    font-weight:600;
+    color:var(--emerald);
+    font-size:.9rem;
+    margin-bottom:9px;
+  }
+  .nahu-opts{display:flex;flex-wrap:wrap;gap:8px;}
+  .nahu-opts .opt{flex:1 1 auto;padding:9px 12px;font-size:.9rem;text-align:center;}
+  .nahu-group[data-part="reason"] .nahu-opts{display:grid;grid-template-columns:1fr;}
+  .nahu-group[data-part="reason"] .nahu-opts .opt{text-align:left;}
   .answer-strip{
     min-height:64px;
     border:2px dashed var(--teal);
@@ -408,6 +439,7 @@ const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzQab0PtSML0qs
 const SURAHS = {
   kawthar: {
     id:"kawthar",
+    sheetUrl:"https://script.google.com/macros/s/AKfycbwLngBRgGWhL96a4K3xW1QuI8alCHtb5bGIgWDsTGMctfvs2u-lrLtBMKFzHLM1HCKA/exec",
     englishName:"Surah Al-Kawthar (108)",
     arabicName:"سُورَةُ الْكَوْثَر",
     subtitle:"Abundance",
@@ -518,6 +550,7 @@ function initQuiz(surahKey, name, cls){
   const steps = [];
   surah.wordMeaning.forEach((q,i)=>steps.push({type:'wordMeaning', data:q, section:"Word Meaning", index:i}));
   surah.wordType.forEach((q,i)=>steps.push({type:'wordType', data:q, section:"Word Type: Ism / Fi'l / Harf", index:i}));
+  (surah.nahu||[]).forEach((q,i)=>steps.push({type:'nahu', data:q, section:"Nahu / I'raab", index:i}));
   surah.ayahTranslation.forEach((q,i)=>steps.push({type:'ayahTranslation', data:q, section:"Ayah Translation", index:i}));
   surah.ayahs
     .filter(a=>a.ar.split(' ').filter(Boolean).length>=2)
@@ -532,6 +565,9 @@ function initQuiz(surahKey, name, cls){
       if(s.type==='wordArrange'){
         const n = s.data.words.length;
         return {attempts:0, status:'unanswered', shuffledOrder:shuffle([...Array(n).keys()]), placed:[]};
+      }
+      if(s.type==='nahu'){
+        return {attempts:0, status:'unanswered', picks:{vowel:null,status:null,reason:null}, locked:{}, wrong:null, reasonOrder:shuffle(s.data.reasons)};
       }
       return {attempts:0, status:'unanswered', selected:null, openText:''};
     })
@@ -566,6 +602,18 @@ function renderStep(){
     html += `<div class="ayah-box"><div class="ar">${step.data.ar}</div></div>`;
     html += `<div class="q-prompt">Which is the correct translation (Dr. Mustafa Khattab, The Clear Qur'an) of this ayah?</div>`;
     html += renderOptions(step.data.options, step.data.correct);
+  }
+  else if(step.type === 'nahu'){
+    const q = step.data;
+    const ayah = surah.ayahs.find(a=>a.num===q.ayah);
+    const words = ayah.ar.split(' ').filter(Boolean);
+    const arHtml = words.map((w,i)=> i===q.w ? `<span class="hl">${w}</span>` : w).join(' ');
+    html += `<div class="ayah-box"><div class="num">Ayah ${q.ayah}</div><div class="ar">${arHtml}</div></div>`;
+    html += `<div class="q-prompt">Focus on the highlighted Ism: <span class="ar-inline">${q.focus}</span></div>`;
+    if(q.note) html += `<div class="small-note" style="margin:-6px 0 14px;">${q.note}</div>`;
+    html += nahuGroup('vowel', 'i) Ending vowel / sound', NAHU_VOWELS);
+    html += nahuGroup('status', "ii) Status (I'raab)", NAHU_STATUS);
+    html += nahuGroup('reason', 'iii) Possible reason', state.answers[current].reasonOrder);
   }
   else if(step.type === 'wordArrange'){
     html += `<div class="ayah-box"><div class="num">Ayah ${step.data.ayah.num}</div></div>`;
@@ -603,6 +651,18 @@ function renderOptions(options, correct, fixedOrder){
   return html;
 }
 
+const NAHU_VOWELS = ["Dhommah","Fathah","Kasrah","Dhommatain (tanwin)","Fathatain (tanwin)","Kasratain (tanwin)"];
+const NAHU_STATUS = ["Rafa'","Nasab","Jarr"];
+
+function nahuGroup(part, label, options){
+  let html = `<div class="nahu-group" data-part="${part}"><div class="nahu-label">${label}</div><div class="nahu-opts">`;
+  options.forEach(opt=>{
+    html += `<button class="opt nahu-opt" data-part="${part}" data-value="${escapeAttr(opt)}">${opt}</button>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
 function escapeAttr(s){
   return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 }
@@ -623,6 +683,96 @@ function wireStepEvents(step){
     ta.addEventListener('input', ()=>{ ans.openText = ta.value; });
     actionRow.innerHTML = `<button class="btn-primary" id="nextBtn">Next Question</button>`;
     document.getElementById('nextBtn').addEventListener('click', ()=>{ ans.openText = ta.value; ans.status='recorded'; advance(); });
+    return;
+  }
+
+  if(step.type === 'nahu'){
+    const q = step.data;
+    const parts = ['vowel','status','reason'];
+    const correctOf = {vowel:q.vowel, status:q.status, reason:q.reason};
+    const btns = document.querySelectorAll('.nahu-opt');
+
+    function paint(){
+      btns.forEach(b=>{
+        const p = b.dataset.part, v = b.dataset.value;
+        b.classList.remove('chosen','correct-flash','incorrect-flash');
+        if(ans.locked[p]){
+          b.disabled = true;
+          if(v===ans.picks[p]) b.classList.add('correct-flash');
+        } else if(ans.wrong){
+          b.disabled = true;
+          if(ans.wrong[p] && v===ans.picks[p]) b.classList.add('incorrect-flash');
+        } else {
+          b.disabled = false;
+          if(v===ans.picks[p]) b.classList.add('chosen');
+        }
+      });
+    }
+
+    function showNext(){
+      feedback.textContent = "Correct! ✅";
+      feedback.className = "feedback correct";
+      actionRow.innerHTML = `<button class="btn-primary" id="nextBtn">Next Question</button>`;
+      document.getElementById('nextBtn').addEventListener('click', advance);
+    }
+
+    function showTryAgain(){
+      const n = Object.keys(ans.wrong).length;
+      feedback.textContent = `Not quite — ${n} part${n>1?'s':''} need${n>1?'':'s'} another look. Parts you got right are locked in.`;
+      feedback.className = "feedback incorrect";
+      actionRow.innerHTML = `<button class="btn-secondary" id="tryAgainNahuBtn">Try Again</button>`;
+      document.getElementById('tryAgainNahuBtn').addEventListener('click', ()=>{
+        Object.keys(ans.wrong).forEach(p=>{ ans.picks[p] = null; });
+        ans.wrong = null;
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        paint();
+        updateRow();
+      });
+    }
+
+    function updateRow(){
+      if(ans.status==='correct' || ans.wrong) return;
+      if(parts.every(p=>ans.picks[p])){
+        actionRow.innerHTML = `<button class="btn-primary" id="confirmNahuBtn">Confirm Answer</button>`;
+        document.getElementById('confirmNahuBtn').addEventListener('click', ()=>{
+          ans.attempts++;
+          const wrong = {};
+          parts.forEach(p=>{
+            if(ans.picks[p]===correctOf[p]) ans.locked[p] = true;
+            else wrong[p] = true;
+          });
+          if(Object.keys(wrong).length===0){
+            ans.status = 'correct';
+            if(ans.attempts===1) ans.firstTry = true;
+            paint();
+            showNext();
+          } else {
+            ans.status = 'incorrect';
+            ans.wrong = wrong;
+            paint();
+            showTryAgain();
+          }
+        });
+      } else {
+        actionRow.innerHTML = '';
+      }
+    }
+
+    btns.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const p = b.dataset.part;
+        if(ans.status==='correct' || ans.wrong || ans.locked[p]) return;
+        ans.picks[p] = b.dataset.value;
+        paint();
+        updateRow();
+      });
+    });
+
+    paint();
+    if(ans.status==='correct') showNext();
+    else if(ans.wrong) showTryAgain();
+    else updateRow();
     return;
   }
 
@@ -816,10 +966,11 @@ function finishQuiz(){
   const wt = scoreFor('wordType');
   const at = scoreFor('ayahTranslation');
   const wa = scoreFor('wordArrange');
+  const nh = scoreFor('nahu');
 
-  const totalMCQ = wm.total + wt.total + at.total + wa.total;
-  const totalFirst = wm.correctFirst + wt.correctFirst + at.correctFirst + wa.correctFirst;
-  const totalEver = wm.correctEver + wt.correctEver + at.correctEver + wa.correctEver;
+  const totalMCQ = wm.total + nh.total + wt.total + at.total + wa.total;
+  const totalFirst = wm.correctFirst + nh.correctFirst + wt.correctFirst + at.correctFirst + wa.correctFirst;
+  const totalEver = wm.correctEver + nh.correctEver + wt.correctEver + at.correctEver + wa.correctEver;
 
   document.getElementById('scoreBig').textContent = `${totalFirst}/${totalMCQ}`;
   document.getElementById('scoreSub').textContent = `correct on first attempt (${totalEver}/${totalMCQ} correct overall after retries)`;
@@ -828,6 +979,7 @@ function finishQuiz(){
   breakdown.innerHTML = `
     <div class="summary-line"><span>Word Meaning</span><span>${wm.correctFirst}/${wm.total}</span></div>
     <div class="summary-line"><span>Word Type (Ism/Fi'l/Harf)</span><span>${wt.correctFirst}/${wt.total}</span></div>
+    ${nh.total ? `<div class="summary-line"><span>Nahu / I'raab</span><span>${nh.correctFirst}/${nh.total}</span></div>` : ''}
     <div class="summary-line"><span>Ayah Translation</span><span>${at.correctFirst}/${at.total}</span></div>
     <div class="summary-line"><span>Ayah Arrangement (Memorisation)</span><span>${wa.correctFirst}/${wa.total}</span></div>
     <div class="summary-line"><span>Takeaway Reflections</span><span>Not scored (${surah.takeaways.length} submitted)</span></div>
@@ -841,6 +993,7 @@ function finishQuiz(){
   report += `\n--- SCORE SUMMARY ---\n`;
   report += `Word Meaning: ${wm.correctFirst}/${wm.total} (first attempt)\n`;
   report += `Word Type (Ism/Fi'l/Harf): ${wt.correctFirst}/${wt.total} (first attempt)\n`;
+  if(nh.total) report += `Nahu / I'raab: ${nh.correctFirst}/${nh.total} (first attempt)\n`;
   report += `Ayah Translation: ${at.correctFirst}/${at.total} (first attempt)\n`;
   report += `Ayah Arrangement (Memorisation): ${wa.correctFirst}/${wa.total} (first attempt)\n`;
   report += `TOTAL: ${totalFirst}/${totalMCQ} on first attempt (${totalEver}/${totalMCQ} overall after retries)\n`;
@@ -858,6 +1011,16 @@ function finishQuiz(){
     const a = answers[idx];
     report += `${q.word} — ${a.status==='correct' ? 'Correct' : 'Not answered correctly'} (attempts: ${a.attempts})\n`;
   });
+
+  if(nh.total){
+    report += `\n--- NAHU / I'RAAB DETAIL ---\n`;
+    steps.forEach((s,idx)=>{
+      if(s.type==='nahu'){
+        const a = answers[idx];
+        report += `${s.data.label} — ${a.status==='correct' ? 'Correct' : 'Not answered correctly'} (attempts: ${a.attempts})\n`;
+      }
+    });
+  }
 
   report += `\n--- AYAH TRANSLATION DETAIL ---\n`;
   surah.ayahTranslation.forEach((q,i)=>{
@@ -908,6 +1071,7 @@ function finishQuiz(){
     wordType: `${wt.correctFirst}/${wt.total}`,
     ayahTranslation: `${at.correctFirst}/${at.total}`,
     ayahArrange: `${wa.correctFirst}/${wa.total}`,
+    nahu: nh.total ? `${nh.correctFirst}/${nh.total}` : 'N/A',
     totalFirst: `${totalFirst}/${totalMCQ}`,
     totalEver: `${totalEver}/${totalMCQ}`,
     reflections: reflectionsText.trim()
@@ -919,7 +1083,9 @@ function finishQuiz(){
   // reject even after a successful submission. 'no-cors' lets the request
   // go through and resolves regardless, since we don't need to read the
   // response back.
-  fetch(SHEET_WEBAPP_URL, {
+  // A Surah can send its results to its own Sheet via `sheetUrl`;
+  // otherwise it uses the shared Sheet.
+  fetch(surah.sheetUrl || SHEET_WEBAPP_URL, {
     method: 'POST',
     mode: 'no-cors',
     body: JSON.stringify(payload)
