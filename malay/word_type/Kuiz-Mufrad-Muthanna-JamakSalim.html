@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuiz: Mufrad, Muthanna, Jama' Salim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment:#f6efe0; --teal:#0f6b64; --gold:#c8a24a; --emerald:#0c3d33;
+  --text:#2c2a22; --card:#fffdf7; --danger:#a4342a; --good:#2f7a4f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+  }
+}
+:root[data-theme="dark"]{
+  --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100%; background:var(--parchment); color:var(--text);
+  font-family:'Lora',serif; display:flex; justify-content:center; padding:24px 14px 40px;
+}
+.arabic{font-family:'Amiri',serif; direction:rtl; unicode-bidi:embed;}
+.wrap{width:100%; max-width:640px;}
+.card{
+  background:var(--card); border:1px solid var(--gold); border-radius:14px;
+  padding:22px 20px; box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:16px;
+}
+h1{color:var(--emerald); font-size:1.5rem; margin:0 0 4px;}
+h2{color:var(--emerald); font-size:1.15rem; margin:0 0 10px;}
+.subtitle{color:var(--teal); font-weight:600; margin:0 0 18px;}
+.footer{text-align:center; color:var(--teal); font-size:.85rem; margin-top:10px; opacity:.85;}
+label.field{display:block; margin-bottom:12px; font-weight:600;}
+input[type=text]{
+  width:100%; padding:10px 12px; margin-top:5px; border:1px solid var(--gold);
+  border-radius:8px; background:var(--parchment); color:var(--text); font-family:'Lora',serif; font-size:1rem;
+}
+.btn{
+  display:inline-block; border:none; border-radius:8px; padding:11px 18px; font-family:'Lora',serif;
+  font-weight:700; font-size:1rem; cursor:pointer; margin:6px 6px 0 0; transition:opacity .15s;
+}
+.btn-primary{background:var(--teal); color:#fff;}
+.btn-gold{background:var(--gold); color:var(--emerald);}
+.btn:disabled{opacity:.5; cursor:not-allowed;}
+.btn:hover:not(:disabled){opacity:.88;}
+.start-note{background:var(--parchment); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-bottom:6px;}
+.start-note b{color:var(--emerald); font-size:1.05rem;}
+.start-note span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
+.progress-label{color:var(--teal); font-weight:600; margin-bottom:6px; font-size:.9rem;}
+.progress-track{background:var(--parchment); border:1px solid var(--gold); border-radius:99px; height:10px; overflow:hidden; margin-bottom:16px;}
+.progress-fill{background:var(--teal); height:100%; border-radius:99px; transition:width .25s ease;}
+.ayah-box{
+  background:var(--parchment); border:1px solid var(--gold); border-radius:10px; padding:16px;
+  font-size:1.35rem; text-align:center; margin-bottom:12px; line-height:2.3;
+}
+.interlinear{display:none; flex-wrap:wrap; gap:10px 14px; justify-content:center; direction:rtl;
+  background:var(--parchment); border:1px dashed var(--gold); border-radius:10px; padding:14px; margin-bottom:16px;
+  max-height:340px; overflow-y:auto;}
+.interlinear.show{display:flex;}
+.iword{display:flex; flex-direction:column; align-items:center; min-width:54px;}
+.iword .ar{font-family:'Amiri',serif; font-size:1.2rem;}
+.iword .gl{font-family:'Lora',serif; font-size:.64rem; color:var(--teal); margin-top:2px; text-align:center; direction:ltr;}
+.toggle-link{display:inline-block; margin:0 0 14px; font-size:.85rem; color:var(--teal); cursor:pointer; text-decoration:underline;}
+.opt{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gold);
+  border-radius:8px; margin-bottom:8px; cursor:pointer; background:var(--parchment);
+}
+.opt input{transform:scale(1.2);}
+.opt.arabic-opt{font-size:1.3rem; justify-content:flex-start;}
+.opt.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.opt.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.match-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px;
+  border:1px solid var(--gold); border-radius:8px; margin-bottom:8px; background:var(--parchment);}
+.match-row .ar{font-size:1.4rem;}
+.match-row select{padding:8px; border-radius:6px; border:1px solid var(--gold); font-family:'Lora',serif; font-size:.95rem; background:var(--card); color:var(--text);}
+.match-row.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.match-row.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.hidden{display:none !important;}
+.result-score{font-size:2.2rem; color:var(--emerald); font-weight:700; text-align:center; margin:6px 0;}
+.result-sub{text-align:center; color:var(--teal); margin-bottom:16px;}
+.root-line{font-size:1.5rem; text-align:center; margin:2px 0 14px; color:var(--emerald);}
+.feedback{border-radius:8px; padding:10px 12px; margin:10px 0 4px; font-size:.92rem;}
+.feedback.good{background:rgba(47,122,79,.12); color:var(--good); border:1px solid var(--good);}
+.feedback.bad{background:rgba(164,52,42,.1); color:var(--danger); border:1px solid var(--danger);}
+.feedback.info{background:rgba(200,162,74,.15); color:var(--emerald); border:1px solid var(--gold); font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card" id="screen-start">
+    <h1>Kuiz: Mufrad, Muthanna, Jama' Salim</h1>
+    <div class="root-line arabic">اَلْمُفْرَدُ وَالْمُثَنَّى وَالْجَمْعُ السَّالِمُ</div>
+    <p class="subtitle">Mengenali Bilangan Isim: Tunggal, Pasangan dan Jamak</p>
+    <label class="field">Nama
+      <input type="text" id="stuName" placeholder="Nama pelajar">
+    </label>
+    <label class="field">Kelas
+      <input type="text" id="stuClass" placeholder="Contoh: QLME 1A">
+    </label>
+    <div class="feedback bad hidden" id="startError">Sila isikan nama dan kelas terlebih dahulu.</div>
+    <div class="start-note">
+      <b>Kuiz Mufrad, Muthanna, Jama' Salim</b>
+      <span>10 soalan</span>
+    </div>
+    <button class="btn btn-primary" onclick="tryStartQuiz()">Mula Kuiz</button>
+  </div>
+
+  <div class="card hidden" id="screen-quiz">
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <h2 id="qPrompt"></h2>
+    <div class="ayah-box arabic hidden" id="ayahBox"></div>
+    <div class="toggle-link hidden" id="interToggle" onclick="toggleInterlinear()">Tunjuk terjemahan setiap perkataan</div>
+    <div class="interlinear" id="interlinearBox"></div>
+    <div id="optionsBox"></div>
+    <div id="feedbackBox"></div>
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">Semak Jawapan</button>
+    <button class="btn btn-gold hidden" id="nextBtn" onclick="nextQuestion()">Soalan Seterusnya →</button>
+  </div>
+
+  <div class="card hidden" id="screen-result">
+    <h2>Kuiz Selesai</h2>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="feedback info" id="submitStatus" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" onclick="retryQuiz()">Cuba Lagi</button>
+    <button class="btn btn-gold" onclick="backToStart()">Kembali</button>
+    <h2 style="margin-top:20px;">Sandaran Keputusan</h2>
+    <p style="font-size:.85rem; color:var(--teal); margin-top:-6px;">Jika keputusan tidak sampai kepada guru secara automatik, muat turun atau salin teks di bawah dan hantar secara manual.</p>
+    <button class="btn btn-gold" onclick="downloadResults()">Muat Turun Keputusan (.txt)</button>
+    <button class="btn btn-gold" onclick="copyResults()">Salin ke Papan Klip</button>
+  </div>
+
+  <div class="footer">AtTartil · Where Qur'anic Knowledge Transforms Lives</div>
+</div>
+
+<script>
+const QASAS23_INTERLINEAR = [
+ [["وَلَمَّا","Dan ketika"],["وَرَدَ","dia sampai"],["مَاءَ","(ke) mata air"],["مَدْيَنَ","Madyan"],["وَجَدَ","dia dapati"],["عَلَيْهِ","di sana"],["أُمَّةً","sekumpulan"],["مِّنَ","dari"],["النَّاسِ","manusia"],["يَسْقُونَ","sedang memberi minum"],["وَوَجَدَ","dan dia dapati"],["مِن دُونِهِمُ","selain mereka"],["امْرَأَتَيْنِ","dua orang perempuan"],["تَذُودَانِ","yang menahan (ternakan)"]]
+];
+const BAQARAH282_INTERLINEAR = [
+ [["فَإِن","Maka jika"],["لَّمْ يَكُونَا","tidak ada mereka berdua"],["رَجُلَيْنِ","dua orang lelaki"],["فَرَجُلٌ","maka seorang lelaki"],["وَامْرَأَتَانِ","dan dua orang perempuan"]]
+];
+const YASIN18_INTERLINEAR = [
+ [["يس","Ya-Sin"]],
+ [["وَالْقُرْآنِ","Demi Al-Quran"],["الْحَكِيمِ","yang penuh hikmah"]],
+ [["إِنَّكَ","Sesungguhnya engkau"],["لَمِنَ","benar-benar dari kalangan"],["الْمُرْسَلِينَ","?"]],
+ [["عَلَىٰ","di atas"],["صِرَاطٍ","jalan"],["مُّسْتَقِيمٍ","yang lurus"]],
+ [["تَنزِيلَ","diturunkan"],["الْعَزِيزِ","Yang Maha Perkasa"],["الرَّحِيمِ","Yang Maha Penyayang"]],
+ [["لِتُنذِرَ","supaya engkau memberi amaran"],["قَوْمًا","?"],["مَّا أُنذِرَ","tidak diberi amaran"],["آبَاؤُهُمْ","bapa-bapa mereka"],["فَهُمْ","maka mereka"],["غَافِلُونَ","lalai"]],
+ [["لَقَدْ","Sesungguhnya"],["حَقَّ","telah tetap"],["الْقَوْلُ","ketetapan (azab)"],["عَلَىٰ","ke atas"],["أَكْثَرِهِمْ","kebanyakan mereka"],["فَهُمْ","maka mereka"],["لَا يُؤْمِنُونَ","tidak beriman"]],
+ [["إِنَّا","Sesungguhnya Kami"],["جَعَلْنَا","Kami jadikan"],["فِي أَعْنَاقِهِمْ","pada leher-leher mereka"],["أَغْلَالًا","belenggu"],["فَهِيَ","maka ia"],["إِلَى الْأَذْقَانِ","sampai ke dagu"],["فَمُقْمَحُونَ","?"]]
+];
+const TAHRIM10_INTERLINEAR = [
+ [["ضَرَبَ","Telah membuat (perumpamaan)"],["اللَّهُ","Allah"],["مَثَلًا","satu perumpamaan"],["لِّلَّذِينَ","bagi orang-orang yang"],["كَفَرُوا","kafir"],["اِمْرَأَتَ","?"],["نُوحٍ","Nuh"],["وَاِمْرَأَتَ","?"],["لُوطٍ","Lut"],["كَانَتَا","mereka berdua adalah"],["تَحْتَ","di bawah (jagaan)"],["عَبْدَيْنِ","?"],["مِنْ عِبَادِنَا","dari hamba-hamba Kami"],["صَالِحَيْنِ","?"],["فَخَانَتَاهُمَا","lalu mereka berdua mengkhianati keduanya"],["فَلَمْ يُغْنِيَا","maka tidak dapat menolong"],["عَنْهُمَا","bagi mereka berdua"],["مِنَ اللَّهِ","dari (azab) Allah"],["شَيْئًا","sedikit pun"],["وَقِيلَ","dan dikatakan"],["ادْخُلَا","Masuklah kamu berdua"],["النَّارَ","ke dalam Neraka"],["مَعَ","bersama"],["الدَّاخِلِينَ","?"]]
+];
+const NISA34_INTERLINEAR = [
+ [["الرِّجَالُ","Kaum lelaki"],["قَوَّامُونَ","adalah pemimpin/pelindung"],["عَلَى النِّسَاءِ","ke atas kaum wanita"],["بِمَا","disebabkan"],["فَضَّلَ","telah melebihkan"],["اللَّهُ","Allah"],["بَعْضَهُمْ","sebahagian mereka"],["عَلَىٰ بَعْضٍ","ke atas sebahagian yang lain"],["وَبِمَا","dan disebabkan"],["أَنفَقُوا","mereka membelanjakan"],["مِنْ أَمْوَالِهِمْ","dari harta mereka"],["فَالصَّالِحَاتُ","maka wanita-wanita yang soleh"],["قَانِتَاتٌ","taat"],["حَافِظَاتٌ","menjaga"],["لِّلْغَيْبِ","perkara yang tersembunyi"],["بِمَا حَفِظَ اللَّهُ","dengan apa yang Allah telah jaga"],["وَاللَّاتِي","dan wanita-wanita yang"],["تَخَافُونَ","kamu bimbangi"],["نُشُوزَهُنَّ","kedurhakaan mereka"],["فَعِظُوهُنَّ","maka nasihatilah mereka"],["وَاهْجُرُوهُنَّ","dan tinggalkanlah mereka"],["فِي الْمَضَاجِعِ","di tempat tidur"],["وَاضْرِبُوهُنَّ","dan pukullah mereka"],["فَإِنْ أَطَعْنَكُمْ","maka jika mereka taat kepada kamu"],["فَلَا تَبْغُوا","maka janganlah kamu mencari-cari"],["عَلَيْهِنَّ","ke atas mereka"],["سَبِيلًا","jalan"],["إِنَّ اللَّهَ","Sesungguhnya Allah"],["كَانَ","adalah"],["عَلِيًّا","Maha Tinggi"],["كَبِيرًا","Maha Besar"]]
+];
+const AHZAB35_INTERLINEAR = [
+ [["إِنَّ","Sesungguhnya"],["الْمُسْلِمِينَ","lelaki-lelaki Muslim"],["وَالْمُسْلِمَاتِ","dan wanita-wanita Muslim"],["وَالْمُؤْمِنِينَ","dan lelaki-lelaki beriman"],["وَالْمُؤْمِنَاتِ","dan wanita-wanita beriman"],["وَالْقَانِتِينَ","dan lelaki-lelaki taat"],["وَالْقَانِتَاتِ","dan wanita-wanita taat"],["وَالصَّادِقِينَ","dan lelaki-lelaki benar"],["وَالصَّادِقَاتِ","dan wanita-wanita benar"],["وَالصَّابِرِينَ","dan lelaki-lelaki sabar"],["وَالصَّابِرَاتِ","dan wanita-wanita sabar"],["وَالْخَاشِعِينَ","dan lelaki-lelaki khusyuk"],["وَالْخَاشِعَاتِ","dan wanita-wanita khusyuk"],["وَالْمُتَصَدِّقِينَ","dan lelaki-lelaki bersedekah"],["وَالْمُتَصَدِّقَاتِ","dan wanita-wanita bersedekah"],["وَالصَّائِمِينَ","dan lelaki-lelaki berpuasa"],["وَالصَّائِمَاتِ","dan wanita-wanita berpuasa"],["وَالْحَافِظِينَ","dan lelaki-lelaki yang menjaga"],["فُرُوجَهُمْ","kemaluan mereka"],["وَالْحَافِظَاتِ","dan wanita-wanita yang menjaga"],["وَالذَّاكِرِينَ","dan lelaki-lelaki yang mengingati"],["اللَّهَ","Allah"],["كَثِيرًا","dengan banyak"],["وَالذَّاكِرَاتِ","dan wanita-wanita yang mengingati"],["أَعَدَّ","telah menyediakan"],["اللَّهُ","Allah"],["لَهُم","bagi mereka"],["مَّغْفِرَةً","keampunan"],["وَأَجْرًا","dan ganjaran"],["عَظِيمًا","yang besar"]]
+];
+const INTERLINEAR_MAP = {
+  qasas23:QASAS23_INTERLINEAR, baqarah282:BAQARAH282_INTERLINEAR, yasin18:YASIN18_INTERLINEAR,
+  tahrim10:TAHRIM10_INTERLINEAR, nisa34:NISA34_INTERLINEAR, ahzab35:AHZAB35_INTERLINEAR
+};
+
+// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
+const CONFIG = {
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzoYPlYecwiX5btLIEO0jAuqQ8-l60SZgUItmnOzSsP8-zWKuwzKFKpxgQVVSMEGgB4/exec"
+};
+
+const QUESTIONS = [
+  {id:1, type:'multi', arabicOptions:true,
+   prompt:"Pilih perkataan-perkataan yang merupakan Isim Mufrad (Tunggal). Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   options:["كَافِرٌ","جَنَّتَانِ","الْكِتَابُ","الْعَلَمِينَ"],
+   correct:[0,2],
+   explain:"كَافِرٌ (seorang kafir) dan الْكِتَابُ (kitab itu) ialah isim mufrad (tunggal). جَنَّتَانِ ialah muthanna (dua) dan الْعَلَمِينَ ialah jama' (ramai)."},
+  {id:2, type:'single', arabicOptions:true, interlinear:'qasas23', revealAfterAnswer:true,
+   prompt:"Perhatikan ayat 23 Surah Al-Qasas. Pilih perkataan yang merupakan Isim Muthanna (Pasangan/Dua).",
+   ayah:"وَلَمَّا وَرَدَ مَاءَ مَدْيَنَ وَجَدَ عَلَيْهِ أُمَّةً مِّنَ النَّاسِ يَسْقُونَ وَوَجَدَ مِن دُونِهِمُ امْرَأَتَيْنِ تَذُودَانِ ﴿٢٣﴾",
+   options:["أُمَّةَ","مَدْيَنَ","امْرَأَتَيْنِ","النَّاسِ"],
+   correct:[2],
+   explain:"امْرَأَتَيْنِ (dua orang perempuan) ialah isim muthanna kerana berakhir dengan ـَيْنِ. أُمَّةَ dan مَدْيَنَ ialah mufrad, manakala النَّاسِ ialah jama' taksir."},
+  {id:3, type:'multi', arabicOptions:true,
+   prompt:"Pilih perkataan-perkataan yang merupakan Isim Jama' (Ramai). Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   options:["جَنَّتَانِ","الْمُحْسِنِينَ","الصَّالِحَاتِ","الشَّمْسِ"],
+   correct:[1,2],
+   explain:"الْمُحْسِنِينَ (jama' muzakkar salim) dan الصَّالِحَاتِ (jama' muannath salim) ialah isim jama'. جَنَّتَانِ ialah muthanna dan الشَّمْسِ ialah mufrad."},
+  {id:4, type:'multi', arabicOptions:true, interlinear:'baqarah282', revealAfterAnswer:true,
+   prompt:"Perhatikan petikan ayat 282 Surah Al-Baqarah. Pilih perkataan-perkataan yang merupakan Isim Muthanna. Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   ayah:"فَإِن لَّمْ يَكُونَا رَجُلَيْنِ فَرَجُلٌ وَامْرَأَتَانِ",
+   options:["يَكُونَا","رَجُلَيْنِ","رَجُلٌ","وَامْرَأَتَانِ"],
+   correct:[1,3],
+   explain:"رَجُلَيْنِ (dua orang lelaki) dan امْرَأَتَانِ (dua orang perempuan) ialah isim muthanna. يَكُونَا ialah fe'il manakala رَجُلٌ ialah isim mufrad."},
+  {id:5, type:'match', interlinear:'yasin18',
+   prompt:"Pilih kategori yang betul bagi perkataan berikut. (Surah Yasin, ayat 1–8)",
+   ayah:"يس ﴿١﴾ وَالْقُرْآنِ الْحَكِيمِ ﴿٢﴾ إِنَّكَ لَمِنَ الْمُرْسَلِينَ ﴿٣﴾ عَلَىٰ صِرَاطٍ مُّسْتَقِيمٍ ﴿٤﴾ تَنزِيلَ الْعَزِيزِ الرَّحِيمِ ﴿٥﴾ لِتُنذِرَ قَوْمًا مَّا أُنذِرَ آبَاؤُهُمْ فَهُمْ غَافِلُونَ ﴿٦﴾ لَقَدْ حَقَّ الْقَوْلُ عَلَىٰ أَكْثَرِهِمْ فَهُمْ لَا يُؤْمِنُونَ ﴿٧﴾ إِنَّا جَعَلْنَا فِي أَعْنَاقِهِمْ أَغْلَالًا فَهِيَ إِلَى الْأَذْقَانِ فَمُقْمَحُونَ ﴿٨﴾",
+   pairs:[["الْمُرْسَلِينَ","JAMA'"],["قَوْمًا","MUFRAD"],["مُقْمَحُونَ","JAMA'"]],
+   choices:["MUFRAD","MUTHANNA","JAMA'"],
+   explain:"الْمُرْسَلِينَ (para rasul) dan مُقْمَحُونَ (tertengadah) ialah jama', manakala قَوْمًا (satu kaum) ialah mufrad."},
+  {id:6, type:'match', interlinear:'tahrim10',
+   prompt:"Pilih kategori yang betul bagi perkataan berikut. (Surah At-Tahrim, ayat 10)",
+   ayah:"ضَرَبَ اللَّهُ مَثَلًا لِّلَّذِينَ كَفَرُوا اِمْرَأَتَ نُوحٍ وَاِمْرَأَتَ لُوطٍ ۖ كَانَتَا تَحْتَ عَبْدَيْنِ مِنْ عِبَادِنَا صَالِحَيْنِ فَخَانَتَاهُمَا فَلَمْ يُغْنِيَا عَنْهُمَا مِنَ اللَّهِ شَيْئًا وَقِيلَ ادْخُلَا النَّارَ مَعَ الدَّاخِلِينَ ﴿١٠﴾",
+   pairs:[["اِمْرَأَتَ","MUFRAD"],["عَبْدَيْنِ","MUTHANNA"],["صَالِحَيْنِ","MUTHANNA"],["الدَّاخِلِينَ","JAMA'"]],
+   choices:["MUFRAD","MUTHANNA","JAMA'"],
+   explain:"اِمْرَأَتَ (isteri) ialah mufrad; عَبْدَيْنِ dan صَالِحَيْنِ (dua hamba yang soleh) ialah muthanna; الدَّاخِلِينَ (orang-orang yang masuk) ialah jama'."},
+  {id:7, type:'single', interlinear:'nisa34', revealAfterAnswer:true,
+   prompt:"Berapakah bilangan perkataan dalam bentuk Jama' Muzakkar Salim dalam ayat berikut? (Surah An-Nisa, ayat 34)",
+   ayah:"الرِّجَالُ قَوَّامُونَ عَلَى النِّسَاءِ بِمَا فَضَّلَ اللَّهُ بَعْضَهُمْ عَلَىٰ بَعْضٍ وَبِمَا أَنفَقُوا مِنْ أَمْوَالِهِمْ ۚ فَالصَّالِحَاتُ قَانِتَاتٌ حَافِظَاتٌ لِّلْغَيْبِ بِمَا حَفِظَ اللَّهُ ۚ وَاللَّاتِي تَخَافُونَ نُشُوزَهُنَّ فَعِظُوهُنَّ وَاهْجُرُوهُنَّ فِي الْمَضَاجِعِ وَاضْرِبُوهُنَّ ۖ فَإِنْ أَطَعْنَكُمْ فَلَا تَبْغُوا عَلَيْهِنَّ سَبِيلًا ۗ إِنَّ اللَّهَ كَانَ عَلِيًّا كَبِيرًا ﴿٣٤﴾",
+   options:["1","2","3","4"], correct:[0],
+   explain:"Hanya قَوَّامُونَ yang merupakan jama' muzakkar salim (berakhir dengan ون). الرِّجَالُ ialah jama' taksir (bukan salim)."},
+  {id:8, type:'single', interlinear:'nisa34', revealAfterAnswer:true,
+   prompt:"Berapakah bilangan perkataan dalam bentuk Jama' Muannas Salim dalam ayat yang sama? (Surah An-Nisa, ayat 34)",
+   ayah:"الرِّجَالُ قَوَّامُونَ عَلَى النِّسَاءِ بِمَا فَضَّلَ اللَّهُ بَعْضَهُمْ عَلَىٰ بَعْضٍ وَبِمَا أَنفَقُوا مِنْ أَمْوَالِهِمْ ۚ فَالصَّالِحَاتُ قَانِتَاتٌ حَافِظَاتٌ لِّلْغَيْبِ بِمَا حَفِظَ اللَّهُ ۚ وَاللَّاتِي تَخَافُونَ نُشُوزَهُنَّ فَعِظُوهُنَّ وَاهْجُرُوهُنَّ فِي الْمَضَاجِعِ وَاضْرِبُوهُنَّ ۖ فَإِنْ أَطَعْنَكُمْ فَلَا تَبْغُوا عَلَيْهِنَّ سَبِيلًا ۗ إِنَّ اللَّهَ كَانَ عَلِيًّا كَبِيرًا ﴿٣٤﴾",
+   options:["2","3","4","6"], correct:[1],
+   explain:"Tiga jama' muannath salim: الصَّالِحَاتُ، قَانِتَاتٌ dan حَافِظَاتٌ (berakhir dengan اتٌ)."},
+  {id:9, type:'single', interlinear:'ahzab35', revealAfterAnswer:true,
+   prompt:"Berapakah bilangan perkataan dalam bentuk Isim Jama' Salim (muzakkar dan muannath) dalam ayat berikut? (Surah Al-Ahzab, ayat 35)",
+   ayah:"إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا ﴿٣٥﴾",
+   options:["10","12","20","23"], correct:[2],
+   explain:"Ada 10 pasangan jama' muzakkar salim dan jama' muannath salim (contohnya الْمُسْلِمِينَ/الْمُسْلِمَاتِ) — jumlahnya 20."},
+  {id:10, type:'multi', interlinear:'ahzab35', revealAfterAnswer:true,
+   prompt:"Pilih pernyataan-pernyataan yang BETUL tentang ayat 35 Surah Al-Ahzab. Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   ayah:"إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا ﴿٣٥﴾",
+   options:["Terdapat lebih daripada satu isim mufrad dalam ayat ini","Semua isim jama' dalam ayat di atas adalah Jama' Muzakkar Salim","Terdapat gabungan Jama' Muzakkar Salim dan Jama' Muannas Salim","Terdapat gabungan Jama' Muzakkar Salim dan Muthanna"],
+   correct:[0,2],
+   explain:"مَّغْفِرَةً، أَجْرًا dan عَظِيمًا ialah isim mufrad — lebih daripada satu. Ayat ini juga mengandungi gabungan jama' muzakkar salim dan jama' muannath salim. Tiada muthanna dalam ayat ini."}
+];
+
+let order=[], idx=0, score=0, answered=false;
+let lastResult=null;
+
+function tryStartQuiz(){
+  const name=document.getElementById('stuName').value.trim();
+  const cls=document.getElementById('stuClass').value.trim();
+  const err=document.getElementById('startError');
+  if(!name || !cls){ err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  startQuiz();
+}
+
+function startQuiz(){
+  order = QUESTIONS.slice();
+  idx=0; score=0;
+  document.getElementById('screen-start').classList.add('hidden');
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  renderQuestion();
+}
+function retryQuiz(){ startQuiz(); }
+function backToStart(){
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-start').classList.remove('hidden');
+}
+
+function toggleInterlinear(){
+  const box=document.getElementById('interlinearBox');
+  box.classList.toggle('show');
+  document.getElementById('interToggle').textContent =
+    box.classList.contains('show') ? "Sembunyikan terjemahan" : "Tunjuk terjemahan setiap perkataan";
+}
+
+function renderQuestion(){
+  answered=false;
+  const q = order[idx];
+  document.getElementById('progressLabel').textContent = `Soalan ${idx+1} / ${order.length}`;
+  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
+  document.getElementById('qPrompt').textContent = q.prompt;
+  document.getElementById('feedbackBox').innerHTML='';
+
+  const ayahBox = document.getElementById('ayahBox');
+  if(q.ayah){ ayahBox.textContent=q.ayah; ayahBox.classList.remove('hidden'); }
+  else { ayahBox.classList.add('hidden'); }
+
+  const interToggle = document.getElementById('interToggle');
+  const interBox = document.getElementById('interlinearBox');
+  interBox.classList.remove('show'); interBox.innerHTML='';
+  const interData = q.interlinear ? INTERLINEAR_MAP[q.interlinear] : null;
+  if(interData){
+    interToggle.textContent="Tunjuk terjemahan setiap perkataan";
+    interData.forEach(verse=>{
+      verse.forEach(([ar,gl])=>{
+        const w=document.createElement('div'); w.className='iword';
+        w.innerHTML=`<span class="ar">${ar}</span><span class="gl">${gl}</span>`;
+        interBox.appendChild(w);
+      });
+    });
+    interToggle.classList.toggle('hidden', !!q.revealAfterAnswer);
+  } else {
+    interToggle.classList.add('hidden');
+  }
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML='';
+
+  if(q.type==='match'){
+    q.pairs.forEach((pair,i)=>{
+      const row=document.createElement('div');
+      row.className='match-row'; row.id='match-'+i;
+      const arSpan=document.createElement('span');
+      arSpan.className='ar arabic'; arSpan.textContent=pair[0];
+      const sel=document.createElement('select');
+      sel.id='sel-'+i;
+      const placeholder=document.createElement('option');
+      placeholder.value=''; placeholder.textContent='Pilih...';
+      sel.appendChild(placeholder);
+      q.choices.forEach(c=>{
+        const o=document.createElement('option'); o.value=c; o.textContent=c;
+        sel.appendChild(o);
+      });
+      row.appendChild(arSpan); row.appendChild(sel);
+      box.appendChild(row);
+    });
+  } else {
+    q.options.forEach((opt,i)=>{
+      const wrap=document.createElement('label');
+      wrap.className='opt'+(q.arabicOptions?' arabic-opt arabic':'');
+      wrap.id='opt-'+i;
+      const input=document.createElement('input');
+      input.type = q.type==='multi' ? 'checkbox' : 'radio';
+      input.name='q'+q.id; input.value=i;
+      const span=document.createElement('span');
+      span.textContent=opt;
+      wrap.appendChild(input); wrap.appendChild(span);
+      box.appendChild(wrap);
+    });
+  }
+
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled=false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q = order[idx];
+  let isCorrect;
+
+  if(q.type==='match'){
+    isCorrect = true;
+    q.pairs.forEach((pair,i)=>{
+      const sel = document.getElementById('sel-'+i);
+      const row = document.getElementById('match-'+i);
+      const ok = sel.value === pair[1];
+      if(!ok) isCorrect=false;
+      row.classList.add(ok ? 'correct' : 'wrong');
+      sel.disabled=true;
+    });
+  } else {
+    const inputs = document.querySelectorAll(`input[name="q${q.id}"]`);
+    const selected = Array.from(inputs).filter(i=>i.checked).map(i=>parseInt(i.value));
+    const correctSet = q.correct.slice().sort().join(',');
+    const selSet = selected.slice().sort().join(',');
+    isCorrect = selSet===correctSet && selected.length>0;
+    inputs.forEach((inp,i)=>{
+      const wrap = document.getElementById('opt-'+i);
+      if(q.correct.includes(i)) wrap.classList.add('correct');
+      else if(inp.checked) wrap.classList.add('wrong');
+      inp.disabled=true;
+    });
+  }
+
+  if(isCorrect) score++;
+
+  const fb = document.getElementById('feedbackBox');
+  fb.innerHTML = isCorrect
+    ? `<div class="feedback good">Betul!</div>`
+    : `<div class="feedback bad">${q.explain}</div>`;
+
+  if(q.revealAfterAnswer && q.interlinear){
+    document.getElementById('interToggle').classList.remove('hidden');
+  }
+
+  answered=true;
+  document.getElementById('checkBtn').disabled=true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx>=order.length){ showResult(); return; }
+  renderQuestion();
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('hidden');
+  const pct = Math.round((score/order.length)*100);
+  const name = document.getElementById('stuName').value.trim();
+  const cls = document.getElementById('stuClass').value.trim();
+  document.getElementById('resultScore').textContent = `${pct}%`;
+  document.getElementById('resultSub').textContent =
+    `${score} / ${order.length} betul` + (name? ` · ${name}`:'');
+
+  lastResult = {
+    nama:name, kelas:cls,
+    skor:score, jumlah:order.length, peratus:pct,
+    masa: new Date().toLocaleString('ms-MY')
+  };
+  submitResults(lastResult);
+}
+
+function submitResults(r){
+  const statusEl = document.getElementById('submitStatus');
+  if(!CONFIG.SCRIPT_URL){
+    statusEl.textContent = "Penghantaran automatik belum disediakan oleh guru. Sila muat turun / salin keputusan di bawah.";
+    return;
+  }
+  statusEl.textContent = "Menghantar keputusan...";
+  const body = new URLSearchParams({
+    nama:r.nama, kelas:r.kelas,
+    skor:r.skor, jumlah:r.jumlah, peratus:r.peratus, masa:r.masa
+  });
+  fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', body })
+    .then(()=>{ statusEl.textContent = "Keputusan telah dihantar. (Jika guru tidak menerimanya, sila muat turun/salin sebagai sandaran.)"; })
+    .catch(()=>{ statusEl.textContent = "Gagal menghantar (tiada sambungan internet?). Sila muat turun atau salin keputusan di bawah."; });
+}
+
+function resultsText(){
+  const r = lastResult;
+  if(!r) return "";
+  return `Kuiz: Mufrad, Muthanna, Jama' Salim
+Nama: ${r.nama}
+Kelas: ${r.kelas}
+Skor: ${r.skor} / ${r.jumlah} (${r.peratus}%)
+Masa: ${r.masa}`;
+}
+
+function downloadResults(){
+  const blob = new Blob([resultsText()], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `keputusan-${(lastResult.nama||'pelajar').replace(/\s+/g,'_')}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function copyResults(){
+  navigator.clipboard.writeText(resultsText()).then(()=>{
+    alert("Keputusan disalin ke papan klip.");
+  }).catch(()=>{
+    alert("Tidak dapat menyalin secara automatik. Sila salin secara manual.");
+  });
+}
+</script>
+</body>
+</html>
