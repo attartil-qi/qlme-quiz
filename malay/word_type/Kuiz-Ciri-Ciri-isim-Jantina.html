@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuiz: Ciri-Ciri Isim — Jantina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment:#f6efe0; --teal:#0f6b64; --gold:#c8a24a; --emerald:#0c3d33;
+  --text:#2c2a22; --card:#fffdf7; --danger:#a4342a; --good:#2f7a4f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+  }
+}
+:root[data-theme="dark"]{
+  --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100%; background:var(--parchment); color:var(--text);
+  font-family:'Lora',serif; display:flex; justify-content:center; padding:24px 14px 40px;
+}
+.arabic{font-family:'Amiri',serif; direction:rtl; unicode-bidi:embed;}
+.wrap{width:100%; max-width:640px;}
+.card{
+  background:var(--card); border:1px solid var(--gold); border-radius:14px;
+  padding:22px 20px; box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:16px;
+}
+h1{color:var(--emerald); font-size:1.5rem; margin:0 0 4px;}
+h2{color:var(--emerald); font-size:1.15rem; margin:0 0 10px;}
+.subtitle{color:var(--teal); font-weight:600; margin:0 0 18px;}
+.footer{text-align:center; color:var(--teal); font-size:.85rem; margin-top:10px; opacity:.85;}
+label.field{display:block; margin-bottom:12px; font-weight:600;}
+input[type=text]{
+  width:100%; padding:10px 12px; margin-top:5px; border:1px solid var(--gold);
+  border-radius:8px; background:var(--parchment); color:var(--text); font-family:'Lora',serif; font-size:1rem;
+}
+.btn{
+  display:inline-block; border:none; border-radius:8px; padding:11px 18px; font-family:'Lora',serif;
+  font-weight:700; font-size:1rem; cursor:pointer; margin:6px 6px 0 0; transition:opacity .15s;
+}
+.btn-primary{background:var(--teal); color:#fff;}
+.btn-gold{background:var(--gold); color:var(--emerald);}
+.btn:disabled{opacity:.5; cursor:not-allowed;}
+.btn:hover:not(:disabled){opacity:.88;}
+.start-note{background:var(--parchment); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-bottom:6px;}
+.start-note b{color:var(--emerald); font-size:1.05rem;}
+.start-note span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
+.progress-label{color:var(--teal); font-weight:600; margin-bottom:6px; font-size:.9rem;}
+.progress-track{background:var(--parchment); border:1px solid var(--gold); border-radius:99px; height:10px; overflow:hidden; margin-bottom:16px;}
+.progress-fill{background:var(--teal); height:100%; border-radius:99px; transition:width .25s ease;}
+.ayah-box{
+  background:var(--parchment); border:1px solid var(--gold); border-radius:10px; padding:16px;
+  font-size:1.4rem; text-align:center; margin-bottom:12px; line-height:2.3;
+}
+.ayah-box u{text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px;}
+.interlinear{display:none; flex-wrap:wrap; gap:10px 14px; justify-content:center; direction:rtl;
+  background:var(--parchment); border:1px dashed var(--gold); border-radius:10px; padding:14px; margin-bottom:16px;}
+.interlinear.show{display:flex;}
+.iword{display:flex; flex-direction:column; align-items:center; min-width:54px;}
+.iword .ar{font-family:'Amiri',serif; font-size:1.2rem;}
+.iword .gl{font-family:'Lora',serif; font-size:.66rem; color:var(--teal); margin-top:2px; text-align:center; direction:ltr;}
+.toggle-link{display:inline-block; margin:0 0 14px; font-size:.85rem; color:var(--teal); cursor:pointer; text-decoration:underline;}
+.opt{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gold);
+  border-radius:8px; margin-bottom:8px; cursor:pointer; background:var(--parchment);
+}
+.opt input{transform:scale(1.2);}
+.opt.arabic-opt{font-size:1.3rem; justify-content:flex-start;}
+.opt.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.opt.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.match-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px;
+  border:1px solid var(--gold); border-radius:8px; margin-bottom:8px; background:var(--parchment);}
+.match-row .ar{font-size:1.4rem;}
+.match-row select{padding:8px; border-radius:6px; border:1px solid var(--gold); font-family:'Lora',serif; font-size:.95rem; background:var(--card); color:var(--text);}
+.match-row.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.match-row.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.hidden{display:none !important;}
+.result-score{font-size:2.2rem; color:var(--emerald); font-weight:700; text-align:center; margin:6px 0;}
+.result-sub{text-align:center; color:var(--teal); margin-bottom:16px;}
+.root-line{font-size:1.5rem; text-align:center; margin:2px 0 14px; color:var(--emerald);}
+.feedback{border-radius:8px; padding:10px 12px; margin:10px 0 4px; font-size:.92rem;}
+.feedback.good{background:rgba(47,122,79,.12); color:var(--good); border:1px solid var(--good);}
+.feedback.bad{background:rgba(164,52,42,.1); color:var(--danger); border:1px solid var(--danger);}
+.feedback.info{background:rgba(200,162,74,.15); color:var(--emerald); border:1px solid var(--gold); font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card" id="screen-start">
+    <h1>Kuiz: Ciri-Ciri Isim — Jantina</h1>
+    <div class="root-line arabic">تَأْنِيثُ الِاسْمِ وَتَذْكِيرُهُ</div>
+    <p class="subtitle">Mengenali Jantina (Maskulin &amp; Feminin) Isim</p>
+    <label class="field">Nama
+      <input type="text" id="stuName" placeholder="Nama pelajar">
+    </label>
+    <label class="field">Kelas
+      <input type="text" id="stuClass" placeholder="Contoh: QLME 1A">
+    </label>
+    <div class="feedback bad hidden" id="startError">Sila isikan nama dan kelas terlebih dahulu.</div>
+    <div class="start-note">
+      <b>Kuiz Ciri-Ciri Isim — Jantina</b>
+      <span>10 soalan</span>
+    </div>
+    <button class="btn btn-primary" onclick="tryStartQuiz()">Mula Kuiz</button>
+  </div>
+
+  <div class="card hidden" id="screen-quiz">
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <h2 id="qPrompt"></h2>
+    <div class="ayah-box arabic hidden" id="ayahBox"></div>
+    <div class="toggle-link hidden" id="interToggle" onclick="toggleInterlinear()">Tunjuk terjemahan setiap perkataan</div>
+    <div class="interlinear" id="interlinearBox"></div>
+    <div id="optionsBox"></div>
+    <div id="feedbackBox"></div>
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">Semak Jawapan</button>
+    <button class="btn btn-gold hidden" id="nextBtn" onclick="nextQuestion()">Soalan Seterusnya →</button>
+  </div>
+
+  <div class="card hidden" id="screen-result">
+    <h2>Kuiz Selesai</h2>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="feedback info" id="submitStatus" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" onclick="retryQuiz()">Cuba Lagi</button>
+    <button class="btn btn-gold" onclick="backToStart()">Kembali</button>
+    <h2 style="margin-top:20px;">Sandaran Keputusan</h2>
+    <p style="font-size:.85rem; color:var(--teal); margin-top:-6px;">Jika keputusan tidak sampai kepada guru secara automatik, muat turun atau salin teks di bawah dan hantar secara manual.</p>
+    <button class="btn btn-gold" onclick="downloadResults()">Muat Turun Keputusan (.txt)</button>
+    <button class="btn btn-gold" onclick="copyResults()">Salin ke Papan Klip</button>
+  </div>
+
+  <div class="footer">AtTartil · Where Qur'anic Knowledge Transforms Lives</div>
+</div>
+
+<script>
+const INSAN5_INTERLINEAR = [
+ [["إِنَّ","Sesungguhnya"],["الْأَبْرَارَ","orang-orang yang berbakti"],["يَشْرَبُونَ","mereka minum"],["مِن","dari"],["كَأْسٍ","?"],["كَانَ","adalah"],["مِزَاجُهَا","campurannya"],["كَافُورًا","kafur"]]
+];
+const ANBIYA101_INTERLINEAR = [
+ [["إِنَّ","Sesungguhnya"],["الَّذِينَ","orang-orang yang"],["سَبَقَتْ","telah mendahului"],["لَهُم","bagi mereka"],["مِّنَّا","dari Kami"],["الْحُسْنَىٰ","kebaikan (balasan yang baik)"],["أُولَٰئِكَ","mereka itulah"],["عَنْهَا","daripadanya"],["مُبْعَدُونَ","dijauhkan"]]
+];
+const FAJR2728_INTERLINEAR = [
+ [["يَا","Wahai"],["أَيَّتُهَا","wahai"],["النَّفْسُ","jiwa"],["الْمُطْمَئِنَّةُ","yang tenang"]],
+ [["ارْجِعِي","Kembalilah (engkau)"],["إِلَىٰ","kepada"],["رَبِّكِ","Tuhanmu"],["رَاضِيَةً","dalam keadaan reda"],["مَّرْضِيَّةً","diredai"]]
+];
+const QADR_INTERLINEAR = [
+ [["إِنَّا","Sesungguhnya Kami"],["أَنزَلْنَاهُ","telah menurunkannya"],["فِي","pada"],["لَيْلَةِ","malam"],["الْقَدْرِ","Lailatul Qadar"]],
+ [["وَمَا","Dan tidakkah"],["أَدْرَاكَ","kamu mengetahui"],["مَا","apakah"],["لَيْلَةُ","malam"],["الْقَدْرِ","Lailatul Qadar"]],
+ [["لَيْلَةُ","Malam"],["الْقَدْرِ","Lailatul Qadar"],["خَيْرٌ","lebih baik"],["مِّنْ","daripada"],["أَلْفِ","seribu"],["شَهْرٍ","bulan"]],
+ [["تَنَزَّلُ","Turun"],["الْمَلَائِكَةُ","para malaikat"],["وَالرُّوحُ","dan Ar-Ruh"],["فِيهَا","padanya"],["بِإِذْنِ","dengan izin"],["رَبِّهِمْ","Tuhan mereka"],["مِن","dari"],["كُلِّ","setiap"],["أَمْرٍ","urusan"]],
+ [["سَلَامٌ","Sejahtera"],["هِيَ","ia"],["حَتَّىٰ","sehingga"],["مَطْلَعِ","terbit"],["الْفَجْرِ","fajar"]]
+];
+const INTERLINEAR_MAP = {insan5:INSAN5_INTERLINEAR, anbiya101:ANBIYA101_INTERLINEAR, fajr2728:FAJR2728_INTERLINEAR, qadr:QADR_INTERLINEAR};
+
+// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
+const CONFIG = {
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxBRgtkvo_tKiyvRV27YS5Sdo4fGPoAwRKIRGY-3Kg2u7Lvc0uJVaPzJ8m9Ldv-NLyz/exec"
+};
+
+const QUESTIONS = [
+  {id:1, type:'multi',
+   prompt:"Setiap isim mempunyai 4 ciri-ciri. Pilih 4 ciri tersebut yang telah dipelajari.",
+   options:["Tanwin atau ال","Jantina","Bilangan","Bermula dengan م diikuti sekurang-kurangnya 3 huruf","Berakhir dengan baris bawah (kasrah)","Jenis","Baris akhir (i'rab)"],
+   correct:[1,2,5,6],
+   explain:"4 ciri isim ialah jantina, bilangan, jenis dan baris akhir (i'rab). Tiga pilihan lain (tanwin/ال, bermula dengan م, berakhir kasrah) ialah tanda-tanda isim yang dipelajari sebelum ini, bukan ciri am isim."},
+  {id:2, type:'multi',
+   prompt:"Pilih pernyataan yang BETUL tentang isim.",
+   options:["Sesetengah isim tiada jantina","Setiap isim adalah Maskulin melainkan ada tanda yang menunjukkan ia Feminin","Setiap isim adalah Feminin melainkan ada tanda yang menunjukkan ia Maskulin","Setiap isim mesti mempunyai perbuatan, masa dan pelaku","Isim kuat dan tidak terbatas kepada waktu."],
+   correct:[1,4],
+   explain:"Setiap isim secara asalnya dianggap Maskulin melainkan ada tanda yang menunjukkan ia Feminin. Pernyataan lain tidak tepat — semua isim mempunyai jantina, dan ciri 'ada perbuatan, masa, pelaku' adalah untuk fe'il, bukan isim."},
+  {id:3, type:'multi',
+   prompt:"Sesuatu isim dianggap Feminin jika ia mempunyai mana-mana tanda berikut:",
+   options:["ة - Ta Marbutah di hujung perkataan","ـّ - Shaddah di hujung perkataan","ى - Alif Maqsurah di hujung perkataan","اء - Alif Mamdudah di hujung perkataan"],
+   correct:[0,2,3],
+   explain:"Tiga tanda feminin ialah ة (ta marbutah), ى (alif maqsurah) dan اء (alif mamdudah) di hujung perkataan. Shaddah bukan tanda jantina."},
+  {id:4, type:'match',
+   prompt:"Padankan setiap anggota badan dalam bahasa Arab dengan maksudnya.",
+   pairs:[["يَدٌ","tangan"],["أُذُنٌ","telinga"],["شَفَةٌ","bibir"]],
+   choices:["telinga","bibir","tangan"],
+   explain:"يَدٌ = tangan, أُذُنٌ = telinga, شَفَةٌ = bibir."},
+  {id:5, type:'single', arabicOptions:true,
+   prompt:"Perkataan manakah yang bermaksud 'mata'?",
+   options:["رِجْلٌ","عَيْنٌ","حَرْب","دَار"],
+   correct:[1],
+   explain:"عَيْنٌ bermaksud 'mata'. رِجْلٌ = kaki, حَرْب = perang, دَار = rumah."},
+  {id:6, type:'match',
+   prompt:"Padankan setiap isim feminin dalam bahasa Arab dengan maksudnya.",
+   pairs:[["سَبِيْل","jalan"],["سَمَاء","langit"],["رِيْح","angin"]],
+   choices:["angin","jalan","langit"],
+   explain:"سَبِيْل = jalan, سَمَاء = langit, رِيْح = angin — ketiga-tiganya isim feminin."},
+  {id:7, type:'single', interlinear:'insan5',
+   prompt:"Apakah maksud perkataan yang digariskan dalam ayat berikut? (Surah Al-Insan, ayat 5)",
+   ayahHTML:"إِنَّ الْأَبْرَارَ يَشْرَبُونَ مِن <u>كَأْسٍ</u> كَانَ مِزَاجُهَا كَافُورًا ﴿٥﴾",
+   options:["cawan/gelas","perigi","arak","timba"], correct:[0],
+   explain:"كَأْسٍ bermaksud cawan/gelas (bekas minuman)."},
+  {id:8, type:'single', arabicOptions:true, interlinear:'anbiya101',
+   prompt:"Kenal pasti isim feminin dalam ayat berikut. (Surah Al-Anbiya, ayat 101)",
+   ayah:"إِنَّ الَّذِينَ سَبَقَتْ لَهُم مِّنَّا الْحُسْنَىٰ أُولَٰئِكَ عَنْهَا مُبْعَدُونَ ﴿١٠١﴾",
+   options:["الَّذِينَ","الْحُسْنَى","أُوْلَئِكَ","مُبْعَدُونَ"], correct:[1],
+   explain:"الْحُسْنَى ialah isim feminin kerana berakhir dengan alif maqsurah (ى). الَّذِينَ، أُوْلَئِكَ dan مُبْعَدُونَ ialah maskulin."},
+  {id:9, type:'single', interlinear:'fajr2728',
+   prompt:"Berdasarkan tanda dan jenis isim feminin yang telah dipelajari, berapakah bilangan isim feminin dalam ayat berikut? (Surah Al-Fajr, ayat 27–28)",
+   ayah:"يَا أَيَّتُهَا النَّفْسُ الْمُطْمَئِنَّةُ ﴿٢٧﴾ ارْجِعِي إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً ﴿٢٨﴾",
+   options:["1","2","3","4"], correct:[3],
+   explain:"Isim feminin: النَّفْسُ (feminin mengikut jenis, tiada tanda zahir), الْمُطْمَئِنَّةُ (ة), رَاضِيَةً (ة) dan مَّرْضِيَّةً (ة) — jumlahnya 4."},
+  {id:10, type:'single', interlinear:'qadr',
+   prompt:"Berdasarkan tanda dan jenis isim feminin yang telah dipelajari, berapakah bilangan isim feminin dalam Surah Al-Qadr berikut?",
+   ayah:"إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ ﴿١﴾ وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ ﴿٢﴾ لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ ﴿٣﴾ تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِمْ مِن كُلِّ أَمْرٍ ﴿٤﴾ سَلَامٌ هِيَ حَتَّىٰ مَطْلَعِ الْفَجْرِ ﴿٥﴾",
+   options:["2","3","4","5"], correct:[2],
+   explain:"Isim feminin ialah لَيْلَةِ/لَيْلَةُ (ة, muncul 3 kali) dan الْمَلَائِكَةُ (ة) — jumlahnya 4."}
+];
+
+let order=[], idx=0, score=0, answered=false;
+let lastResult=null;
+
+function tryStartQuiz(){
+  const name=document.getElementById('stuName').value.trim();
+  const cls=document.getElementById('stuClass').value.trim();
+  const err=document.getElementById('startError');
+  if(!name || !cls){ err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  startQuiz();
+}
+
+function startQuiz(){
+  order = QUESTIONS.slice();
+  idx=0; score=0;
+  document.getElementById('screen-start').classList.add('hidden');
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  renderQuestion();
+}
+function retryQuiz(){ startQuiz(); }
+function backToStart(){
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-start').classList.remove('hidden');
+}
+
+function toggleInterlinear(){
+  const box=document.getElementById('interlinearBox');
+  box.classList.toggle('show');
+  document.getElementById('interToggle').textContent =
+    box.classList.contains('show') ? "Sembunyikan terjemahan" : "Tunjuk terjemahan setiap perkataan";
+}
+
+function renderQuestion(){
+  answered=false;
+  const q = order[idx];
+  document.getElementById('progressLabel').textContent = `Soalan ${idx+1} / ${order.length}`;
+  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
+  document.getElementById('qPrompt').textContent = q.prompt;
+  document.getElementById('feedbackBox').innerHTML='';
+
+  const ayahBox = document.getElementById('ayahBox');
+  if(q.ayahHTML){ ayahBox.innerHTML=q.ayahHTML; ayahBox.classList.remove('hidden'); }
+  else if(q.ayah){ ayahBox.textContent=q.ayah; ayahBox.classList.remove('hidden'); }
+  else { ayahBox.classList.add('hidden'); }
+
+  const interToggle = document.getElementById('interToggle');
+  const interBox = document.getElementById('interlinearBox');
+  interBox.classList.remove('show'); interBox.innerHTML='';
+  const interData = q.interlinear ? INTERLINEAR_MAP[q.interlinear] : null;
+  if(interData){
+    interToggle.classList.remove('hidden');
+    interToggle.textContent="Tunjuk terjemahan setiap perkataan";
+    interData.forEach(verse=>{
+      verse.forEach(([ar,gl])=>{
+        const w=document.createElement('div'); w.className='iword';
+        w.innerHTML=`<span class="ar">${ar}</span><span class="gl">${gl}</span>`;
+        interBox.appendChild(w);
+      });
+    });
+  } else {
+    interToggle.classList.add('hidden');
+  }
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML='';
+
+  if(q.type==='match'){
+    q.pairs.forEach((pair,i)=>{
+      const row=document.createElement('div');
+      row.className='match-row'; row.id='match-'+i;
+      const arSpan=document.createElement('span');
+      arSpan.className='ar arabic'; arSpan.textContent=pair[0];
+      const sel=document.createElement('select');
+      sel.id='sel-'+i;
+      const placeholder=document.createElement('option');
+      placeholder.value=''; placeholder.textContent='Pilih...';
+      sel.appendChild(placeholder);
+      q.choices.forEach(c=>{
+        const o=document.createElement('option'); o.value=c; o.textContent=c;
+        sel.appendChild(o);
+      });
+      row.appendChild(arSpan); row.appendChild(sel);
+      box.appendChild(row);
+    });
+  } else {
+    q.options.forEach((opt,i)=>{
+      const wrap=document.createElement('label');
+      wrap.className='opt'+(q.arabicOptions?' arabic-opt arabic':'');
+      wrap.id='opt-'+i;
+      const input=document.createElement('input');
+      input.type = q.type==='multi' ? 'checkbox' : 'radio';
+      input.name='q'+q.id; input.value=i;
+      const span=document.createElement('span');
+      span.textContent=opt;
+      wrap.appendChild(input); wrap.appendChild(span);
+      box.appendChild(wrap);
+    });
+  }
+
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled=false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q = order[idx];
+  let isCorrect;
+
+  if(q.type==='match'){
+    isCorrect = true;
+    q.pairs.forEach((pair,i)=>{
+      const sel = document.getElementById('sel-'+i);
+      const row = document.getElementById('match-'+i);
+      const ok = sel.value === pair[1];
+      if(!ok) isCorrect=false;
+      row.classList.add(ok ? 'correct' : 'wrong');
+      sel.disabled=true;
+    });
+  } else {
+    const inputs = document.querySelectorAll(`input[name="q${q.id}"]`);
+    const selected = Array.from(inputs).filter(i=>i.checked).map(i=>parseInt(i.value));
+    const correctSet = q.correct.slice().sort().join(',');
+    const selSet = selected.slice().sort().join(',');
+    isCorrect = selSet===correctSet && selected.length>0;
+    inputs.forEach((inp,i)=>{
+      const wrap = document.getElementById('opt-'+i);
+      if(q.correct.includes(i)) wrap.classList.add('correct');
+      else if(inp.checked) wrap.classList.add('wrong');
+      inp.disabled=true;
+    });
+  }
+
+  if(isCorrect) score++;
+
+  const fb = document.getElementById('feedbackBox');
+  fb.innerHTML = isCorrect
+    ? `<div class="feedback good">Betul!</div>`
+    : `<div class="feedback bad">${q.explain}</div>`;
+
+  answered=true;
+  document.getElementById('checkBtn').disabled=true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx>=order.length){ showResult(); return; }
+  renderQuestion();
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('hidden');
+  const pct = Math.round((score/order.length)*100);
+  const name = document.getElementById('stuName').value.trim();
+  const cls = document.getElementById('stuClass').value.trim();
+  document.getElementById('resultScore').textContent = `${pct}%`;
+  document.getElementById('resultSub').textContent =
+    `${score} / ${order.length} betul` + (name? ` · ${name}`:'');
+
+  lastResult = {
+    nama:name, kelas:cls,
+    skor:score, jumlah:order.length, peratus:pct,
+    masa: new Date().toLocaleString('ms-MY')
+  };
+  submitResults(lastResult);
+}
+
+function submitResults(r){
+  const statusEl = document.getElementById('submitStatus');
+  if(!CONFIG.SCRIPT_URL){
+    statusEl.textContent = "Penghantaran automatik belum disediakan oleh guru. Sila muat turun / salin keputusan di bawah.";
+    return;
+  }
+  statusEl.textContent = "Menghantar keputusan...";
+  const body = new URLSearchParams({
+    nama:r.nama, kelas:r.kelas,
+    skor:r.skor, jumlah:r.jumlah, peratus:r.peratus, masa:r.masa
+  });
+  fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', body })
+    .then(()=>{ statusEl.textContent = "Keputusan telah dihantar. (Jika guru tidak menerimanya, sila muat turun/salin sebagai sandaran.)"; })
+    .catch(()=>{ statusEl.textContent = "Gagal menghantar (tiada sambungan internet?). Sila muat turun atau salin keputusan di bawah."; });
+}
+
+function resultsText(){
+  const r = lastResult;
+  if(!r) return "";
+  return `Kuiz: Ciri-Ciri Isim — Jantina
+Nama: ${r.nama}
+Kelas: ${r.kelas}
+Skor: ${r.skor} / ${r.jumlah} (${r.peratus}%)
+Masa: ${r.masa}`;
+}
+
+function downloadResults(){
+  const blob = new Blob([resultsText()], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `keputusan-${(lastResult.nama||'pelajar').replace(/\s+/g,'_')}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function copyResults(){
+  navigator.clipboard.writeText(resultsText()).then(()=>{
+    alert("Keputusan disalin ke papan klip.");
+  }).catch(()=>{
+    alert("Tidak dapat menyalin secara automatik. Sila salin secara manual.");
+  });
+}
+</script>
+</body>
+</html>
