@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuiz: Kata Sifat &amp; Yang Disifati</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --parchment:#f6efe0; --teal:#0f6b64; --gold:#c8a24a; --emerald:#0c3d33;
+  --text:#2c2a22; --card:#fffdf7; --danger:#a4342a; --good:#2f7a4f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+  }
+}
+:root[data-theme="dark"]{
+  --parchment:#20211d; --card:#2a2b25; --text:#eee6d3; --teal:#3fb8ae; --gold:#e0bd6d; --emerald:#8fd6c1;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100%; background:var(--parchment); color:var(--text);
+  font-family:'Lora',serif; display:flex; justify-content:center; padding:24px 14px 40px;
+}
+.arabic{font-family:'Amiri',serif; direction:rtl; unicode-bidi:embed;}
+.wrap{width:100%; max-width:640px;}
+.card{
+  background:var(--card); border:1px solid var(--gold); border-radius:14px;
+  padding:22px 20px; box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:16px;
+}
+h1{color:var(--emerald); font-size:1.5rem; margin:0 0 4px;}
+h2{color:var(--emerald); font-size:1.15rem; margin:0 0 10px;}
+.subtitle{color:var(--teal); font-weight:600; margin:0 0 18px;}
+.footer{text-align:center; color:var(--teal); font-size:.85rem; margin-top:10px; opacity:.85;}
+label.field{display:block; margin-bottom:12px; font-weight:600;}
+input[type=text]{
+  width:100%; padding:10px 12px; margin-top:5px; border:1px solid var(--gold);
+  border-radius:8px; background:var(--parchment); color:var(--text); font-family:'Lora',serif; font-size:1rem;
+}
+.btn{
+  display:inline-block; border:none; border-radius:8px; padding:11px 18px; font-family:'Lora',serif;
+  font-weight:700; font-size:1rem; cursor:pointer; margin:6px 6px 0 0; transition:opacity .15s;
+}
+.btn-primary{background:var(--teal); color:#fff;}
+.btn-gold{background:var(--gold); color:var(--emerald);}
+.btn:disabled{opacity:.5; cursor:not-allowed;}
+.btn:hover:not(:disabled){opacity:.88;}
+.start-note{background:var(--parchment); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-bottom:6px;}
+.start-note b{color:var(--emerald); font-size:1.05rem;}
+.start-note span{display:block; color:var(--teal); font-size:.85rem; margin-top:3px;}
+.progress-label{color:var(--teal); font-weight:600; margin-bottom:6px; font-size:.9rem;}
+.progress-track{background:var(--parchment); border:1px solid var(--gold); border-radius:99px; height:10px; overflow:hidden; margin-bottom:16px;}
+.progress-fill{background:var(--teal); height:100%; border-radius:99px; transition:width .25s ease;}
+.ayah-box{
+  background:var(--parchment); border:1px solid var(--gold); border-radius:10px; padding:16px;
+  font-size:1.4rem; text-align:center; margin-bottom:12px; line-height:2.3;
+}
+.interlinear{display:none; flex-wrap:wrap; gap:10px 14px; justify-content:center; direction:rtl;
+  background:var(--parchment); border:1px dashed var(--gold); border-radius:10px; padding:14px; margin-bottom:16px;
+  max-height:340px; overflow-y:auto;}
+.interlinear.show{display:flex;}
+.iword{display:flex; flex-direction:column; align-items:center; min-width:54px;}
+.iword .ar{font-family:'Amiri',serif; font-size:1.2rem;}
+.iword .gl{font-family:'Lora',serif; font-size:.66rem; color:var(--teal); margin-top:2px; text-align:center; direction:ltr;}
+.toggle-link{display:inline-block; margin:0 0 14px; font-size:.85rem; color:var(--teal); cursor:pointer; text-decoration:underline;}
+.opt{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gold);
+  border-radius:8px; margin-bottom:8px; cursor:pointer; background:var(--parchment);
+}
+.opt input{transform:scale(1.2);}
+.opt.arabic-opt{font-size:1.3rem; justify-content:flex-start;}
+.opt.big{font-size:1.9rem; line-height:2.1; padding:12px 14px;}
+.opt .latin-text{direction:ltr; unicode-bidi:isolate; font-family:'Lora',serif; font-size:1rem; text-align:left;}
+.opt .ref{margin-inline-start:auto; direction:ltr; font-family:'Lora',serif; font-size:.75rem; color:var(--teal);}
+.opt.correct{border-color:var(--good); background:rgba(47,122,79,.12);}
+.opt.wrong{border-color:var(--danger); background:rgba(164,52,42,.12);}
+.hidden{display:none !important;}
+.result-score{font-size:2.2rem; color:var(--emerald); font-weight:700; text-align:center; margin:6px 0;}
+.result-sub{text-align:center; color:var(--teal); margin-bottom:16px;}
+.root-line{font-size:1.5rem; text-align:center; margin:2px 0 14px; color:var(--emerald);}
+.feedback{border-radius:8px; padding:10px 12px; margin:10px 0 4px; font-size:.92rem;}
+.feedback.good{background:rgba(47,122,79,.12); color:var(--good); border:1px solid var(--good);}
+.feedback.bad{background:rgba(164,52,42,.1); color:var(--danger); border:1px solid var(--danger);}
+.feedback.info{background:rgba(200,162,74,.15); color:var(--emerald); border:1px solid var(--gold); font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card" id="screen-start">
+    <h1>Kuiz: Kata Sifat &amp; Yang Disifati</h1>
+    <div class="root-line arabic">اَلنَّعْتُ وَالْمَنْعُوتُ</div>
+    <p class="subtitle">Mengenali Kata Sifat dan Yang Disifati dalam Al-Quran</p>
+    <label class="field">Nama
+      <input type="text" id="stuName" placeholder="Nama pelajar">
+    </label>
+    <label class="field">Kelas
+      <input type="text" id="stuClass" placeholder="Contoh: QLME 1A">
+    </label>
+    <div class="feedback bad hidden" id="startError">Sila isikan nama dan kelas terlebih dahulu.</div>
+    <div class="start-note">
+      <b>Kuiz Kata Sifat &amp; Yang Disifati</b>
+      <span>10 soalan</span>
+    </div>
+    <button class="btn btn-primary" onclick="tryStartQuiz()">Mula Kuiz</button>
+  </div>
+
+  <div class="card hidden" id="screen-quiz">
+    <div class="progress-label" id="progressLabel"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <h2 id="qPrompt"></h2>
+    <div class="ayah-box arabic hidden" id="ayahBox"></div>
+    <div class="toggle-link hidden" id="interToggle" onclick="toggleInterlinear()">Tunjuk terjemahan setiap perkataan</div>
+    <div class="interlinear" id="interlinearBox"></div>
+    <div id="optionsBox"></div>
+    <div id="feedbackBox"></div>
+    <button class="btn btn-primary" id="checkBtn" onclick="checkAnswer()">Semak Jawapan</button>
+    <button class="btn btn-gold hidden" id="nextBtn" onclick="nextQuestion()">Soalan Seterusnya →</button>
+  </div>
+
+  <div class="card hidden" id="screen-result">
+    <h2>Kuiz Selesai</h2>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="feedback info" id="submitStatus" style="margin-bottom:14px;"></div>
+    <button class="btn btn-primary" onclick="retryQuiz()">Cuba Lagi</button>
+    <button class="btn btn-gold" onclick="backToStart()">Kembali</button>
+    <h2 style="margin-top:20px;">Sandaran Keputusan</h2>
+    <p style="font-size:.85rem; color:var(--teal); margin-top:-6px;">Jika keputusan tidak sampai kepada guru secara automatik, muat turun atau salin teks di bawah dan hantar secara manual.</p>
+    <button class="btn btn-gold" onclick="downloadResults()">Muat Turun Keputusan (.txt)</button>
+    <button class="btn btn-gold" onclick="copyResults()">Salin ke Papan Klip</button>
+  </div>
+
+  <div class="footer">AtTartil · Where Qur'anic Knowledge Transforms Lives</div>
+</div>
+
+<script>
+const GHASHIYAH4_INTERLINEAR = [
+ [["تَصْلَىٰ","mereka akan masuk (dibakar)"],["نَارًا","api"],["حَامِيَةً","yang sangat panas"]]
+];
+const GHASHIYAH5_INTERLINEAR = [
+ [["تُسْقَىٰ","mereka diberi minum"],["مِنْ","dari"],["عَيْنٍ","mata air"],["آنِيَةٍ","yang mendidih"]]
+];
+const FALAQ_INTERLINEAR = [
+ [["قُلْ","Katakanlah"],["أَعُوذُ","Aku berlindung"],["بِرَبِّ","dengan Tuhan"],["الْفَلَقِ","Subuh (yang menyingsing)"]],
+ [["مِن","daripada"],["شَرِّ","kejahatan"],["مَا","apa yang"],["خَلَقَ","Dia ciptakan"]],
+ [["وَمِن","Dan daripada"],["شَرِّ","kejahatan"],["غَاسِقٍ","malam yang gelap gelita"],["إِذَا","apabila"],["وَقَبَ","ia menyelubungi"]],
+ [["وَمِن","Dan daripada"],["شَرِّ","kejahatan"],["النَّفَّاثَاتِ","wanita-wanita peniup"],["فِي","pada"],["الْعُقَدِ","buhul-buhul"]],
+ [["وَمِن","Dan daripada"],["شَرِّ","kejahatan"],["حَاسِدٍ","pendengki"],["إِذَا","apabila"],["حَسَدَ","dia dengki"]]
+];
+const INTERLINEAR_MAP = {ghashiyah4:GHASHIYAH4_INTERLINEAR, ghashiyah5:GHASHIYAH5_INTERLINEAR, falaq:FALAQ_INTERLINEAR};
+
+// ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
+const CONFIG = {
+  SCRIPT_URL: "" // contoh: "https://script.google.com/macros/s/AKfycb.../exec"
+};
+
+const QUESTIONS = [
+  {id:1, type:'multi',
+   prompt:"Kata sifat mesti mempunyai ciri-ciri yang sama berikut. (Pilih pilihan yang betul.) Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   options:["Jantina","Bermula dengan م dan lebih daripada 3 huruf","Bilangan","Baris akhir (status)","Jenis","Tanwin"],
+   correct:[0,2,3,4],
+   explain:"Kata sifat dan perkataan yang disifatkan mesti sama jantina, bilangan, baris akhir dan jenis. 'Bermula dengan م' dan 'tanwin' ialah tanda isim, bukan ciri yang perlu sama."},
+  {id:2, type:'single',
+   prompt:"Salah satu cara untuk mengenali kata sifat ialah:",
+   options:["mempunyai ال di awal perkataan","mempunyai tanwin di hujung perkataan","dua isim berturutan yang mana isim kedua berbaris bawah (kasrah)","dua isim berturutan yang mempunyai baris akhir yang sama"],
+   correct:[3],
+   explain:"Kata sifat dikenali apabila dua isim berturutan mempunyai baris akhir yang sama. 'Isim kedua berkasrah' ialah ciri kata sandaran (idhafah), manakala ال dan tanwin ialah tanda isim biasa."},
+  {id:3, type:'single', arabicOptions:true,
+   prompt:"Kenal pasti kata sifat daripada pilihan di bawah.",
+   options:["عِيشَةٍ رَّاضِيَةٍ","إِنَّ الإِنسَانَ","يَكُونُ النَّاسُ","خَفَّتْ مَوَازِنُهُ"],
+   correct:[0],
+   explain:"عِيشَةٍ رَّاضِيَةٍ (kehidupan yang menyenangkan) ialah kata sifat: dua isim berturutan yang sama jantina, bilangan, jenis (tanwin) dan baris akhir. إِنَّ الإِنسَانَ (sesungguhnya manusia) ialah harf + isim, يَكُونُ النَّاسُ (manusia akan menjadi) ialah fe'il + isim, dan خَفَّتْ مَوَازِنُهُ (ringan timbangannya) ialah fe'il + isim."},
+  {id:4, type:'single',
+   prompt:"Antara berikut, yang manakah ciri-ciri kata sifat?",
+   options:["Isim pertama ada ال, dan isim kedua ada tanwin.","Isim pertama ada ال dan tanwin, dan isim kedua juga ada ال dan tanwin.","Isim pertama ada ال dan berakhir dengan kasrah, dan isim kedua juga ada ال dan berakhir dengan kasrah.","Isim pertama ada ال dan berakhir dengan kasrah, dan isim kedua ada ال dan berakhir dengan fathah."],
+   correct:[2],
+   explain:"Kedua-dua isim mesti sama jenis (kedua-duanya ada ال) dan sama baris akhir (kedua-duanya kasrah). Pilihan 1 berbeza jenis, pilihan 2 mustahil (ال dan tanwin tidak boleh bersama), dan pilihan 4 berbeza baris akhir."},
+  {id:5, type:'single', arabicOptions:true, bigArabic:true,
+   prompt:"Antara berikut, yang manakah contoh kata sifat?",
+   options:["الْجِنَّةِ وَالنَّاسِ","صُدُورِ النَّاسِ","الْوَسْوَاسِ الْخَنَّاسِ","مَلِكِ النَّاسِ"],
+   correct:[2],
+   explain:"الْوَسْوَاسِ الْخَنَّاسِ (pembisik yang bersembunyi) ialah kata sifat: kedua-duanya ada ال, berkasrah, mufrad dan maskulin. الْجِنَّةِ وَالنَّاسِ (jin dan manusia) dipisahkan oleh huruf و, manakala صُدُورِ النَّاسِ (dada-dada manusia) dan مَلِكِ النَّاسِ (raja manusia) ialah kata sandaran."},
+  {id:6, type:'single', arabicOptions:true,
+   prompt:"Antara berikut, yang manakah contoh kata sifat?",
+   options:["شَرِّ غَاسِقٍ","الْجِنَّةِ وَالنَّاسِ","دِينِ اللَّهِ","الْعَزِيزُ الْحَكِيمُ"],
+   correct:[3],
+   explain:"الْعَزِيزُ الْحَكِيمُ (Yang Maha Perkasa, Maha Bijaksana) ialah kata sifat: dua isim berturutan dengan ال dan baris akhir yang sama. شَرِّ غَاسِقٍ (kejahatan malam yang gelap) dan دِينِ اللَّهِ (agama Allah) ialah kata sandaran, manakala الْجِنَّةِ وَالنَّاسِ (jin dan manusia) dipisahkan oleh huruf و."},
+  {id:7, type:'single', arabicOptions:true, interlinear:'ghashiyah4',
+   prompt:"Kenal pasti kata sifat dalam ayat berikut. (Surah Al-Ghashiyah, ayat 4)",
+   ayah:"تَصْلَىٰ نَارًا حَامِيَةً ﴿٤﴾",
+   options:["تَصْلَىٰ","نَارًا","حَامِيَةً","Tiada kata sifat dalam ayat ini."],
+   correct:[2],
+   explain:"نَارًا حَامِيَةً (api yang sangat panas) ialah kata sifat: kedua-duanya bertanwin fathah, feminin dan mufrad. حَامِيَةً ialah sifat bagi نَارًا, manakala تَصْلَىٰ ialah fe'il."},
+  {id:8, type:'single', arabicOptions:true, interlinear:'ghashiyah5',
+   prompt:"Kenal pasti kata sifat dalam ayat berikut. (Surah Al-Ghashiyah, ayat 5)",
+   ayah:"تُسْقَىٰ مِنْ عَيْنٍ آنِيَةٍ ﴿٥﴾",
+   options:["تُسْقَىٰ","عَيْنٍ","آنِيَةٍ","Tiada kata sifat dalam ayat ini."],
+   correct:[2],
+   explain:"عَيْنٍ آنِيَةٍ (mata air yang mendidih) ialah kata sifat: kedua-duanya bertanwin kasrah, feminin dan mufrad. آنِيَةٍ ialah sifat bagi عَيْنٍ, manakala تُسْقَىٰ ialah fe'il."},
+  {id:9, type:'multi', arabicOptions:true,
+   prompt:"Kenal pasti kata sifat daripada frasa-frasa di bawah. Terdapat lebih daripada satu jawapan untuk soalan ini.",
+   options:["وَالْقُرْآنِ الْحَكِيمِ","طَعَامِ الْمِسْكِينِ","قُرْآنٌ مَّجِيدٌ","كَذَّبَ وَتَوَلَّىٰ"],
+   optRefs:["(Surah Yasin: 2)","(Surah Al-Ma'un: 3)","(Surah Al-Buruj: 21)","(Surah Al-Alaq: 13)"],
+   correct:[0,2],
+   explain:"وَالْقُرْآنِ الْحَكِيمِ (demi Al-Quran yang penuh hikmah) dan قُرْآنٌ مَّجِيدٌ (Al-Quran yang mulia) ialah kata sifat. طَعَامِ الْمِسْكِينِ (makanan orang miskin) ialah kata sandaran, manakala كَذَّبَ وَتَوَلَّىٰ (dia mendustakan dan berpaling) ialah dua fe'il."},
+  {id:10, type:'single', interlinear:'falaq',
+   prompt:"Berapakah bilangan kata sifat dalam Surah Al-Falaq?",
+   ayah:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ ﴿٢﴾ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴿٣﴾ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ﴿٤﴾ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿٥﴾",
+   options:["0","1","2","3"], correct:[0],
+   explain:"Tiada kata sifat dalam Surah Al-Falaq. Pasangan isim berturutan seperti رَبِّ الْفَلَقِ، شَرِّ غَاسِقٍ، شَرِّ النَّفَّاثَاتِ dan شَرِّ حَاسِدٍ ialah kata sandaran, bukan kata sifat."}
+];
+
+let order=[], idx=0, score=0, answered=false;
+let lastResult=null;
+
+function tryStartQuiz(){
+  const name=document.getElementById('stuName').value.trim();
+  const cls=document.getElementById('stuClass').value.trim();
+  const err=document.getElementById('startError');
+  if(!name || !cls){ err.classList.remove('hidden'); return; }
+  err.classList.add('hidden');
+  startQuiz();
+}
+
+function startQuiz(){
+  order = QUESTIONS.slice();
+  idx=0; score=0;
+  document.getElementById('screen-start').classList.add('hidden');
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  renderQuestion();
+}
+function retryQuiz(){ startQuiz(); }
+function backToStart(){
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-start').classList.remove('hidden');
+}
+
+function toggleInterlinear(){
+  const box=document.getElementById('interlinearBox');
+  box.classList.toggle('show');
+  document.getElementById('interToggle').textContent =
+    box.classList.contains('show') ? "Sembunyikan terjemahan" : "Tunjuk terjemahan setiap perkataan";
+}
+
+function renderQuestion(){
+  answered=false;
+  const q = order[idx];
+  document.getElementById('progressLabel').textContent = `Soalan ${idx+1} / ${order.length}`;
+  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
+  document.getElementById('qPrompt').textContent = q.prompt;
+  document.getElementById('feedbackBox').innerHTML='';
+
+  const ayahBox = document.getElementById('ayahBox');
+  if(q.ayah){ ayahBox.textContent=q.ayah; ayahBox.classList.remove('hidden'); }
+  else { ayahBox.classList.add('hidden'); }
+
+  // Terjemahan perkataan hanya ditunjukkan SELEPAS pelajar menjawab
+  const interToggle = document.getElementById('interToggle');
+  const interBox = document.getElementById('interlinearBox');
+  interBox.classList.remove('show'); interBox.innerHTML='';
+  const interData = q.interlinear ? INTERLINEAR_MAP[q.interlinear] : null;
+  if(interData){
+    interToggle.textContent="Tunjuk terjemahan setiap perkataan";
+    interData.forEach(verse=>{
+      verse.forEach(([ar,gl])=>{
+        const w=document.createElement('div'); w.className='iword';
+        w.innerHTML=`<span class="ar">${ar}</span><span class="gl">${gl}</span>`;
+        interBox.appendChild(w);
+      });
+    });
+  }
+  interToggle.classList.add('hidden');
+
+  const box = document.getElementById('optionsBox');
+  box.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const wrap=document.createElement('label');
+    wrap.className='opt'+(q.arabicOptions?' arabic-opt arabic':'')+(q.bigArabic?' big':'');
+    wrap.id='opt-'+i;
+    const input=document.createElement('input');
+    input.type = q.type==='multi' ? 'checkbox' : 'radio';
+    input.name='q'+q.id; input.value=i;
+    const span=document.createElement('span');
+    span.textContent=opt;
+    if(q.arabicOptions && !/[\u0600-\u06FF]/.test(opt)) span.className='latin-text';
+    wrap.appendChild(input); wrap.appendChild(span);
+    if(q.optRefs && q.optRefs[i]){
+      const ref=document.createElement('small');
+      ref.className='ref'; ref.textContent=q.optRefs[i];
+      wrap.appendChild(ref);
+    }
+    box.appendChild(wrap);
+  });
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled=false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q = order[idx];
+  const inputs = document.querySelectorAll(`input[name="q${q.id}"]`);
+  const selected = Array.from(inputs).filter(i=>i.checked).map(i=>parseInt(i.value));
+  const correctSet = q.correct.slice().sort().join(',');
+  const selSet = selected.slice().sort().join(',');
+  const isCorrect = selSet===correctSet && selected.length>0;
+  if(isCorrect) score++;
+
+  inputs.forEach((inp,i)=>{
+    const wrap = document.getElementById('opt-'+i);
+    if(q.correct.includes(i)) wrap.classList.add('correct');
+    else if(inp.checked) wrap.classList.add('wrong');
+    inp.disabled=true;
+  });
+
+  const fb = document.getElementById('feedbackBox');
+  fb.innerHTML = isCorrect
+    ? `<div class="feedback good">Betul!</div>`
+    : `<div class="feedback bad">${q.explain}</div>`;
+
+  if(q.interlinear){
+    document.getElementById('interToggle').classList.remove('hidden');
+  }
+
+  answered=true;
+  document.getElementById('checkBtn').disabled=true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx>=order.length){ showResult(); return; }
+  renderQuestion();
+}
+
+function showResult(){
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('hidden');
+  const pct = Math.round((score/order.length)*100);
+  const name = document.getElementById('stuName').value.trim();
+  const cls = document.getElementById('stuClass').value.trim();
+  document.getElementById('resultScore').textContent = `${pct}%`;
+  document.getElementById('resultSub').textContent =
+    `${score} / ${order.length} betul` + (name? ` · ${name}`:'');
+
+  lastResult = {
+    nama:name, kelas:cls,
+    skor:score, jumlah:order.length, peratus:pct,
+    masa: new Date().toLocaleString('ms-MY')
+  };
+  submitResults(lastResult);
+}
+
+function submitResults(r){
+  const statusEl = document.getElementById('submitStatus');
+  if(!CONFIG.SCRIPT_URL){
+    statusEl.textContent = "Penghantaran automatik belum disediakan oleh guru. Sila muat turun / salin keputusan di bawah.";
+    return;
+  }
+  statusEl.textContent = "Menghantar keputusan...";
+  const body = new URLSearchParams({
+    nama:r.nama, kelas:r.kelas,
+    skor:r.skor, jumlah:r.jumlah, peratus:r.peratus, masa:r.masa
+  });
+  fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', body })
+    .then(()=>{ statusEl.textContent = "Keputusan telah dihantar. (Jika guru tidak menerimanya, sila muat turun/salin sebagai sandaran.)"; })
+    .catch(()=>{ statusEl.textContent = "Gagal menghantar (tiada sambungan internet?). Sila muat turun atau salin keputusan di bawah."; });
+}
+
+function resultsText(){
+  const r = lastResult;
+  if(!r) return "";
+  return `Kuiz: Kata Sifat & Yang Disifati
+Nama: ${r.nama}
+Kelas: ${r.kelas}
+Skor: ${r.skor} / ${r.jumlah} (${r.peratus}%)
+Masa: ${r.masa}`;
+}
+
+function downloadResults(){
+  const blob = new Blob([resultsText()], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `keputusan-${(lastResult.nama||'pelajar').replace(/\s+/g,'_')}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function copyResults(){
+  navigator.clipboard.writeText(resultsText()).then(()=>{
+    alert("Keputusan disalin ke papan klip.");
+  }).catch(()=>{
+    alert("Tidak dapat menyalin secara automatik. Sila salin secara manual.");
+  });
+}
+</script>
+</body>
+</html>
