@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  .attartil-logo{display:block;margin:0 auto 10px;width:68px;height:68px;border-radius:50%;object-fit:cover;box-shadow:0 2px 10px rgba(13,59,52,0.18);}
   @font-face{
     /* KFGQPC Uthmanic Script HAFS — the official Madinah Mushaf font, built
        from the authoritative Uthmani text, so every diacritic combination
@@ -223,7 +222,38 @@
   .opt.chosen{border-color:var(--teal);background:var(--teal-tint);}
   .opt.correct-flash{border-color:var(--success);background:#e2f1ee;}
   .opt.incorrect-flash{border-color:var(--danger);background:#f9e9e7;}
-  .opt:disabled{cursor:default;}
+  .opt:disabled{cursor:default;color:var(--text);}
+  .ayah-box .ar .hl{
+    background:var(--gold-tint);
+    border-bottom:3px solid var(--gold);
+    border-radius:6px;
+    padding:0 6px;
+  }
+  .ar-inline{
+    font-family:'KFGQPC Uthmanic Script HAFS','Scheherazade New','Amiri',serif;
+    font-size:1.4rem;
+    color:var(--emerald);
+    direction:rtl;
+    unicode-bidi:isolate;
+  }
+  .small-note .ar-inline{font-size:1.15rem;}
+  .nahu-group{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:12px;
+    background:#fffefb;
+  }
+  .nahu-label{
+    font-weight:600;
+    color:var(--emerald);
+    font-size:.9rem;
+    margin-bottom:9px;
+  }
+  .nahu-opts{display:flex;flex-wrap:wrap;gap:8px;}
+  .nahu-opts .opt{flex:1 1 auto;padding:9px 12px;font-size:.9rem;text-align:center;}
+  .nahu-group[data-part="reason"] .nahu-opts{display:grid;grid-template-columns:1fr;}
+  .nahu-group[data-part="reason"] .nahu-opts .opt{text-align:left;}
   .answer-strip{
     min-height:64px;
     border:2px dashed var(--teal);
@@ -342,7 +372,6 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <img class="attartil-logo" src="data:image/jpeg;base64,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" alt="AtTartil Quranic Institute logo">
     <h1>Qur'anic Arabic Quiz</h1>
     <p id="headerSubtitle">Al-Takāthur &middot; Al-'Asr &middot; Al-Kawthar</p>
   </header>
@@ -410,6 +439,7 @@ const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzQab0PtSML0qs
 const SURAHS = {
   kafirun: {
     id:"kafirun",
+    sheetUrl:"https://script.google.com/macros/s/AKfycbxaPox0kCUqWdc9az6ZMVaNF2ozd_csluWA3MoMNvoTSZeIsRDo2YIpiKGdEArdAJxu/exec",
     englishName:"Surah Al-Kāfirūn (109)",
     arabicName:"سُورَةُ الْكَافِرُون",
     subtitle:"The Disbelievers",
@@ -456,6 +486,7 @@ const SURAHS = {
       {ref:"Ayah 6", ar:"لَكُمْ دِينُكُمْ وَلِىَ دِينِ", prompt:"This famous closing ayah is often cited as a foundation for religious tolerance. What does it teach us about how to coexist peacefully with people of different beliefs, while still holding firmly to our own?"}
     ]
   }
+
 };
 
 /* ================= STATE ================= */
@@ -529,6 +560,7 @@ function initQuiz(surahKey, name, cls){
   const steps = [];
   surah.wordMeaning.forEach((q,i)=>steps.push({type:'wordMeaning', data:q, section:"Word Meaning", index:i}));
   surah.wordType.forEach((q,i)=>steps.push({type:'wordType', data:q, section:"Word Type: Ism / Fi'l / Harf", index:i}));
+  (surah.nahu||[]).forEach((q,i)=>steps.push({type:'nahu', data:q, section:"Nahu / I'raab", index:i}));
   surah.ayahTranslation.forEach((q,i)=>steps.push({type:'ayahTranslation', data:q, section:"Ayah Translation", index:i}));
   surah.ayahs
     .filter(a=>a.ar.split(' ').filter(Boolean).length>=2)
@@ -543,6 +575,9 @@ function initQuiz(surahKey, name, cls){
       if(s.type==='wordArrange'){
         const n = s.data.words.length;
         return {attempts:0, status:'unanswered', shuffledOrder:shuffle([...Array(n).keys()]), placed:[]};
+      }
+      if(s.type==='nahu'){
+        return {attempts:0, status:'unanswered', picks:{vowel:null,status:null,reason:null}, locked:{}, wrong:null, reasonOrder:shuffle(s.data.reasons)};
       }
       return {attempts:0, status:'unanswered', selected:null, openText:''};
     })
@@ -577,6 +612,18 @@ function renderStep(){
     html += `<div class="ayah-box"><div class="ar">${step.data.ar}</div></div>`;
     html += `<div class="q-prompt">Which is the correct translation (Dr. Mustafa Khattab, The Clear Qur'an) of this ayah?</div>`;
     html += renderOptions(step.data.options, step.data.correct);
+  }
+  else if(step.type === 'nahu'){
+    const q = step.data;
+    const ayah = surah.ayahs.find(a=>a.num===q.ayah);
+    const words = ayah.ar.split(' ').filter(Boolean);
+    const arHtml = words.map((w,i)=> i===q.w ? `<span class="hl">${w}</span>` : w).join(' ');
+    html += `<div class="ayah-box"><div class="num">Ayah ${q.ayah}</div><div class="ar">${arHtml}</div></div>`;
+    html += `<div class="q-prompt">Focus on the highlighted Ism: <span class="ar-inline">${q.focus}</span></div>`;
+    if(q.note) html += `<div class="small-note" style="margin:-6px 0 14px;">${q.note}</div>`;
+    html += nahuGroup('vowel', 'i) Ending vowel / sound', NAHU_VOWELS);
+    html += nahuGroup('status', "ii) Status (I'raab)", NAHU_STATUS);
+    html += nahuGroup('reason', 'iii) Possible reason', state.answers[current].reasonOrder);
   }
   else if(step.type === 'wordArrange'){
     html += `<div class="ayah-box"><div class="num">Ayah ${step.data.ayah.num}</div></div>`;
@@ -614,6 +661,18 @@ function renderOptions(options, correct, fixedOrder){
   return html;
 }
 
+const NAHU_VOWELS = ["Dhommah","Fathah","Kasrah","Dhommatain (tanwin)","Fathatain (tanwin)","Kasratain (tanwin)"];
+const NAHU_STATUS = ["Rafa'","Nasab","Jarr"];
+
+function nahuGroup(part, label, options){
+  let html = `<div class="nahu-group" data-part="${part}"><div class="nahu-label">${label}</div><div class="nahu-opts">`;
+  options.forEach(opt=>{
+    html += `<button class="opt nahu-opt" data-part="${part}" data-value="${escapeAttr(opt)}">${opt}</button>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
 function escapeAttr(s){
   return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 }
@@ -634,6 +693,96 @@ function wireStepEvents(step){
     ta.addEventListener('input', ()=>{ ans.openText = ta.value; });
     actionRow.innerHTML = `<button class="btn-primary" id="nextBtn">Next Question</button>`;
     document.getElementById('nextBtn').addEventListener('click', ()=>{ ans.openText = ta.value; ans.status='recorded'; advance(); });
+    return;
+  }
+
+  if(step.type === 'nahu'){
+    const q = step.data;
+    const parts = ['vowel','status','reason'];
+    const correctOf = {vowel:q.vowel, status:q.status, reason:q.reason};
+    const btns = document.querySelectorAll('.nahu-opt');
+
+    function paint(){
+      btns.forEach(b=>{
+        const p = b.dataset.part, v = b.dataset.value;
+        b.classList.remove('chosen','correct-flash','incorrect-flash');
+        if(ans.locked[p]){
+          b.disabled = true;
+          if(v===ans.picks[p]) b.classList.add('correct-flash');
+        } else if(ans.wrong){
+          b.disabled = true;
+          if(ans.wrong[p] && v===ans.picks[p]) b.classList.add('incorrect-flash');
+        } else {
+          b.disabled = false;
+          if(v===ans.picks[p]) b.classList.add('chosen');
+        }
+      });
+    }
+
+    function showNext(){
+      feedback.textContent = "Correct! ✅";
+      feedback.className = "feedback correct";
+      actionRow.innerHTML = `<button class="btn-primary" id="nextBtn">Next Question</button>`;
+      document.getElementById('nextBtn').addEventListener('click', advance);
+    }
+
+    function showTryAgain(){
+      const n = Object.keys(ans.wrong).length;
+      feedback.textContent = `Not quite — ${n} part${n>1?'s':''} need${n>1?'':'s'} another look. Parts you got right are locked in.`;
+      feedback.className = "feedback incorrect";
+      actionRow.innerHTML = `<button class="btn-secondary" id="tryAgainNahuBtn">Try Again</button>`;
+      document.getElementById('tryAgainNahuBtn').addEventListener('click', ()=>{
+        Object.keys(ans.wrong).forEach(p=>{ ans.picks[p] = null; });
+        ans.wrong = null;
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        paint();
+        updateRow();
+      });
+    }
+
+    function updateRow(){
+      if(ans.status==='correct' || ans.wrong) return;
+      if(parts.every(p=>ans.picks[p])){
+        actionRow.innerHTML = `<button class="btn-primary" id="confirmNahuBtn">Confirm Answer</button>`;
+        document.getElementById('confirmNahuBtn').addEventListener('click', ()=>{
+          ans.attempts++;
+          const wrong = {};
+          parts.forEach(p=>{
+            if(ans.picks[p]===correctOf[p]) ans.locked[p] = true;
+            else wrong[p] = true;
+          });
+          if(Object.keys(wrong).length===0){
+            ans.status = 'correct';
+            if(ans.attempts===1) ans.firstTry = true;
+            paint();
+            showNext();
+          } else {
+            ans.status = 'incorrect';
+            ans.wrong = wrong;
+            paint();
+            showTryAgain();
+          }
+        });
+      } else {
+        actionRow.innerHTML = '';
+      }
+    }
+
+    btns.forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const p = b.dataset.part;
+        if(ans.status==='correct' || ans.wrong || ans.locked[p]) return;
+        ans.picks[p] = b.dataset.value;
+        paint();
+        updateRow();
+      });
+    });
+
+    paint();
+    if(ans.status==='correct') showNext();
+    else if(ans.wrong) showTryAgain();
+    else updateRow();
     return;
   }
 
@@ -827,10 +976,11 @@ function finishQuiz(){
   const wt = scoreFor('wordType');
   const at = scoreFor('ayahTranslation');
   const wa = scoreFor('wordArrange');
+  const nh = scoreFor('nahu');
 
-  const totalMCQ = wm.total + wt.total + at.total + wa.total;
-  const totalFirst = wm.correctFirst + wt.correctFirst + at.correctFirst + wa.correctFirst;
-  const totalEver = wm.correctEver + wt.correctEver + at.correctEver + wa.correctEver;
+  const totalMCQ = wm.total + nh.total + wt.total + at.total + wa.total;
+  const totalFirst = wm.correctFirst + nh.correctFirst + wt.correctFirst + at.correctFirst + wa.correctFirst;
+  const totalEver = wm.correctEver + nh.correctEver + wt.correctEver + at.correctEver + wa.correctEver;
 
   document.getElementById('scoreBig').textContent = `${totalFirst}/${totalMCQ}`;
   document.getElementById('scoreSub').textContent = `correct on first attempt (${totalEver}/${totalMCQ} correct overall after retries)`;
@@ -839,6 +989,7 @@ function finishQuiz(){
   breakdown.innerHTML = `
     <div class="summary-line"><span>Word Meaning</span><span>${wm.correctFirst}/${wm.total}</span></div>
     <div class="summary-line"><span>Word Type (Ism/Fi'l/Harf)</span><span>${wt.correctFirst}/${wt.total}</span></div>
+    ${nh.total ? `<div class="summary-line"><span>Nahu / I'raab</span><span>${nh.correctFirst}/${nh.total}</span></div>` : ''}
     <div class="summary-line"><span>Ayah Translation</span><span>${at.correctFirst}/${at.total}</span></div>
     <div class="summary-line"><span>Ayah Arrangement (Memorisation)</span><span>${wa.correctFirst}/${wa.total}</span></div>
     <div class="summary-line"><span>Takeaway Reflections</span><span>Not scored (${surah.takeaways.length} submitted)</span></div>
@@ -852,6 +1003,7 @@ function finishQuiz(){
   report += `\n--- SCORE SUMMARY ---\n`;
   report += `Word Meaning: ${wm.correctFirst}/${wm.total} (first attempt)\n`;
   report += `Word Type (Ism/Fi'l/Harf): ${wt.correctFirst}/${wt.total} (first attempt)\n`;
+  if(nh.total) report += `Nahu / I'raab: ${nh.correctFirst}/${nh.total} (first attempt)\n`;
   report += `Ayah Translation: ${at.correctFirst}/${at.total} (first attempt)\n`;
   report += `Ayah Arrangement (Memorisation): ${wa.correctFirst}/${wa.total} (first attempt)\n`;
   report += `TOTAL: ${totalFirst}/${totalMCQ} on first attempt (${totalEver}/${totalMCQ} overall after retries)\n`;
@@ -869,6 +1021,16 @@ function finishQuiz(){
     const a = answers[idx];
     report += `${q.word} — ${a.status==='correct' ? 'Correct' : 'Not answered correctly'} (attempts: ${a.attempts})\n`;
   });
+
+  if(nh.total){
+    report += `\n--- NAHU / I'RAAB DETAIL ---\n`;
+    steps.forEach((s,idx)=>{
+      if(s.type==='nahu'){
+        const a = answers[idx];
+        report += `${s.data.label} — ${a.status==='correct' ? 'Correct' : 'Not answered correctly'} (attempts: ${a.attempts})\n`;
+      }
+    });
+  }
 
   report += `\n--- AYAH TRANSLATION DETAIL ---\n`;
   surah.ayahTranslation.forEach((q,i)=>{
@@ -919,6 +1081,7 @@ function finishQuiz(){
     wordType: `${wt.correctFirst}/${wt.total}`,
     ayahTranslation: `${at.correctFirst}/${at.total}`,
     ayahArrange: `${wa.correctFirst}/${wa.total}`,
+    nahu: nh.total ? `${nh.correctFirst}/${nh.total}` : 'N/A',
     totalFirst: `${totalFirst}/${totalMCQ}`,
     totalEver: `${totalEver}/${totalMCQ}`,
     reflections: reflectionsText.trim()
@@ -930,7 +1093,9 @@ function finishQuiz(){
   // reject even after a successful submission. 'no-cors' lets the request
   // go through and resolves regardless, since we don't need to read the
   // response back.
-  fetch(SHEET_WEBAPP_URL, {
+  // A Surah can send its results to its own Sheet via `sheetUrl`;
+  // otherwise it uses the shared Sheet.
+  fetch(surah.sheetUrl || SHEET_WEBAPP_URL, {
     method: 'POST',
     mode: 'no-cors',
     body: JSON.stringify(payload)
