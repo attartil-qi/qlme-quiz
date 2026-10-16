@@ -98,6 +98,14 @@
   .copy svg{width:15px;height:15px;flex:none}
   .copy.done{background:var(--gold-tint);color:var(--emerald);border-color:var(--gold)}
   .copy.fail{background:transparent;border-color:var(--border);color:var(--muted)}
+  .subs{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;
+    font:inherit;font-size:.84rem;font-weight:600;color:var(--emerald);background:transparent;text-decoration:none;
+    border:1px solid var(--gold);border-radius:8px;padding:7px 10px;min-height:38px;transition:background .15s ease}
+  .subs:hover{background:var(--gold-tint)}
+  .subs:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .subs svg{width:15px;height:15px;flex:none}
+  .subs.none{border-style:dashed;border-color:var(--border);color:var(--muted);font-weight:400;font-style:italic;cursor:default}
+  .subs.none:hover{background:transparent}
   .tag{display:inline-block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;
     background:var(--teal-tint);color:var(--teal-deep);font-family:Lora,serif}
 
@@ -162,23 +170,25 @@
    path : file path from the repo root (exactly as on GitHub, case matters)
    title: name shown on the card
    ar   : Arabic label (optional)
+   sheet: ID of the submissions Google Sheet (the long code in its URL,
+          between /d/ and /edit). Leave "" if there is no sheet yet.
    ===================================================================== */
 const LANGS = {
   en: {
     name: "English",
     topics: {
       surah: [
-        { path: "english/surah/quiz_al-takathur.html", title: "Surah Al-Takāthur (102)", ar: "التَّكَاثُر" },
-        { path: "english/surah/quiz_al-asr.html",      title: "Surah Al-‘Asr (103)",     ar: "العَصْر" },
-        { path: "english/surah/quiz_al-kawthar.html",  title: "Surah Al-Kawthar (108)",  ar: "الكَوْثَر" },
-        { path: "english/surah/quiz_al-kafirun.html",  title: "Surah Al-Kāfirūn (109)",  ar: "الكَافِرُون" },
-        { path: "english/surah/quiz_al-nasr.html",     title: "Surah Al-Naṣr (110)",     ar: "النَّصْر" },
-        { path: "english/surah/quiz_al-ikhlas.html",   title: "Surah Al-Ikhlāṣ (112)",   ar: "الإِخْلَاص" }
+        { path: "english/surah/quiz_al-takathur.html", title: "Surah Al-Takāthur (102)", ar: "التَّكَاثُر", sheet: "1Ie2r9mncw22l-HPES7TbkSsaGWF4jQ5kssIiX5GPg9Y" },
+        { path: "english/surah/quiz_al-asr.html",      title: "Surah Al-‘Asr (103)",     ar: "العَصْر", sheet: "1_WzP0O5jFUu_GJiwnD523a28NYkI1oKsMJirmLFyMbk" },
+        { path: "english/surah/quiz_al-kawthar.html",  title: "Surah Al-Kawthar (108)",  ar: "الكَوْثَر", sheet: "1SeNauwKK12No01fr7dcb9hPTlbJmsv1SZm4X0ApOIhY" },
+        { path: "english/surah/quiz_al-kafirun.html",  title: "Surah Al-Kāfirūn (109)",  ar: "الكَافِرُون", sheet: "1-FP_MeZexu0wG4m0jLBF6Iq16xg6siLQqYS3IsVKVYs" },
+        { path: "english/surah/quiz_al-nasr.html",     title: "Surah Al-Naṣr (110)",     ar: "النَّصْر", sheet: "1U_33qKgL4jiELDoxRbZMZ-BuJEGCASXa1vfXldwPheA" },
+        { path: "english/surah/quiz_al-ikhlas.html",   title: "Surah Al-Ikhlāṣ (112)",   ar: "الإِخْلَاص", sheet: "15L_oeLKhbnCkK0GXVvMEDyy2MnqjPpCsLZ8t8ph4OtM" }
       ],
       saraf: [
-        { path: "english/saraf/tasrif_quiz_abd.html",  title: "Taṣrīf: ‘a-ba-da (Form I)", ar: "عَبَدَ" },
-        { path: "english/saraf/tasrif_quiz_dkr.html",  title: "Taṣrīf: dha-ka-ra",         ar: "ذَكَرَ" },
-        { path: "english/saraf/tasrif_quiz_khlq.html", title: "Taṣrīf: kha-la-qa",         ar: "خَلَقَ" }
+        { path: "english/saraf/tasrif_quiz_abd.html",  title: "Taṣrīf: ‘a-ba-da (Form I)", ar: "عَبَدَ", sheet: "1vIK_-KmDBsL47UKYbrQYYypDjK8MQwdmKQR11HqFfJI" },
+        { path: "english/saraf/tasrif_quiz_dkr.html",  title: "Taṣrīf: dha-ka-ra",         ar: "ذَكَرَ", sheet: "1JW4EhMJp60DK9KsIgZXPvpvhAeLoYGQGzc5DjruhiHs" },
+        { path: "english/saraf/tasrif_quiz_khlq.html", title: "Taṣrīf: kha-la-qa",         ar: "خَلَقَ", sheet: "1CPSMWRhd7bsR17Z2KKsn1vXaG2fIV5Cr1GlXnZnSijo" }
       ],
       nahu: [],
       balaghah: [],
@@ -193,14 +203,14 @@ const LANGS = {
       nahu: [],
       balaghah: [],
       word_type: [
-        { path: "malay/word_type/kuiz-tanda-isim.html",                  title: "Tanda-Tanda Isim",               ar: "عَلَامَاتُ الاسْم" },
-        { path: "malay/word_type/kuiz-isim-harfjar.html",                title: "Tanda Isim & Harf Jar",          ar: "عَلَامَاتُ الاسْمِ وَحُرُوفُ الجَرّ" },
-        { path: "malay/word_type/Kuiz_ Harf Jar & Isim Majrur.html",     title: "Harf Jar & Isim Majrur",         ar: "الجَارُّ وَالمَجْرُور" },
-        { path: "malay/word_type/Kuiz-Ciri-Ciri-isim-Jantina.html",      title: "Ciri-Ciri Isim: Jantina",        ar: "المُذَكَّرُ وَالمُؤَنَّث" },
-        { path: "malay/word_type/Kuiz-Mufrad-Muthanna-JamakSalim.html",  title: "Mufrad, Muthanna, Jama‘ Salim",  ar: "المُفْرَدُ وَالمُثَنَّى وَالجَمْعُ السَّالِم" },
-        { path: "malay/word_type/Kuiz-Mufrad-JamakTaksir.html",          title: "Mufrad & Jamak Taksir",          ar: "جَمْعُ التَّكْسِير" },
-        { path: "malay/word_type/kuiz-kata-sandaran.html",               title: "Kata Sandaran (Idhafah)",        ar: "الإِضَافَة" },
-        { path: "malay/word_type/kuiz-kata-sifat.html",                  title: "Kata Sifat & Yang Disifati",     ar: "النَّعْتُ وَالمَنْعُوت" }
+        { path: "malay/word_type/kuiz-tanda-isim.html",                  title: "Tanda-Tanda Isim",               ar: "عَلَامَاتُ الاسْم", sheet: "1FvrbIjZFc6ahK7jKXPDWewTMQsQLbj_eKnZOS6aNCQw" },
+        { path: "malay/word_type/kuiz-isim-harfjar.html",                title: "Tanda Isim & Harf Jar",          ar: "عَلَامَاتُ الاسْمِ وَحُرُوفُ الجَرّ", sheet: "198xIxHj3YBrA-4S7u6aLBncYGzQeMn7nIk6gkXjMMOA" },
+        { path: "malay/word_type/Kuiz_ Harf Jar & Isim Majrur.html",     title: "Harf Jar & Isim Majrur",         ar: "الجَارُّ وَالمَجْرُور", sheet: "1WEW_xwD4SiU5hyNe_z84tkz1a2l3z-RdSCzLC3aBbms" },
+        { path: "malay/word_type/Kuiz-Ciri-Ciri-isim-Jantina.html",      title: "Ciri-Ciri Isim: Jantina",        ar: "المُذَكَّرُ وَالمُؤَنَّث", sheet: "125QdPu1wxTpw5WqXRssg_eW-SEzx5zHO_j3wZCfeMO8" },
+        { path: "malay/word_type/Kuiz-Mufrad-Muthanna-JamakSalim.html",  title: "Mufrad, Muthanna, Jama‘ Salim",  ar: "المُفْرَدُ وَالمُثَنَّى وَالجَمْعُ السَّالِم", sheet: "14aHK1ojkO_VVUPf6T89Ww7E_FeCrj9apzl7sN2kY0ZQ" },
+        { path: "malay/word_type/Kuiz-Mufrad-JamakTaksir.html",          title: "Mufrad & Jamak Taksir",          ar: "جَمْعُ التَّكْسِير", sheet: "12VruWiSwareuZCXuxXhow2IBncG3v2datlkoHYQsZyU" },
+        { path: "malay/word_type/kuiz-kata-sandaran.html",               title: "Kata Sandaran (Idhafah)",        ar: "الإِضَافَة", sheet: "1xeFiOl0L6_2IgJybaDkrM10GRVZYg2DdsBPJ0rq2agA" },
+        { path: "malay/word_type/kuiz-kata-sifat.html",                  title: "Kata Sifat & Yang Disifati",     ar: "النَّعْتُ وَالمَنْعُوت", sheet: "" }
       ]
     }
   }
@@ -215,12 +225,15 @@ const TOPICS = {
 };
 const UI = {
   en: { quiz: n => n === 1 ? "1 quiz" : n + " quizzes", start: "Start →", soon: "Quizzes coming soon, in shā’ Allāh.",
-        copy: "Copy Quiz Link", copied: "Link copied!", fail: "Press Ctrl/⌘+C to copy" },
+        copy: "Copy Quiz Link", copied: "Link copied!", fail: "Press Ctrl/⌘+C to copy",
+        subs: "View Quiz Submissions", noSubs: "No submissions sheet yet" },
   ms: { quiz: n => n + " kuiz",                          start: "Mula →",  soon: "Kuiz akan datang, insya-Allah.",
-        copy: "Salin Pautan Kuiz", copied: "Pautan disalin!", fail: "Tekan Ctrl/⌘+C untuk salin" }
+        copy: "Salin Pautan Kuiz", copied: "Pautan disalin!", fail: "Tekan Ctrl/⌘+C untuk salin",
+        subs: "Lihat Hantaran Kuiz", noSubs: "Tiada helaian hantaran lagi" }
 };
 
 const LINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>';
+const SHEET_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/></svg>';
 const CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 
 /* Copy the full public link of a quiz to the clipboard */
@@ -270,6 +283,9 @@ function render(){
           <span class="t">${esc(q.title)}</span>
           <span class="m"><span class="tag">${code === "en" ? "EN" : "BM"}</span><a class="go" href="${href(q.path)}" aria-label="${esc(q.title)}: ${u.start.replace(' →','')}">${u.start}</a></span>
           <button type="button" class="copy" data-href="${href(q.path)}" data-lang="${code}" aria-label="${u.copy}: ${esc(q.title)}">${LINK_ICON}<span>${u.copy}</span></button>
+          ${q.sheet
+            ? `<a class="subs" href="https://docs.google.com/spreadsheets/d/${encodeURIComponent(q.sheet)}/edit" target="_blank" rel="noopener" aria-label="${u.subs}: ${esc(q.title)} (opens Google Sheets)">${SHEET_ICON}<span>${u.subs}</span></a>`
+            : `<span class="subs none">${u.noSubs}</span>`}
         </div>`).join("") + `</div></div>`;
     }
     html += `</section>`;
