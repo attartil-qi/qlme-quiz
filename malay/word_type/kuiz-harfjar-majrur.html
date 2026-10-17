@@ -191,42 +191,45 @@ const QUESTIONS = [
    explain:"بِ bermaksud 'dengan'."},
   {id:3, type:'single',
    prompt:"Apakah maksud umum bagi 'عَن'?",
-   options:["dari","kepada","seperti","tentang"],
+   options:["maka","kepada","seperti","tentang"],
    correct:[3],
    explain:"عَن bermaksud 'tentang'."},
-  {id:4, type:'multi', arabicOptions:true,
+  {id:4, type:'multi', arabicOptions:true, explainOnCorrect:true,
    prompt:"Pilih pilihan di bawah yang merupakan harf jar. (Boleh pilih lebih daripada satu jawapan)",
    options:["لَ","إِلَى","مَن","كَ","Semua pilihan di atas"],
    correct:[1,3],
    explain:"إِلَى dan كَ ialah harf jar. لَ (berbaris atas) bukan harf jar — harf jar yang sebenar ialah لِ (berbaris bawah). مَن (tanpa baris bawah) bermaksud 'siapa', bukan harf jar مِن ('dari')."},
-  {id:5, type:'single', interlinear:'fil45',
+  {id:5, type:'single', interlinear:'fil45', explainOnCorrect:true,
    prompt:"Berapakah bilangan Harf Jar Isim Majrur dalam 2 ayat terakhir Surah Al-Fil?",
    ayah:"تَرْمِيهِم بِحِجَارَةٍ مِّن سِجِّيلٍ ﴿٤﴾ فَجَعَلَهُمْ كَعَصْفٍ مَّأْكُولٍ ﴿٥﴾",
    options:["2","3","4","5"], correct:[1],
    explain:"Terdapat 3 pasangan harf jar + isim majrur: بِحِجَارَةٍ، مِّن سِجِّيلٍ dan كَعَصْفٍ."},
-  {id:6, type:'multi', arabicOptions:true,
+  {id:6, type:'multi', arabicOptions:true, explainOnCorrect:true,
    prompt:"Yang manakah antara pilihan berikut mempunyai Harf Jar Isim Majrur? (Boleh pilih lebih daripada satu jawapan)",
    options:["لَفِي خُسْرٍ","اللَّهُ الصَّمَدُ","عَلَى طَعَامِ الْمِسْكِينِ","فَصَلِّ لِرَبِّكَ","فَالْمُورِيَاتِ قَدْحًا"],
    optionGlosses:["benar-benar dalam kerugian","Allah tempat bergantung","untuk memberi makan orang miskin","maka dirikanlah solat kerana Tuhanmu","dan kuda yang mencetuskan percikan api"],
    correct:[0,2,3],
    explain:"لَفِي خُسْرٍ (في+خسر), عَلَى طَعَامِ الْمِسْكِينِ (على+طعام) dan فَصَلِّ لِرَبِّكَ (لِ+ربك) semuanya mempunyai harf jar + isim majrur. اللَّهُ الصَّمَدُ dan فَالْمُورِيَاتِ قَدْحًا tiada harf jar."},
-  {id:7, type:'single', interlinear:'falaq',
+  {id:7, type:'single', interlinear:'falaq', explainOnCorrect:true,
    prompt:"Berapakah bilangan Harf Jar Isim Majrur dalam Surah Al-Falaq?",
    ayah:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ ﴿٢﴾ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴿٣﴾ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ﴿٤﴾ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿٥﴾",
    options:["3","4","5","6"], correct:[3],
    explain:"Terdapat 6 pasangan: بِرَبِّ (ayat 1), مِن شَرِّ (ayat 2, 3, 4 dan 5 — 4 kali) dan فِي الْعُقَدِ (ayat 4)."},
   {id:8, type:'match',
    prompt:"Padankan harf jar berikut dengan maksud umumnya.",
-   pairs:[{word:"لِ", correct:"untuk"},{word:"عَلَى", correct:"ke atas"},{word:"إِلَى", correct:"kepada"}],
-   choices:["untuk","ke atas","kepada"],
+   pairs:[
+     {word:"لِ", correct:"untuk", choices:["dari","untuk","seperti"]},
+     {word:"عَلَى", correct:"ke atas", choices:["tentang","dari","ke atas"]},
+     {word:"إِلَى", correct:"kepada", choices:["untuk","daripada","kepada"]}
+   ],
    explain:"لِ bermaksud 'untuk', عَلَى bermaksud 'ke atas', dan إِلَى bermaksud 'kepada'."},
-  {id:9, type:'multi', arabicOptions:true,
+  {id:9, type:'multi', arabicOptions:true, explainOnCorrect:true,
    prompt:"Pilih perkataan di bawah yang merupakan kata nama (isim). (Boleh pilih lebih daripada satu jawapan)",
    options:["عَظِيمٌ","يُكَذِّبُونَ","قُلْ","فِي","مُصْلِحُونَ"],
    optionGlosses:["besar/agung","mereka mendustakan","Katakanlah","dalam","orang-orang yang melakukan kebaikan"],
    correct:[0,4],
    explain:"عَظِيمٌ mempunyai tanwin dan مُصْلِحُونَ bermula dengan م diikuti sekurang-kurangnya 3 huruf — kedua-duanya isim. يُكَذِّبُونَ dan قُلْ ialah fe'il, manakala فِي ialah harf."},
-  {id:10, type:'single', interlinear:'qariah',
+  {id:10, type:'single', interlinear:'qariah', explainOnCorrect:true,
    prompt:"Berdasarkan tanda-tanda isim yang telah dipelajari, berapakah bilangan isim dalam Surah Al-Qari'ah berikut?",
    ayah:"الْقَارِعَةُ ﴿١﴾ مَا الْقَارِعَةُ ﴿٢﴾ وَمَا أَدْرَاكَ مَا الْقَارِعَةُ ﴿٣﴾ يَوْمَ يَكُونُ النَّاسُ كَالْفَرَاشِ الْمَبْثُوثِ ﴿٤﴾ وَتَكُونُ الْجِبَالُ كَالْعِهْنِ الْمَنفُوشِ ﴿٥﴾ فَأَمَّا مَن ثَقُلَتْ مَوَازِينُهُ ﴿٦﴾ فَهُوَ فِي عِيشَةٍ رَّاضِيَةٍ ﴿٧﴾ وَأَمَّا مَنْ خَفَّتْ مَوَازِينُهُ ﴿٨﴾ فَأُمُّهُ هَاوِيَةٌ ﴿٩﴾ وَمَا أَدْرَاكَ مَا هِيَهْ ﴿١٠﴾ نَارٌ حَامِيَةٌ ﴿١١﴾",
    options:["14","15","16","17"], correct:[2],
@@ -307,7 +310,7 @@ function renderQuestion(){
       const sel=document.createElement('select'); sel.id='sel-'+i;
       const blank=document.createElement('option'); blank.value=''; blank.textContent='— pilih —';
       sel.appendChild(blank);
-      q.choices.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+      (p.choices||q.choices).forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
       row.appendChild(w); row.appendChild(sel);
       box.appendChild(row);
     });
@@ -370,7 +373,7 @@ function checkAnswer(){
 
   const fb = document.getElementById('feedbackBox');
   fb.innerHTML = isCorrect
-    ? `<div class="feedback good">Betul!</div>`
+    ? `<div class="feedback good">Betul!</div>` + (q.explainOnCorrect ? `<div class="feedback info">${q.explain}</div>` : '')
     : `<div class="feedback bad">${q.explain}</div>`;
 
   answered=true;
