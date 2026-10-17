@@ -143,17 +143,16 @@ input[type=text]{
 const YUALLIM_INTERLINEAR = [
  [["وَيُعَلِّمُهُ","Dan Dia mengajarkan kepadanya"],["الْكِتَابَ","Kitab (tulisan)"],["وَالْحِكْمَةَ","dan hikmah"],["وَالتَّوْرَاةَ","dan Taurat"],["وَالْإِنجِيلَ","dan Injil"]]
 ];
-const ATTIN_INTERLINEAR = [
- [["وَالتِّينِ","Demi buah tin"],["وَالزَّيْتُونِ","dan buah zaitun"]],
- [["وَطُورِ","Dan gunung"],["سِينِينَ","Sinai"]],
- [["وَهَٰذَا","Dan ini"],["الْبَلَدِ","negeri"],["الْأَمِينِ","yang aman"]],
- [["لَقَدْ","Sesungguhnya"],["خَلَقْنَا","Kami ciptakan"],["الْإِنسَانَ","manusia"],["فِي","dalam"],["أَحْسَنِ","sebaik-baik"],["تَقْوِيمٍ","bentuk"]],
- [["ثُمَّ","Kemudian"],["رَدَدْنَاهُ","Kami kembalikan dia"],["أَسْفَلَ","serendah-rendah"],["سَافِلِينَ","(tempat) yang rendah"]],
- [["إِلَّا","Kecuali"],["الَّذِينَ","orang yang"],["آمَنُوا","beriman"],["وَعَمِلُوا","dan beramal"],["الصَّالِحَاتِ","soleh"],["فَلَهُمْ","maka bagi mereka"],["أَجْرٌ","pahala"],["غَيْرُ","yang tidak"],["مَمْنُونٍ","putus"]],
- [["فَمَا","Maka apakah"],["يُكَذِّبُكَ","yang menyebabkan kamu mendustakan"],["بَعْدُ","selepas ini"],["بِالدِّينِ","hari pembalasan"]],
- [["أَلَيْسَ","Bukankah"],["اللَّهُ","Allah"],["بِأَحْكَمِ","paling adil"],["الْحَاكِمِينَ","(kalangan) hakim-hakim"]]
+const FATIHAH_INTERLINEAR = [
+ [["بِسْمِ","Dengan nama"],["اللَّهِ","Allah"],["الرَّحْمَٰنِ","Yang Maha Pemurah"],["الرَّحِيمِ","Yang Maha Penyayang"]],
+ [["الْحَمْدُ","Segala puji"],["لِلَّهِ","bagi Allah"],["رَبِّ","Tuhan"],["الْعَالَمِينَ","sekalian alam"]],
+ [["الرَّحْمَٰنِ","Yang Maha Pemurah"],["الرَّحِيمِ","Yang Maha Penyayang"]],
+ [["مَالِكِ","Pemilik"],["يَوْمِ","hari"],["الدِّينِ","pembalasan"]],
+ [["إِيَّاكَ","Hanya kepada-Mu"],["نَعْبُدُ","kami menyembah"],["وَإِيَّاكَ","dan hanya kepada-Mu"],["نَسْتَعِينُ","kami memohon pertolongan"]],
+ [["اهْدِنَا","Tunjukilah kami"],["الصِّرَاطَ","jalan"],["الْمُسْتَقِيمَ","yang lurus"]],
+ [["صِرَاطَ","(Iaitu) jalan"],["الَّذِينَ","orang-orang yang"],["أَنْعَمْتَ","Engkau beri nikmat"],["عَلَيْهِمْ","ke atas mereka"],["غَيْرِ","bukan (jalan)"],["الْمَغْضُوبِ","mereka yang dimurkai"],["عَلَيْهِمْ","ke atas mereka"],["وَلَا","dan bukan"],["الضَّالِّينَ","mereka yang sesat"]]
 ];
-const INTERLINEAR_MAP = {attin:ATTIN_INTERLINEAR, yuallim:YUALLIM_INTERLINEAR};
+const INTERLINEAR_MAP = {fatihah:FATIHAH_INTERLINEAR, yuallim:YUALLIM_INTERLINEAR};
 
 // ====== TETAPAN PENGHANTARAN KEPUTUSAN ======
 const CONFIG = {
@@ -168,9 +167,9 @@ const QUESTIONS = [
    explain:"Aspek asas ialah Nahu, Sorof, Balaghah, Tafsir dan Tadabbur. Tajwid, Tarannum dan Qiraat berkaitan seni bacaan, bukan sebahagian daripada 5 aspek ini."},
   {id:2, type:'single',
    prompt:"Isim ialah ______.",
-   options:["satu kata kerja","kata nama yang berkaitan dengan perbuatan dan masa","kata nama yang tiada kaitan dengan perbuatan dan masa","tiada satu pun di atas"],
+   options:["satu kata kerja","kata nama yang berkaitan dengan perbuatan dan masa","perkataan yang menunjukkan makna pada dirinya sendiri dan tidak terikat dengan masa","tiada satu pun di atas"],
    correct:[2],
-   explain:"Isim tidak berubah mengikut masa — sifat inilah yang membezakannya daripada fe'il."},
+   explain:"Isim ialah perkataan yang menunjukkan makna pada dirinya sendiri dan tidak terikat dengan masa — sifat inilah yang membezakannya daripada fe'il."},
   {id:3, type:'multi',
    prompt:"Pilih 2 tanda isim yang telah anda pelajari.",
    options:["Ada ال di hujung perkataan","Ada ال di awal perkataan","Ada tanwin di hujung perkataan","Ada tanwin di awal perkataan","Ada kedua-dua tanwin dan ال dalam satu perkataan"],
@@ -206,11 +205,11 @@ const QUESTIONS = [
    ayah:"وَيُعَلِّمُهُ الْكِتَابَ وَالْحِكْمَةَ وَالتَّوْرَاةَ وَالْإِنجِيلَ",
    options:["1","2","3","4"], correct:[3],
    explain:"Isim dalam ayat ini ialah الْكِتَابَ، الْحِكْمَةَ، التَّوْرَاةَ dan الْإِنجِيلَ — kesemuanya bertanda ال, jumlahnya 4."},
-  {id:10, type:'single', interlinear:'attin',
-   prompt:"Berdasarkan 2 tanda isim yang telah anda pelajari, berapakah bilangan isim dalam Surah At-Tin (ayat 1–8) berikut?",
-   ayah:"وَالتِّينِ وَالزَّيْتُونِ ﴿١﴾ وَطُورِ سِينِينَ ﴿٢﴾ وَهَٰذَا الْبَلَدِ الْأَمِينِ ﴿٣﴾ لَقَدْ خَلَقْنَا الْإِنسَانَ فِي أَحْسَنِ تَقْوِيمٍ ﴿٤﴾ ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ ﴿٥﴾ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ ﴿٦﴾ فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ ﴿٧﴾ أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ ﴿٨﴾",
+  {id:10, type:'single', interlinear:'fatihah',
+   prompt:"Berdasarkan 2 tanda isim yang telah anda pelajari, berapakah bilangan isim dalam Surah Al-Fatihah berikut?",
+   ayah:"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿١﴾ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿٢﴾ الرَّحْمَٰنِ الرَّحِيمِ ﴿٣﴾ مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾",
    options:["11","12","13","14"], correct:[2],
-   explain:"Kira setiap perkataan yang mempunyai ال di awal atau tanwin di hujung sepanjang lapan ayat ini — jumlahnya 13."}
+   explain:"Kira setiap perkataan yang bermula dengan ال atau berakhir dengan tanwin sepanjang tujuh ayat ini — jumlahnya 13: اللَّهِ، الرَّحْمَٰنِ، الرَّحِيمِ (ayat 1), الْحَمْدُ، الْعَالَمِينَ (ayat 2), الرَّحْمَٰنِ، الرَّحِيمِ (ayat 3), الدِّينِ (ayat 4), الصِّرَاطَ، الْمُسْتَقِيمَ (ayat 6), الَّذِينَ، الْمَغْضُوبِ، الضَّالِّينَ (ayat 7)."}
 ];
 
 let order=[], idx=0, score=0, answered=false;
