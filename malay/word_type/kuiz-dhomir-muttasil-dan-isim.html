@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuiz Dhomir Muttasil bersama Isim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'UthmanicHafs';src:local('KFGQPC Uthmanic Script HAFS'),local('KFGQPC Uthmanic Script HAFS Regular'),url('https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2'),url('https://raw.githubusercontent.com/mustafa0x/qpc-fonts/f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2');font-display:swap}
+:root{--parchment:#faf5e6;--parchment2:#f2ead4;--teal:#1f7a72;--teal-d:#155c56;--gold:#b8912f;--gold-l:#e8d8a8;--em:#0d3b34;--ok:#2e7d46;--ok-bg:#e5f3e8;--bad:#a33636;--bad-bg:#fbe9e7;--card:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Lora',Georgia,serif;color:var(--em);background:linear-gradient(180deg,var(--parchment),var(--parchment2));min-height:100vh;line-height:1.55}
+.arabic{font-family:'UthmanicHafs','Amiri',serif}
+bdi.arabic{font-size:1.25em}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 40px}
+header.top{text-align:center;padding:10px 0 6px}
+.brand-logo{display:block;width:96px;height:96px;margin:0 auto 12px;border-radius:50%}
+body:has(#quizScreen:not(.hidden)) .brand-logo{display:none}
+h1{margin:4px 0;font-size:1.55rem;color:var(--em)}
+.badge{display:inline-block;background:var(--gold-l);color:var(--em);border-radius:20px;padding:2px 14px;font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--gold-l);border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 4px 14px rgba(13,59,52,.09)}
+.hidden{display:none!important}
+label.f{display:block;font-weight:600;margin:12px 0 4px}
+input[type=text]{width:100%;padding:10px 12px;font:inherit;border:1px solid var(--gold);border-radius:8px;background:#fff}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:11px 22px;background:var(--teal);color:#fff;font-weight:600;margin-top:14px}
+button:hover{background:var(--teal-d)}button:disabled{opacity:.45;cursor:not-allowed}
+button.alt{background:#fff;color:var(--teal-d);border:1px solid var(--teal)}
+.err{color:var(--bad);min-height:1.2em;margin-top:8px}
+.bar{height:8px;background:var(--gold-l);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.pc{font-size:.85rem;margin:6px 0 0;text-align:right}
+.ref{font-size:.9rem;color:var(--gold);font-weight:600;margin-bottom:4px}
+.q{font-size:1.08rem;font-weight:600;margin:6px 0 12px}.hint{font-size:.85rem;font-style:italic;margin:-6px 0 10px}
+.ayah{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:flex-start;background:var(--parchment);border:1px solid var(--gold-l);border-radius:10px;padding:12px;margin-bottom:14px}
+.tok{text-align:center;min-width:36px}.tok .ar{display:block;font-size:1.7rem;line-height:1.9}
+.tok .gl{display:block;font-size:.72rem;color:var(--teal-d);max-width:110px}
+.tok.boxed .ar{border:2px solid var(--bad);border-radius:6px;padding:0 6px}
+.opt{display:flex;gap:10px;align-items:center;border:1px solid var(--gold-l);background:#fff;border-radius:10px;padding:10px 12px;margin:8px 0;cursor:pointer}
+.opt .ot{flex:1}.opt .ot.arabic{font-size:1.5rem}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}.opt.miss{border:2px dashed var(--ok);background:var(--ok-bg)}.opt.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.fb{margin-top:12px;padding:12px;border-radius:10px;font-size:.95rem}.fb.ok{background:var(--ok-bg);color:var(--ok)}.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb b{display:block;margin-bottom:4px}.fb span{color:var(--em)}
+.circle{width:150px;height:150px;border-radius:50%;border:8px solid var(--teal);margin:10px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff}
+.circle b{font-size:2rem}.rl{list-style:none;padding:0;margin:12px 0}.rl li{padding:8px 10px;border-bottom:1px solid var(--gold-l);display:flex;justify-content:space-between}
+.pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}.status{text-align:center;font-size:.9rem;min-height:1.3em}
+footer{text-align:center;font-size:.85rem;color:var(--teal-d);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<img class="brand-logo" src="data:image/webp;base64,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" alt="AtTartil Quranic Institute">
+<h1 id="title"></h1><span class="badge" id="badge"></span>
+</header>
+
+<section id="landing" class="card">
+<p id="intro"></p>
+<label class="f" id="nameL" for="name"></label><input type="text" id="name" autocomplete="name">
+<label class="f" id="clsL" for="cls"></label><input type="text" id="cls">
+<div class="err" id="err"></div>
+<button id="beginBtn"></button>
+</section>
+
+<section id="quizScreen" class="hidden">
+<div class="bar"><i id="prog"></i></div><p class="pc" id="pcount"></p>
+<div class="card" id="qcard"></div>
+</section>
+
+<section id="results" class="hidden card" style="text-align:center">
+<h2 id="resTitle"></h2>
+<div class="circle"><b id="pct"></b><span id="pts"></span></div>
+<div class="status" id="status"></div>
+<button class="alt hidden" id="retrySub"></button>
+<ul class="rl" id="rlist" style="text-align:left"></ul>
+<button id="againBtn"></button>
+</section>
+
+<footer>AtTartilQI · Where Qur'anic Knowledge Transforms Lives</footer>
+</div>
+
+<script>
+const QUIZ_LANGUAGE = "ms";
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx1Y01INyM4Ltlt_L8jpcvzLLbqTfIqxgHibzdNC72kbLXJ9WG7Ak-cnPYIaAlzHWgn/exec";
+
+const UI = {
+en:{title:"Attached Pronouns with Isim Quiz",badge:"Dhomir Muttasil + Isim",
+ intro:"This quiz tests your understanding of attached pronouns (dhomir muttasil) joined to an isim: their function, their meaning in Qur'anic verses, and how to count them. There are 10 questions. Enter your name and class to begin.",
+ nameL:"Name",classL:"Class",classPh:"e.g. QLME 22",begin:"Begin Quiz",required:"Please enter both your name and class.",
+ qOf:"Question {n} of {t}",check:"Check Answer(s)",next:"Next Question →",see:"See Results →",
+ multi:"You may choose more than one answer.",right:"Correct",wrong:"Incorrect",resTitle:"Your Results",again:"Try Again",
+ submitting:"Submitting your result…",submitted:"Result submitted.",failed:"Submission failed. Please try again.",
+ notConfigured:"Result not sent: Google Sheet link is not set yet.",retry:"Retry submit",pass:"Correct",fail:"Incorrect",qn:"Question"},
+ms:{title:"Kuiz Dhomir Muttasil bersama Isim",badge:"Dhomir Muttasil + Isim",
+ intro:"Kuiz ini menguji kefahaman anda tentang dhomir muttasil (kata ganti nama yang bersambung) pada isim: fungsinya, maknanya dalam ayat al-Quran dan cara mengira bilangannya. Terdapat 10 soalan. Masukkan nama dan kelas anda untuk bermula.",
+ nameL:"Nama",classL:"Kelas",classPh:"cth. QLME 22",begin:"Mula Kuiz",required:"Sila isi nama dan kelas anda.",
+ qOf:"Soalan {n} daripada {t}",check:"Semak Jawapan",next:"Soalan Seterusnya →",see:"Lihat Keputusan →",
+ multi:"Anda boleh memilih lebih daripada satu jawapan.",right:"Betul",wrong:"Salah",resTitle:"Keputusan Anda",again:"Cuba Lagi",
+ submitting:"Sedang menghantar keputusan…",submitted:"Keputusan telah dihantar.",failed:"Penghantaran gagal. Sila cuba lagi.",
+ notConfigured:"Keputusan belum dihantar: pautan Google Sheet belum ditetapkan.",retry:"Hantar semula",pass:"Betul",fail:"Salah",qn:"Soalan"}
+};
+const t = k => UI[QUIZ_LANGUAGE][k];
+const T = o => (typeof o === "string") ? o : o[QUIZ_LANGUAGE];
+const AR = s => s.replace(/[\u0600-\u06FF]+(?:\s[\u0600-\u06FF]+)*/g, m => '<bdi class="arabic">' + m + '</bdi>');
+
+/* Word-by-word tokens: [arabic, en gloss, ms gloss, boxed?]. Boxed = gloss shown as "?" until answered.
+   Arabic = quran.com text_qpc_hafs; Malay glosses = quran.com Indonesian word-by-word (language=id), copied as-is. */
+const A3=[["قَالَ","He said","(Yaqub) berkata"],["إِنَّمَآ","Only","sesungguhnya hanyalah"],["أَشۡكُواْ","I complain","aku mengadukan"],["بَثِّي","my suffering (of)","kesusahan"],["وَحُزۡنِيٓ","and my grief","dan kesedihanku",1],["إِلَى","to","kepada"],["ٱللَّهِ","Allah","Allah"],["وَأَعۡلَمُ","and I know","dan aku mengetahui"],["مِنَ","from","dari"],["ٱللَّهِ","Allah","Allah"],["مَا","what","apa"],["لَا","not","tidak"],["تَعۡلَمُونَ","you know","(kalian) mengetahui"],["﴿٨٦﴾","(86)",""]];
+const A4=[["أَلَمۡ","Have not","apakah tidak"],["تَرَ","you seen","kamu perhatikan"],["كَيۡفَ","how","bagaimana"],["فَعَلَ","dealt","berbuat/bertindak"],["رَبُّكَ","your Lord","Tuhanmu",1],["بِأَصۡحَٰبِ","with (the) Companions","terhadap golongan (tentara)"],["ٱلۡفِيلِ","Elephant (of the)","gajah"],["﴿١﴾","(1)",""]];
+const A6=[["أَوَلَمۡ","Do not","ataukah tidak"],["يَرَوۡاْ","they see","mereka memperhatikan"],["إِلَى","[to]","kepada"],["ٱلطَّيۡرِ","the birds","burung"],["فَوۡقَهُمۡ","above them","di atas mereka",1],["صَٰٓفَّٰتٖ","spreading (their wings)","mengembangkan sayap"],["وَيَقۡبِضۡنَۚ","and folding","dan ia mengatupkannya"]];
+const A7=[["ثُمَّ","Then","kemudian"],["أَرۡسَلۡنَا","We sent","Kami utus"],["رُسُلَنَا","our messengers","Rasul-rasul kami",1],["تَتۡرَاۖ","succession (in)","berturut-turut"],["كُلَّ","Every time","setiap"],["مَا","Every time","apa-apa"],["جَآءَ","came","datang"],["أُمَّةٗ","a nation (to)","ummat"],["رَّسُولُهَا","its messenger","Rasulnya",1],["كَذَّبُوهُۖ","they denied him","mereka mendustakannya"]];
+const A8=[["وَٱللَّهُ","And Allah","dan Allah"],["أَعۡلَمُ","knows best","lebih mengetahui"],["بِإِيمَٰنِكُمۚ","about all of your faith","dengan keimananmu",1]];
+const A9=[["وَإِذۡ","And when","dan ketika"],["تَقُولُ","you said","kamu berkata"],["لِلَّذِيٓ","to the one","kepada orang-orang"],["أَنۡعَمَ","bestowed favor","telah memberi ni'mat"],["ٱللَّهُ","Allah","Allah"],["عَلَيۡهِ","on him","atasnya"],["وَأَنۡعَمۡتَ","and you bestowed favor","dan kamu telah memberi ni'mat"],["عَلَيۡهِ","on him","atasnya"],["أَمۡسِكۡ","Keep","tahanlah"],["عَلَيۡكَ","to yourself","atasmu"],["زَوۡجَكَ","your wife","istrimu"],["وَٱتَّقِ","and fear","dan bertakwalah"],["ٱللَّهَ","Allah","Allah"],["وَتُخۡفِي","But you concealed","dan kamu menyembunyikan"],["فِي","within","dalam"],["نَفۡسِكَ","yourself","jiwamu/hatimu"],["مَا","what","apa-apa"],["ٱللَّهُ","Allah","Allah"],["مُبۡدِيهِ","(was to) disclose","menyatakannya"],["وَتَخۡشَى","And you fear","dan kamu takut"],["ٱلنَّاسَ","the people","manusia"],["وَٱللَّهُ","while Allah","dan Allah"],["أَحَقُّ","has more right","lebih berhak"],["أَن","that","bahwa"],["تَخۡشَىٰهُۖ","you (should) fear Him","kamu takuti-Nya"]];
+const A10=[["تَبَّتۡ","Perish","binasalah"],["يَدَآ","hands (the)","kedua tangan"],["أَبِي","Abu (of)","Abu"],["لَهَبٖ","Lahab","Lahab"],["وَتَبَّ","and perish he","sebenar-benar binasa"],["﴿١﴾","(1)",""],["مَآ","Not","tidak"],["أَغۡنَىٰ","avail (will)","berguna"],["عَنۡهُ","him","dari padanya/kepadanya"],["مَالُهُۥ","his wealth","hartanya"],["وَمَا","and what","dan apa"],["كَسَبَ","he earned","yang ia usahakan"],["﴿٢﴾","(2)",""],["سَيَصۡلَىٰ","He will be burnt","kelak ia akan masuk"],["نَارٗا","(in) a Fire","api"],["ذَاتَ","of","mempunyai"],["لَهَبٖ","Blazing Flames","begejolak"],["﴿٣﴾","(3)",""],["وَٱمۡرَأَتُهُۥ","And his wife","dan istrinya"],["حَمَّالَةَ","carrier (the)","pembawa"],["ٱلۡحَطَبِ","firewood (of)","kayu bakar"],["﴿٤﴾","(4)",""],["فِي","In","pada"],["جِيدِهَا","her neck","lehernya"],["حَبۡلٞ","a rope (will be)","tali"],["مِّن","of","dari"],["مَّسَدِۭ","palm-fiber","sabut"],["﴿٥﴾","(5)",""]];
+
+/* Question bank. c = indexes of correct option(s). Options are written in the given order; the UI shuffles them
+   (except numeric options, ns:1). Content strings are {en, ms} pairs. */
+const Q = [
+{id:1,p:{en:"What is the function of an attached pronoun when combined with an Isim?",ms:"Apakah fungsi dhomir muttasil apabila bersambung dengan isim?"},
+ o:[{en:"Idafah (possessive phrase)",ms:"Idhafah (kata sandaran)"},{en:"verb",ms:"kata kerja"},{en:"noun",ms:"kata nama"},{en:"no change",ms:"tiada perubahan"}],c:[0],
+ n:{en:"An attached pronoun joined to an isim forms an idafah (possessive phrase): the isim is possessed and the pronoun is its owner, e.g. كِتَابُهُ = his book.",
+    ms:"Dhomir muttasil yang bersambung dengan isim membentuk idhafah (kata sandaran): isim itu dimiliki dan dhomir itu pemiliknya, contohnya كِتَابُهُ = bukunya."}},
+{id:2,p:{en:"What is the meaning of كِتَابُهُ ?",ms:"Apakah maksud كِتَابُهُ ?"},
+ o:[{en:"his book",ms:"bukunya (dia lelaki)"},{en:"my book",ms:"buku saya"},{en:"her book",ms:"bukunya (dia perempuan)"},{en:"your book (male)",ms:"buku kamu (lelaki)"}],c:[0],
+ n:{en:"كِتَابُ (book) + ـهُ (his) = his book. Compare: ـي = my, ـهَا = her, ـكَ = your (male).",
+    ms:"كِتَابُ (buku) + ـهُ (dia lelaki) = bukunya. Bandingkan: ـي = saya, ـهَا = dia perempuan, ـكَ = kamu (lelaki)."}},
+{id:3,r:{en:"Surah Yusuf, 12:86",ms:"Surah Yusuf, 12:86"},a:A3,p:{en:"What is the meaning of the boxed word in the following verse?",ms:"Apakah maksud perkataan yang berkotak dalam ayat berikut?"},
+ o:[{en:"and my grief",ms:"dan kesedihan saya"},{en:"and your grief",ms:"dan kesedihan kamu"},{en:"and our grief",ms:"dan kesedihan kami"},{en:"and his grief",ms:"dan kesedihan dia"}],c:[0],
+ n:{en:"وَحُزْنِي = وَ (and) + حُزْن (grief) + ـي (my). The attached pronoun ـي is the first person singular.",
+    ms:"وَحُزْنِي = وَ (dan) + حُزْن (kesedihan) + ـي (saya). Dhomir muttasil ـي ialah orang pertama tunggal. Terjemahan Sheikh Abdullah Basmeih: 'Sesungguhnya aku hanyalah mengadukan kesusahan dan dukacitaku kepada Allah dan aku mengetahui (dengan perantaraan wahyu) dari Allah, apa yang kamu tidak mengetahuinya.'"}},
+{id:4,r:{en:"Surah Al-Fil, 105:1",ms:"Surah al-Fil, 105:1"},a:A4,p:{en:"What is the meaning of the boxed word in the following verse?",ms:"Apakah maksud perkataan yang berkotak dalam ayat berikut?"},
+ o:[{en:"your Lord",ms:"Tuhan kamu"},{en:"his Lord",ms:"Tuhan dia"},{en:"our Lord",ms:"Tuhan kami"},{en:"my Lord",ms:"Tuhan saya"}],c:[0],
+ n:{en:"رَبُّكَ = رَبّ (Lord) + ـكَ (your, singular male).",ms:"رَبُّكَ = رَبّ (Tuhan) + ـكَ (kamu, lelaki tunggal). Terjemahan Sheikh Abdullah Basmeih: 'Tidakkah engkau mengetahui bagaimana Tuhanmu telah melakukan kepada angkatan tentera (yang dipimpin oleh pembawa) Gajah, (yang hendak meruntuhkan Kaabah)?'"}},
+{id:5,p:{en:"Which of the following words contains an Isim combined with an attached pronoun?",ms:"Antara perkataan berikut, yang manakah mengandungi isim yang bersambung dengan dhomir muttasil?"},
+ h:1,o:[{ar:"عَبْدِهِ"},{ar:"وَإِلَهُكُمْ"},{ar:"مَدْرَسَتِيْ"},{ar:"مَسْجِدُنَا"},{ar:"وَالمُؤْمِنُونَ"}],c:[0,1,2,3],
+ n:{en:"عَبْدِهِ = عَبْد + هِ (his); وَإِلَهُكُمْ = إِلَه + كُمْ (your, plural); مَدْرَسَتِي = مَدْرَسَة + ي (my); مَسْجِدُنَا = مَسْجِد + نَا (our). وَالمُؤْمِنُونَ has no attached pronoun: ـونَ is a plural ending, not a pronoun.",
+    ms:"عَبْدِهِ = عَبْد + هِ (dia lelaki); وَإِلَهُكُمْ = إِلَه + كُمْ (kamu semua); مَدْرَسَتِي = مَدْرَسَة + ي (saya); مَسْجِدُنَا = مَسْجِد + نَا (kami). وَالمُؤْمِنُونَ tiada dhomir muttasil: ـونَ ialah akhiran jamak, bukan dhomir."}},
+{id:6,r:{en:"Surah Al-Mulk, 67:19",ms:"Surah al-Mulk, 67:19"},a:A6,p:{en:"What is the meaning of the boxed word in the following verse?",ms:"Apakah maksud perkataan yang berkotak dalam ayat berikut?"},
+ o:[{en:"above them",ms:"di atas mereka"},{en:"above him",ms:"di atas dia"},{en:"above all of you",ms:"di atas kamu semua"},{en:"above both of them",ms:"di atas mereka berdua"}],c:[0],
+ n:{en:"فَوْقَهُمْ = فَوْقَ (above) + ـهُمْ (them, plural male). Compare ـهُمَا = both of them, ـكُمْ = all of you, ـهُ = him.",
+    ms:"فَوْقَهُمْ = فَوْقَ (di atas) + ـهُمْ (mereka, jamak lelaki). Bandingkan ـهُمَا = mereka berdua, ـكُمْ = kamu semua, ـهُ = dia. Terjemahan Sheikh Abdullah Basmeih: 'Patutkah mereka menutup mata dan tidak memerhatikan (kekuasaan Allah pada) burung-burung yang terbang di atas mereka, (siapakah yang menjaganya ketika) burung-burung itu mengembang dan menutupkan sayapnya?'"}},
+{id:7,r:{en:"Surah Al-Mu'minun, 23:44",ms:"Surah al-Mu'minun, 23:44"},a:A7,p:{en:"Complete the meanings of the two dhomir muttasil found in the following verse.",ms:"Lengkapkan maksud bagi dua dhomir muttasil dalam ayat berikut."},
+ o:[{en:"our messengers, its messenger",ms:"rasul-rasul kami, rasulnya"},{en:"my messengers, our messenger",ms:"rasul-rasul saya, rasul kami"},{en:"its messengers, your messenger",ms:"rasul-rasulnya, rasul kamu"},{en:"both the messengers, their messenger",ms:"kedua-dua rasul, rasul mereka"}],c:[0],
+ n:{en:"رُسُلَنَا = رُسُل (messengers) + نَا (our); رَسُولُهَا = رَسُول (messenger) + هَا (its, referring to the feminine أُمَّة).",
+    ms:"رُسُلَنَا = رُسُل (rasul-rasul) + نَا (kami); رَسُولُهَا = رَسُول (rasul) + هَا (dia perempuan, merujuk kepada أُمَّة yang muannath). Terjemahan Sheikh Abdullah Basmeih: 'Kemudian Kami mengutus Rasul-rasul Kami silih berganti. Tiap-tiap kali sesuatu umat didatangi Rasulnya, mereka mendustakannya;'"}},
+{id:8,r:{en:"Surah An-Nisa', 4:25",ms:"Surah an-Nisa', 4:25"},a:A8,p:{en:"What is the meaning of the boxed phrase in the following verse?",ms:"Apakah maksud frasa yang berkotak dalam ayat berikut?"},
+ o:[{en:"about all of your faith",ms:"dengan keimanan kamu semua"},{en:"about both your faith",ms:"dengan keimanan kamu berdua"},{en:"about his faith",ms:"dengan keimanannya"},{en:"about their faith",ms:"dengan keimanan mereka"}],c:[0],
+ n:{en:"بِإِيمَانِكُمْ = بِ (about) + إِيمَان (faith) + كُمْ (all of you). Compare ـكُمَا = both of you.",
+    ms:"بِإِيمَانِكُمْ = بِ (dengan) + إِيمَان (keimanan) + كُمْ (kamu semua). Bandingkan ـكُمَا = kamu berdua. Terjemahan Sheikh Abdullah Basmeih: 'Dan Allah lebih mengetahui akan iman kamu;'"}},
+{id:9,r:{en:"Surah Al-Ahzab, 33:37 (excerpt)",ms:"Surah al-Ahzab, 33:37 (petikan)"},a:A9,ns:1,p:{en:"How many pronouns that are attached to Isim are there in this excerpt from verse 37 of Surah Al-Ahzab?",ms:"Berapakah bilangan dhomir yang bersambung dengan isim dalam petikan ayat 37 Surah al-Ahzab ini?"},
+ o:[{en:"2",ms:"2"},{en:"3",ms:"3"},{en:"4",ms:"4"},{en:"5",ms:"5"}],c:[1],
+ n:{en:"Three: زَوْجَكَ (ـكَ), نَفْسِكَ (ـكَ), مُبْدِيهِ (ـهِ). Not counted: عَلَيْهِ and عَلَيْكَ (attached to a harf), أَنْعَمْتَ (attached to a verb) and تَخْشَاهُ (attached to a verb).",
+    ms:"Tiga: زَوْجَكَ (ـكَ), نَفْسِكَ (ـكَ), مُبْدِيهِ (ـهِ). Tidak dikira: عَلَيْهِ dan عَلَيْكَ (bersambung dengan harf), أَنْعَمْتَ (bersambung dengan kata kerja) dan تَخْشَاهُ (bersambung dengan kata kerja). Terjemahan Sheikh Abdullah Basmeih: 'Dan (ingatlah wahai Muhammad) ketika engkau berkata kepada orang yang telah dikurniakan oleh Allah (dengan nikmat Islam) dan yang engkau juga telah berbuat baik kepadanya: 'Jangan ceraikan isterimu itu dan bertaqwalah kepada Allah', sambil engkau menyembunyikan dalam hatimu perkara yang Allah akan menyatakannya; dan engkau pula takut kepada (cacian manusia padahal Allah jualah yang berhak engkau takuti (melanggar perintahNya).'"}},
+{id:10,r:{en:"Surah Al-Masad",ms:"Surah al-Masad"},a:A10,ns:1,p:{en:"How many pronouns that are attached to Isim are there in this surah?",ms:"Berapakah bilangan dhomir yang bersambung dengan isim dalam surah ini?"},
+ o:[{en:"1",ms:"1"},{en:"2",ms:"2"},{en:"3",ms:"3"},{en:"4",ms:"4"}],c:[2],
+ n:{en:"Three: مَالُهُ (ـهُ), امْرَأَتُهُ (ـهُ), جِيدِهَا (ـهَا). عَنْهُ is not counted because the pronoun is attached to a harf.",
+    ms:"Tiga: مَالُهُ (ـهُ), امْرَأَتُهُ (ـهُ), جِيدِهَا (ـهَا). عَنْهُ tidak dikira kerana dhomir itu bersambung dengan harf. Terjemahan Sheikh Abdullah Basmeih: 'Hartanya dan segala yang diusahakannya, tidak dapat menolongnya. (ayat 2) ... Dan juga isterinya, seorang perempuan pemunggah kayu api. (ayat 4) ... Di lehernya sejenis tali, dari tali-tali yang dipintal. (ayat 5)'"}}
+];
+
+const $ = id => document.getElementById(id);
+let order = [], cur = 0, res = [], status = "", payload = null;
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function show(id){ ["landing","quizScreen","results"].forEach(s => $(s).classList.toggle("hidden", s !== id)); window.scrollTo(0,0); }
+
+function init(){
+  document.documentElement.lang = QUIZ_LANGUAGE;
+  document.title = t("title"); $("title").textContent = t("title"); $("badge").textContent = t("badge");
+  $("intro").textContent = t("intro"); $("nameL").textContent = t("nameL"); $("clsL").textContent = t("classL");
+  $("cls").placeholder = t("classPh"); $("beginBtn").textContent = t("begin"); $("resTitle").textContent = t("resTitle");
+  $("againBtn").textContent = t("again"); $("retrySub").textContent = t("retry");
+  $("beginBtn").onclick = start; $("againBtn").onclick = start; $("retrySub").onclick = submit;
+}
+
+function start(){
+  const n = $("name").value.trim(), c = $("cls").value.trim();
+  if (!n || !c){ $("err").textContent = t("required"); show("landing"); return; }
+  $("err").textContent = "";
+  order = shuffle(Q).map(q => ({q, opts: q.ns ? q.o.map((o,i)=>({o,i})) : shuffle(q.o.map((o,i)=>({o,i})))}));
+  cur = 0; res = []; status = ""; payload = null; show("quizScreen"); render();
+}
+
+function ayahHTML(q, revealed){
+  return '<div class="ayah" dir="rtl" id="ayah">' + q.a.map(k => {
+    const g = (k[3] && !revealed) ? "?" : (QUIZ_LANGUAGE === "ms" ? k[2] : k[1]);
+    return '<div class="tok' + (k[3] ? ' boxed' : '') + '"><span class="ar arabic">' + k[0] + '</span><span class="gl">' + g + '</span></div>';
+  }).join("") + '</div>';
+}
+
+function render(){
+  const {q, opts} = order[cur], multi = q.c.length > 1;
+  $("prog").style.width = (cur / order.length * 100) + "%";
+  $("pcount").textContent = t("qOf").replace("{n}", cur + 1).replace("{t}", order.length);
+  $("qcard").innerHTML =
+    (q.r ? '<div class="ref">' + T(q.r) + '</div>' : '') + (q.a ? ayahHTML(q, false) : '') +
+    '<div class="q">' + AR(T(q.p)) + '</div>' + (multi ? '<div class="hint">' + t("multi") + '</div>' : '') +
+    '<div id="opts">' + opts.map(x => '<label class="opt" data-i="' + x.i + '"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="o" value="' + x.i + '"><span class="ot' + (x.o.ar ? ' arabic' : '') + '">' + (x.o.ar || T(x.o)) + '</span></label>').join("") + '</div>' +
+    '<div id="fb"></div><button id="chk" disabled>' + t("check") + '</button> <button id="nxt" class="hidden">' + (cur === order.length - 1 ? t("see") : t("next")) + '</button>';
+  document.querySelectorAll("input[name=o]").forEach(i => i.onchange = () => $("chk").disabled = !document.querySelector("input[name=o]:checked"));
+  $("chk").onclick = check; $("nxt").onclick = () => { if (cur === order.length - 1) showResults(); else { cur++; render(); } };
+}
+
+function check(){
+  const {q} = order[cur];
+  const sel = [...document.querySelectorAll("input[name=o]:checked")].map(x => +x.value);
+  const ok = sel.length === q.c.length && q.c.every(i => sel.includes(i));
+  res.push({id: q.id, ok});
+  document.querySelectorAll(".opt").forEach(l => {
+    const i = +l.dataset.i; l.querySelector("input").disabled = true;
+    if (q.c.includes(i)) l.classList.add(sel.includes(i) ? "ok" : "miss"); else if (sel.includes(i)) l.classList.add("bad");
+  });
+  if (q.a) $("ayah").outerHTML = ayahHTML(q, true);
+  $("fb").innerHTML = '<div class="fb ' + (ok ? 'ok' : 'bad') + '"><b>' + (ok ? t("right") : t("wrong")) + '</b><span>' + AR(T(q.n)) + '</span></div>';
+  $("chk").classList.add("hidden"); $("nxt").classList.remove("hidden");
+  if (cur === order.length - 1) finish();   // auto-submit the moment the last question is checked
+}
+
+function finish(){
+  const score = res.filter(r => r.ok).length, max = order.length;
+  const details = res.slice().sort((a,b) => a.id - b.id).map(r => "Q" + r.id + " (" + (r.ok ? 1 : 0) + "/1)").join("; ");
+  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
+  submit();
+}
+
+async function submit(){
+  setStatus("submitting");
+  if (SHEET_WEBAPP_URL.indexOf("PASTE_YOUR") === 0){ setStatus("notConfigured"); return; }
+  try{
+    await fetch(SHEET_WEBAPP_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(payload)});
+    setStatus("submitted");
+  }catch(e){ setStatus("failed"); }
+}
+function setStatus(k){
+  status = k; $("status").textContent = t(k);
+  $("retrySub").classList.toggle("hidden", !(k === "failed" || k === "notConfigured"));
+}
+
+function showResults(){
+  $("pct").textContent = payload.percentage + "%"; $("pts").textContent = payload.score + " / " + payload.scoreMax;
+  $("rlist").innerHTML = res.slice().sort((a,b) => a.id - b.id).map(r => '<li><span>' + t("qn") + ' ' + r.id + '</span><span class="' + (r.ok ? 'pass' : 'fail') + '">' + (r.ok ? t("pass") : t("fail")) + '</span></li>').join("");
+  setStatus(status); show("results");
+}
+init();
+</script>
+</body>
+</html>
