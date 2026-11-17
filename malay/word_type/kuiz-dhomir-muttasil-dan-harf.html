@@ -80,7 +80,7 @@ footer{text-align:center;font-size:.85rem;color:var(--teal-d);margin-top:24px}
 
 <script>
 const QUIZ_LANGUAGE = "ms";
-const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx3ILpKSovntoVdKd9HUm9NwQ7ERZ93qaED9loXXQe-I828T7O1CyPv3Yva9QWcYEY/exec";
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwrkLmDYmq39HvFfeHGoptbrnyd3dplPkaER6qjP1NQa58xNzNHOXsdhUB65tNnkCg/exec";
 
 const UI = {
 en:{title:"Attached Pronouns with Harf Quiz",badge:"Dhomir Muttasil + Harf",
@@ -201,7 +201,7 @@ function check(){
 function finish(){
   const score = res.filter(r => r.ok).length, max = order.length;
   const details = res.slice().sort((a,b) => a.id - b.id).map(r => "Q" + r.id + " (" + (r.ok ? 1 : 0) + "/1)").join("; ");
-  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
+  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", sheetId: "1NsaPLXfwW6JEKsbPKGItE-KrkWJws2HSdqXx3DC_axk", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
   submit();
 }
 
