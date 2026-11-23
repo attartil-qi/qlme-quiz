@@ -80,7 +80,7 @@ footer{text-align:center;font-size:.85rem;color:var(--teal-d);margin-top:24px}
 
 <script>
 const QUIZ_LANGUAGE = "ms";
-const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzkqdyeMtiHRFZLWD_8xH2IJH6hLn31LLonA496eZPB2r6PDV_Z89Jes6_0zcQvAzYN/exec";
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzlkWuofmT3ZGYr4F-yKlTn-wlNbMIvUshFk_YDVmpZA6BLhz9lWiwxM-XH3AUpDeSq/exec";
 
 const UI = {
 en:{title:"Isim Dzoraf Quiz",badge:"Isim Dzoraf",
@@ -188,7 +188,7 @@ function check(){
 function finish(){
   const score = res.filter(r => r.ok).length, max = order.length;
   const details = res.slice().sort((a,b) => a.id - b.id).map(r => "Q" + r.id + " (" + (r.ok ? 1 : 0) + "/1)").join("; ");
-  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", sheetId: "PASTE_SHEET_ID_HERE", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
+  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", sheetId: "1zxIJ0s7uHhiZxp4LrjXCtaHZqqKSISn5KnIEuP6e4H4", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
   submit();
 }
 
