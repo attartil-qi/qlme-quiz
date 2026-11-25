@@ -226,7 +226,7 @@ function check(){
 function finish(){
   const score = res.reduce((a,r) => a + P1(r), 0), max = res.reduce((a,r) => a + M1(r), 0);
   const details = res.slice().sort((a,b) => a.id - b.id).map(r => "Q" + r.id + " (" + P1(r) + "/" + M1(r) + ")").join("; ");
-  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", sheetId: "1yxh-eZd7WbAKcvtHi0NpyMc9Lu5f5H7P_UmTpEmu8G0", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
+  payload = {name: $("name").value.trim(), className: $("cls").value.trim(), level: "", sheetId: "1-H22EQA6qMzHr4SMchDULtr3QC8Owlp9XHWV1LSO5GE", score, scoreMax: max, percentage: Math.round(score / max * 100), details, submittedAt: new Date().toISOString()};
   submit();
 }
 
