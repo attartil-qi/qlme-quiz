@@ -11,7 +11,7 @@
 :root{--parchment:#faf5e6;--parchment2:#f2ead4;--teal:#1f7a72;--teal-d:#155c56;--gold:#b8912f;--gold-l:#e8d8a8;--em:#0d3b34;--ok:#2e7d46;--ok-bg:#e5f3e8;--bad:#a33636;--bad-bg:#fbe9e7;--card:#fffdf8}
 *{box-sizing:border-box}
 body{margin:0;font-family:'Lora',Georgia,serif;color:var(--em);background:linear-gradient(180deg,var(--parchment),var(--parchment2));min-height:100vh;line-height:1.55}
-.arabic{font-family:'UthmanicHafs','Amiri',serif}
+.arabic{font-family:'UthmanicHafs','Amiri',serif}.arabic.na{font-family:'Amiri','Noto Naskh Arabic',serif}
 bdi.arabic{font-size:1.25em}
 .wrap{max-width:760px;margin:0 auto;padding:18px 14px 40px}
 header.top{text-align:center;padding:10px 0 6px}
@@ -110,7 +110,7 @@ const A10=[["أَلَمۡ","","tidaklah/bukankah"],["نَخۡلُقكُّم","",
 /* Question bank. c = indexes of correct option(s). Malay only. */
 const Q = [
 {"id":1,"p":"Apakah yang dimaksudkan dengan Fe'il Mudhorie'?","o":["Perbuatan yang telah berlaku pada masa lampau","Perbuatan yang sedang berlaku atau akan berlaku","Perintah","Tiada satu pun pilihan di atas"],"c":[1],"ns":1,"n":"Fe'il mudhorie' ialah kata kerja yang menunjukkan perbuatan yang sedang berlaku atau akan berlaku. Pilihan lain salah: perbuatan yang telah berlaku ialah fe'il madhi, manakala perintah ialah fe'il amr."},
-{"id":2,"p":"Apakah empat huruf awal yang lazim digunakan dalam Fe'il Mudhorie'?","o":[{"ar":"أ - ن - ي - ت"},{"ar":"أ - ب - ي - ت"},{"ar":"أ - ن - ي - ه"},"Tiada satu pun pilihan di atas"],"c":[0],"ns":1,"n":"Empat huruf awal fe'il mudhorie' ialah أ - ن - ي - ت (أَ = aku, نَ = kami, يَ = dia/mereka, تَ = kamu atau dia muannas). Pilihan أ - ب - ي - ت dan أ - ن - ي - ه salah kerana ب dan ه bukan huruf awal fe'il mudhorie'."},
+{"id":2,"p":"Apakah empat huruf awal yang lazim digunakan dalam Fe'il Mudhorie'?","o":[{"ar":"أ - ن - ي - ت","na":1},{"ar":"أ - ب - ي - ت","na":1},{"ar":"أ - ن - ي - ه","na":1},"Tiada satu pun pilihan di atas"],"c":[0],"ns":1,"n":"Empat huruf awal fe'il mudhorie' ialah أ - ن - ي - ت (أَ = aku, نَ = kami, يَ = dia/mereka, تَ = kamu atau dia muannas). Pilihan أ - ب - ي - ت dan أ - ن - ي - ه salah kerana ب dan ه bukan huruf awal fe'il mudhorie'."},
 {"id":3,"p":"Antara perkataan berikut, yang manakah berbentuk Fe'il Mudhorie'?","o":[{"ar":"تَرَكَ"},{"ar":"نَظَرَ"},{"ar":"نَكۡتُبُ"},{"ar":"أُعۡبُدۡ"}],"c":[2],"n":"نَكۡتُبُ bermula dengan huruf ن (kami) dan bermaksud \"kami menulis\", maka ia fe'il mudhorie'. Pilihan lain salah: تَرَكَ (dia telah meninggalkan) dan نَظَرَ (dia telah melihat) ialah fe'il madhi; أُعۡبُدۡ (sembahlah!) ialah fe'il amr."},
 {"id":4,"p":"Apakah bentuk Fe'il Mudhorie' bagi perbuatan \"menolong\"?","o":[{"ar":"يَخۡلُقُ"},{"ar":"يَنۡصُرُ"},{"ar":"خَلَقَ"},{"ar":"نَصَرَ"}],"c":[1],"n":"يَنۡصُرُ ialah fe'il mudhorie' bagi \"menolong\" (dia menolong). Pilihan lain salah: يَخۡلُقُ ialah fe'il mudhorie' tetapi bermaksud \"dia mencipta\"; خَلَقَ (dia telah mencipta) dan نَصَرَ (dia telah menolong) ialah fe'il madhi."},
 {"id":5,"p":"Tukarkan Fe'il Mudhorie' يَذۡهَبُ (dia sedang pergi / akan pergi) kepada bentuk \"aku sedang pergi / akan pergi\".","o":[{"ar":"أَذۡهَبُ"},{"ar":"تَذۡهَبُ"},{"ar":"نَذۡهَبُ"},{"ar":"يَذۡهَبُونَ"}],"c":[0],"n":"Huruf أ di awal fe'il mudhorie' menunjukkan pelaku أَنَا (aku): أَذۡهَبُ. Pilihan lain salah: تَذۡهَبُ = kamu pergi (atau dia muannas pergi); نَذۡهَبُ = kami pergi; يَذۡهَبُونَ = mereka pergi."},
@@ -157,7 +157,7 @@ function render(){
   $("qcard").innerHTML =
     (q.r ? '<div class="ref">' + T(q.r) + '</div>' : '') + (q.a ? ayahHTML(q, false) : '') +
     '<div class="q">' + AR(T(q.p)) + '</div>' + (multi ? '<div class="hint">' + t("multi") + '</div>' : '') +
-    '<div id="opts">' + opts.map(x => '<label class="opt" data-i="' + x.i + '"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="o" value="' + x.i + '"><span class="ot' + (x.o.ar ? ' arabic' : '') + '">' + (x.o.ar || AR(T(x.o))) + '</span></label>').join("") + '</div>' +
+    '<div id="opts">' + opts.map(x => '<label class="opt" data-i="' + x.i + '"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="o" value="' + x.i + '"><span class="ot' + (x.o.ar ? ' arabic' + (x.o.na ? ' na' : '') : '') + '">' + (x.o.ar || AR(T(x.o))) + '</span></label>').join("") + '</div>' +
     '<div id="fb"></div><button id="chk" disabled>' + t("check") + '</button> <button id="nxt" class="hidden">' + (cur === order.length - 1 ? t("see") : t("next")) + '</button>';
   document.querySelectorAll("input[name=o]").forEach(i => i.onchange = () => $("chk").disabled = !document.querySelector("input[name=o]:checked"));
   if (q.m) setupMatch(q);
