@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="ms" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuiz Tasrif — خلق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  .brand-logo{
+    display:block;
+    width:96px;
+    height:96px;
+    margin:0 auto 12px;
+  }
+  /* Show the logo on the landing and results screens; hide it during questions to save space on phones */
+  body:has(#quizScreen:not(.hidden)) .brand-logo{display:none;}
+  @font-face{
+    font-family:'UthmanicHafs';
+    src:url('https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@f93bf5f3/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2');
+    font-display:swap;
+  }
+  :root{
+    --parchment:#faf5e6;
+    --parchment-deep:#f2ead4;
+    --teal:#1f7a72;
+    --teal-dark:#155c56;
+    --gold:#b8912f;
+    --gold-light:#e8d8a8;
+    --emerald:#0d3b34;
+    --correct:#2e7d46;
+    --correct-bg:#e5f3e8;
+    --incorrect:#a33636;
+    --incorrect-bg:#fbe9e7;
+    --shadow: 0 4px 18px rgba(13,59,52,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Lora', serif;
+    background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+    color:var(--emerald);
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .arabic{font-family:'UthmanicHafs','Amiri', serif;}
+  header.top{
+    text-align:center;
+    padding:22px 18px 26px;
+    border-bottom:3px solid var(--gold);
+    margin-bottom:22px;
+  }
+  header.top h1{color:var(--emerald);font-size:1.6rem;margin:0 0 6px;letter-spacing:0.3px;}
+  header.top .root-badge{
+    display:inline-block;font-family:'UthmanicHafs','Amiri',serif;font-size:2rem;color:var(--teal-dark);
+    background:#fff;border:2px solid var(--gold);border-radius:12px;padding:6px 22px;
+    margin-top:6px;box-shadow: var(--shadow);
+  }
+  header.top p.sub{color:#5b6b63;font-size:0.95rem;margin-top:10px;}
+  .card{
+    background:#fffdf8;border:1px solid var(--gold-light);border-radius:14px;
+    box-shadow:var(--shadow);padding:22px 22px 24px;margin-bottom:18px;
+  }
+  #intro .stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:18px 0;}
+  #intro .stat{background:var(--parchment-deep);border:1px solid var(--gold-light);border-radius:10px;padding:10px 16px;text-align:center;min-width:110px;}
+  #intro .stat b{display:block;color:var(--teal-dark);font-size:1.3rem;}
+  #intro .stat span{font-size:0.78rem;color:#5b6b63;}
+  .student-info{
+    display:flex;flex-direction:column;gap:14px;max-width:320px;margin:20px auto 4px;
+  }
+  .student-info label{
+    text-align:left;font-size:0.82rem;font-weight:700;color:var(--emerald);
+    text-transform:uppercase;letter-spacing:0.4px;
+  }
+  .student-info input[type="text"]{
+    display:block;width:100%;margin-top:5px;padding:10px 12px;
+    border:1.5px solid var(--gold-light);border-radius:8px;
+    font-family:'Lora',serif;font-size:0.95rem;color:var(--emerald);background:#fff;
+    box-sizing:border-box;
+  }
+  .student-info input[type="text"]:focus{outline:none;border-color:var(--teal);}
+  .level-choice{
+    display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:22px;
+  }
+  .level-card{
+    flex:1 1 220px;max-width:260px;background:var(--parchment-deep);
+    border:1.5px solid var(--gold-light);border-radius:12px;padding:16px 16px 18px;text-align:center;
+  }
+  .level-card h3{margin:0 0 6px;color:var(--emerald);font-size:1rem;}
+  .level-card p{margin:0 0 14px;font-size:0.82rem;color:#5b6b63;line-height:1.4;}
+  .submit-status{
+    text-align:center;font-size:0.85rem;color:#5b6b63;margin:4px 0 18px;min-height:20px;
+  }
+  .submit-status.ok{color:var(--correct);font-weight:600;}
+  .submit-status.warn{color:#96721f;font-weight:600;}
+  .btn{
+    display:inline-block;background:var(--teal);color:#fff;border:none;border-radius:10px;
+    padding:13px 26px;font-family:'Lora',serif;font-size:1rem;font-weight:600;cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:hover{background:var(--teal-dark);}
+  .btn:active{transform:scale(0.98);}
+  .btn.gold{background:var(--gold);}
+  .btn.gold:hover{background:#96721f;}
+  .btn:disabled{background:#ccc;cursor:not-allowed;}
+  .btn-row{text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .progress-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:0.85rem;color:var(--teal-dark);font-weight:600;}
+  .progress-bar{flex:1;height:8px;background:var(--parchment-deep);border-radius:6px;overflow:hidden;border:1px solid var(--gold-light);}
+  .progress-fill{height:100%;background:linear-gradient(90deg, var(--gold), var(--teal));transition:width .3s ease;}
+  .ayah-ref{font-size:0.82rem;color:var(--gold);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;}
+  .ayah-box{
+    direction:rtl;font-family:'UthmanicHafs','Amiri', serif;font-size:1.85rem;line-height:2.5;text-align:center;
+    color:var(--emerald);background:var(--parchment-deep);border:1px solid var(--gold-light);
+    border-radius:10px;padding:18px 14px;margin-bottom:18px;
+  }
+  .ayah-box .target-word{color:var(--teal-dark);border-bottom:3px dotted var(--gold);padding-bottom:2px;}
+  .gloss-title{font-size:0.82rem;text-transform:uppercase;letter-spacing:0.5px;color:#5b6b63;margin:6px 0 8px;font-weight:700;}
+  .gloss-table{display:flex;flex-wrap:wrap;gap:8px;direction:rtl;margin-bottom:20px;}
+  .gloss-item{background:#fff;border:1px solid var(--gold-light);border-radius:8px;padding:6px 10px;text-align:center;min-width:64px;}
+  .gloss-item.blank{border:2px dashed var(--teal);background:#eef7f6;}
+  .gloss-item .ar{font-family:'UthmanicHafs','Amiri',serif;font-size:1.2rem;color:var(--emerald);}
+  .gloss-item .tr{font-size:0.72rem;color:#6a7a72;direction:ltr;margin-top:2px;}
+  .gloss-item.blank .tr{color:var(--teal-dark);font-weight:700;}
+  .part{margin-bottom:22px;}
+  .part-label{font-weight:700;color:var(--emerald);margin-bottom:4px;font-size:0.98rem;display:flex;align-items:center;gap:8px;}
+  .part-sub{font-size:0.82rem;color:#6a7a72;margin-bottom:10px;}
+  .part-label .tag{background:var(--teal);color:#fff;font-size:0.68rem;padding:2px 8px;border-radius:20px;letter-spacing:0.4px;text-transform:uppercase;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option{
+    border:1.5px solid var(--gold-light);background:#fff;border-radius:9px;padding:11px 14px;
+    cursor:pointer;font-size:0.96rem;display:flex;align-items:center;gap:10px;
+    transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--teal);}
+  .option input{accent-color:var(--teal);}
+  .option.correct{background:var(--correct-bg);border-color:var(--correct);color:var(--correct);font-weight:600;}
+  .option.incorrect{background:var(--incorrect-bg);border-color:var(--incorrect);color:var(--incorrect);font-weight:600;}
+  .option.locked{cursor:default;}
+  .explain{margin-top:10px;background:var(--parchment-deep);border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.88rem;color:#3f4e47;display:none;}
+  .explain.show{display:block;}
+  .assist-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .assist-btn{
+    padding:8px 16px;font-size:0.82rem;background:#fff;color:var(--teal-dark);
+    border:1.5px solid var(--teal);border-radius:8px;font-family:'Lora',serif;font-weight:600;cursor:pointer;
+  }
+  .assist-btn:hover:not(:disabled){background:var(--parchment-deep);}
+  .assist-btn:disabled{background:#f2efe6;color:#9aa39c;border-color:#ddd6c2;cursor:default;}
+  #assistLegend{display:flex;gap:6px;flex-wrap:wrap;}
+  .legend-chip{
+    display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;
+    border:1.5px solid currentColor;
+  }
+  .morph-harf{color:#a3771f;font-weight:700;}
+  .morph-fiil{color:var(--teal-dark);font-weight:700;}
+  .morph-pronoun{color:#7a4f8a;font-weight:700;}
+  .legend-chip.morph-harf{background:#faf1d9;}
+  .legend-chip.morph-fiil{background:#e8f3f1;}
+  .legend-chip.morph-pronoun{background:#f2e9f4;}
+  #results .score-circle{
+    width:150px;height:150px;border-radius:50%;border:10px solid var(--gold-light);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    margin:10px auto 20px;background:#fff;
+  }
+  #results .score-circle b{font-size:2.1rem;color:var(--teal-dark);}
+  #results .score-circle span{font-size:0.78rem;color:#5b6b63;}
+  .review-item{border-bottom:1px solid var(--gold-light);padding:10px 0;font-size:0.9rem;}
+  .review-item .ref{color:var(--gold);font-weight:700;}
+  .review-item .status-ok{color:var(--correct);font-weight:700;}
+  .review-item .status-bad{color:var(--incorrect);font-weight:700;}
+  .hidden{display:none !important;}
+  footer{text-align:center;color:#8a9990;font-size:0.78rem;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <img class="brand-logo" alt="AtTartil Quranic Institute" src="data:image/webp;base64,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">
+    <h1>Kuiz Tasrif</h1>
+    <div class="root-badge">خ - ل - ق</div>
+    <p class="sub">AtTartil · Latihan Form I — bagi setiap ayat, pilih terjemahan yang tepat bagi <b>masa &amp; pelaku</b>, kemudian kenal pasti <b>jenis perkataan</b> (ṣarf).</p>
+  </header>
+
+  <!-- INTRO -->
+  <div id="intro" class="card">
+    <p style="text-align:center;color:#3f4e47;">Setiap perkataan dalam kuiz ini berasal daripada akar <span class="arabic" style="font-size:1.3rem;">خلق</span>, Form I sahaja (فعل ماضي / مضارع, aktif dan pasif) serta kata nama terbitannya: اسم فاعل (خَالِق) dan مصدر (خَلْق). Oleh kerana makna akar berulang di seluruh kuiz, kuiz ini tidak menguji kosa kata semula — sebaliknya, setiap pilihan terjemahan mengubah <b>orang (pelaku)</b>, <b>masa</b> dan/atau <b>bentuk aktif/pasif</b>, jadi memilih dengan betul bermakna anda telah mengenal pasti pelaku (الفاعل) daripada bentuk perkataan Arab itu sendiri. Terjemahan perkataan demi perkataan diambil daripada quran.com (Bahasa Indonesia).</p>
+    <div class="stats">
+      <div class="stat"><b>10</b><span>Soalan Tahap 1</span></div>
+      <div class="stat"><b>10</b><span>Soalan Tahap 2</span></div>
+      <div class="stat"><b>⟳</b><span>Disusun semula setiap cubaan</span></div>
+    </div>
+    <div class="student-info">
+      <label>Nama
+        <input type="text" id="studentName" placeholder="cth. Ahmad bin Ali" autocomplete="name">
+      </label>
+      <label>Kelas
+        <input type="text" id="studentClass" placeholder="cth. QLME 22" autocomplete="off">
+      </label>
+    </div>
+    <div class="level-choice">
+      <div class="level-card">
+        <h3>Tahap 1</h3>
+        <p>Terjemahkan kata kerja dan kenal pasti pelakunya (الفاعل). Tiada dhomir bersambung.</p>
+        <button class="btn" onclick="startQuiz(1)">Mula Tahap 1</button>
+      </div>
+      <div class="level-card">
+        <h3>Tahap 2</h3>
+        <p>Sama, tetapi setiap perkataan sasaran juga membawa dhomir bersambung yang perlu diterjemahkan.</p>
+        <button class="btn gold" onclick="startQuiz(2)">Mula Tahap 2</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="hidden">
+    <div class="progress-wrap">
+      <span id="qCounter">Soalan 1 / 10</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div class="btn-row">
+      <button class="btn" id="checkBtn" onclick="checkAnswers()">Semak Jawapan</button>
+      <button class="btn gold hidden" id="nextBtn" onclick="nextQuestion()">Soalan Seterusnya →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="card hidden">
+    <h2 style="text-align:center;color:var(--emerald);margin-top:0;" id="resultsHeading">Kuiz Selesai</h2>
+    <div class="score-circle"><b id="scorePct">0%</b><span id="scoreFrac">0 / 0 mata</span></div>
+    <div id="submitStatus" class="submit-status"></div>
+    <div id="reviewList"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="startQuiz(currentLevel)">Cuba Lagi — Susunan Baharu</button>
+      <button class="btn gold" onclick="goToIntro()">Pilih Tahap Lain</button>
+    </div>
+  </div>
+
+  <footer>AtTartil · Where Qur'anic Knowledge Transforms Lives</footer>
+</div>
+
+<script>
+/* ============ LEVEL 1 — verb + doer only (no attached pronoun) ============ */
+const LEVEL1_BANK = [
+ {
+  "ref": "6:1",
+  "surah": "Al-Anʿām",
+  "ayah": "الْحَمْدُ لِلَّهِ الَّذِي خَلَقَ السَّمَاوَاتِ وَالْأَرْضَ وَجَعَلَ الظُّلُمَاتِ وَالنُّورَ",
+  "gloss": [
+   {
+    "ar": "الْحَمْدُ لِلَّهِ",
+    "tr": "segala puji bagi Allah"
+   },
+   {
+    "ar": "الَّذِي",
+    "tr": "yang"
+   },
+   {
+    "ar": "خَلَقَ",
+    "target": true
+   },
+   {
+    "ar": "السَّمَاوَاتِ وَالْأَرْضَ",
+    "tr": "langit(jamak) dan bumi"
+   },
+   {
+    "ar": "وَجَعَلَ",
+    "tr": "dan Dia telah menjadikan"
+   },
+   {
+    "ar": "الظُّلُمَاتِ وَالنُّورَ",
+    "tr": "gelap dan cahaya/terang"
+   }
+  ],
+  "targetWord": "خَلَقَ",
+  "morphemes": [
+   {
+    "text": "خَلَقَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "telah menciptakan",
+    "mereka telah menciptakan",
+    "Dia menciptakan",
+    "Dia diciptakan"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berada pada pola asas فَعَلَ (masa lampau) dengan dhomir tersembunyi هو sebagai فاعل, merujuk kembali kepada اللَّه: 'Dia telah menciptakan'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "اسم فاعل (kata nama pelaku)",
+    "مصدر (kata terbitan)"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berbaris fatḥah sepenuhnya tanpa huruf mudāriʿ — فعل ماضي asas (Form I)."
+  }
+ },
+ {
+  "ref": "3:47",
+  "surah": "Āl ʿImrān",
+  "ayah": "قَالَ كَذَٰلِكِ اللَّهُ يَخْلُقُ مَا يَشَاءُ",
+  "gloss": [
+   {
+    "ar": "قَالَ",
+    "tr": "Dia berfirman"
+   },
+   {
+    "ar": "كَذَٰلِكِ",
+    "tr": "demikianlah"
+   },
+   {
+    "ar": "اللَّهُ",
+    "tr": "Allah"
+   },
+   {
+    "ar": "يَخْلُقُ",
+    "target": true
+   },
+   {
+    "ar": "مَا يَشَاءُ",
+    "tr": "apa Dia kehendaki"
+   }
+  ],
+  "targetWord": "يَخْلُقُ",
+  "morphemes": [
+   {
+    "text": "يَخْلُقُ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "Dia menciptakan",
+    "Dia telah menciptakan",
+    "Kami menciptakan",
+    "Dia diciptakan"
+   ],
+   "correct": 0,
+   "note": "يَخْلُقُ bermula dengan huruf mudāriʿ ي dan mengikut pola mudāriʿ — masa kini, dengan dhomir tersembunyi هو (merujuk kepada اللَّه) sebagai فاعل: 'Dia menciptakan'."
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع (kata kerja kini)",
+    "فعل ماضي (kata kerja lampau)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "يَخْلُقُ dimulakan dengan huruf mudāriʿ (ي) dan berbaris ḍammah — kata kerja kini yang biasa (aktif, marfūʿ)."
+  }
+ },
+ {
+  "ref": "3:49",
+  "surah": "Āl ʿImrān",
+  "ayah": "أَنِّي أَخْلُقُ لَكُمْ مِنَ الطِّينِ كَهَيْئَةِ الطَّيْرِ فَأَنْفُخُ فِيهِ فَيَكُونُ طَيْرًا بِإِذْنِ اللَّهِ",
+  "gloss": [
+   {
+    "ar": "أَنِّي",
+    "tr": "sesungguhnya aku"
+   },
+   {
+    "ar": "أَخْلُقُ",
+    "target": true
+   },
+   {
+    "ar": "لَكُمْ",
+    "tr": "bagi kalian"
+   },
+   {
+    "ar": "مِنَ الطِّينِ",
+    "tr": "dari tanah"
+   },
+   {
+    "ar": "كَهَيْئَةِ الطَّيْرِ",
+    "tr": "seperti bentuk burung"
+   },
+   {
+    "ar": "فَأَنْفُخُ فِيهِ",
+    "tr": "maka/lalu aku meniupkan kedalamnya"
+   },
+   {
+    "ar": "فَيَكُونُ طَيْرًا",
+    "tr": "maka ia menjadi seekor burung"
+   },
+   {
+    "ar": "بِإِذْنِ اللَّهِ",
+    "tr": "dengan izin Allah"
+   }
+  ],
+  "targetWord": "أَخْلُقُ",
+  "morphemes": [
+   {
+    "text": "أَخْلُقُ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "aku membuat",
+    "kami membuat",
+    "dia membuat",
+    "aku telah membuat"
+   ],
+   "correct": 0,
+   "note": "أَخْلُقُ dimulakan dengan أ, penanda mudāriʿ bagi orang pertama tunggal — Nabi Isa (عليه السلام) berkata tentang dirinya: 'aku membuat/membentuk'."
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع (kata kerja kini)",
+    "فعل ماضي (kata kerja lampau)",
+    "فعل أمر (kata kerja perintah)",
+    "مصدر (kata terbitan)"
+   ],
+   "correct": 0,
+   "note": "أَخْلُقُ membawa awalan mudāriʿ أ — masa kini, orang pertama tunggal."
+  }
+ },
+ {
+  "ref": "3:191",
+  "surah": "Āl ʿImrān",
+  "ayah": "رَبَّنَا مَا خَلَقْتَ هَٰذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ",
+  "gloss": [
+   {
+    "ar": "رَبَّنَا",
+    "tr": "ya Tuhan kami"
+   },
+   {
+    "ar": "مَا",
+    "tr": "tidak"
+   },
+   {
+    "ar": "خَلَقْتَ",
+    "target": true
+   },
+   {
+    "ar": "هَٰذَا",
+    "tr": "ini"
+   },
+   {
+    "ar": "بَاطِلًا",
+    "tr": "sia-sia"
+   },
+   {
+    "ar": "سُبْحَانَكَ",
+    "tr": "Maha Suci Engkau"
+   },
+   {
+    "ar": "فَقِنَا",
+    "tr": "maka peliharalah"
+   },
+   {
+    "ar": "عَذَابَ النَّارِ",
+    "tr": "siksa neraka"
+   }
+  ],
+  "targetWord": "خَلَقْتَ",
+  "morphemes": [
+   {
+    "text": "خَلَقْتَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "Engkau ciptakan",
+    "Engkau menciptakan (kini)",
+    "Dia telah menciptakan",
+    "Kami telah menciptakan"
+   ],
+   "correct": 0,
+   "note": "خَلَقْتَ menyambungkan ـتَ terus kepada pangkal masa lampau خَلَقَ — masa lampau, orang kedua lelaki tunggal: 'Engkau telah menciptakan'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "Akhiran pelaku ـتَ bersambung terus pada pangkal masa lampau — pola ini hanya berlaku pada فعل ماضي."
+  }
+ },
+ {
+  "ref": "4:28",
+  "surah": "An-Nisāʾ",
+  "ayah": "يُرِيدُ اللَّهُ أَنْ يُخَفِّفَ عَنْكُمْ وَخُلِقَ الْإِنْسَانُ ضَعِيفًا",
+  "gloss": [
+   {
+    "ar": "يُرِيدُ اللَّهُ",
+    "tr": "menghendaki Allah"
+   },
+   {
+    "ar": "أَنْ يُخَفِّفَ عَنْكُمْ",
+    "tr": "supaya Dia memberi keringanan dari kalian"
+   },
+   {
+    "ar": "وَخُلِقَ",
+    "target": true
+   },
+   {
+    "ar": "الْإِنْسَانُ",
+    "tr": "manusia"
+   },
+   {
+    "ar": "ضَعِيفًا",
+    "tr": "lemah"
+   }
+  ],
+  "targetWord": "خُلِقَ",
+  "morphemes": [
+   {
+    "text": "وَ",
+    "type": "harf"
+   },
+   {
+    "text": "خُلِقَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "dan dijadikan",
+    "dan sedang dijadikan",
+    "dan menjadikan",
+    "dan sedang menjadikan"
+   ],
+   "correct": 0,
+   "note": "خُلِقَ berbaris ḍammah pada خ dan bukan fatḥah — tanda kata kerja lampau pasif; kata nama الْإِنْسَانُ yang disebut selepasnya ialah نائب الفاعل: 'dan manusia dijadikan berkeadaan lemah'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي مبني للمجهول (kata kerja lampau pasif)",
+    "فعل مضارع مبني للمجهول (kata kerja kini pasif)",
+    "فعل ماضي (kata kerja lampau aktif)",
+    "اسم مفعول (kata nama objek)"
+   ],
+   "correct": 0,
+   "note": "خُلِقَ berbaris ḍammah-kasrah, bukan fatḥah-fatḥah yang aktif bagi خَلَقَ — tanda فعل ماضي pasif."
+  }
+ },
+ {
+  "ref": "7:191",
+  "surah": "Al-Aʿrāf",
+  "ayah": "أَيُشْرِكُونَ مَا لَا يَخْلُقُ شَيْئًا وَهُمْ يُخْلَقُونَ",
+  "gloss": [
+   {
+    "ar": "أَيُشْرِكُونَ",
+    "tr": "apakah mereka mempersekutukan"
+   },
+   {
+    "ar": "مَا لَا يَخْلُقُ",
+    "tr": "apa tidak menciptakan"
+   },
+   {
+    "ar": "شَيْئًا",
+    "tr": "sesuatu"
+   },
+   {
+    "ar": "وَهُمْ",
+    "tr": "dan mereka"
+   },
+   {
+    "ar": "يُخْلَقُونَ",
+    "target": true
+   }
+  ],
+  "targetWord": "يُخْلَقُونَ",
+  "morphemes": [
+   {
+    "text": "يُخْلَقُونَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "mereka diciptakan",
+    "dia diciptakan",
+    "mereka telah menciptakan",
+    "mereka menciptakan"
+   ],
+   "correct": 0,
+   "note": "يُخْلَقُونَ berbaris ḍammah pada ي dan bukan fatḥah, dengan واو الجماعة menandakan هم — kata kerja kini pasif: 'sedangkan mereka sendiri diciptakan'."
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع مبني للمجهول (kata kerja kini pasif)",
+    "فعل ماضي مبني للمجهول (kata kerja lampau pasif)",
+    "فعل مضارع (kata kerja kini aktif)",
+    "اسم مفعول (kata nama objek)"
+   ],
+   "correct": 0,
+   "note": "يُخْلَقُونَ dimulakan dengan ḍammah pada ي — tanda kata kerja mudāriʿ yang tidak disebut pelakunya (مبني للمجهول)."
+  }
+ },
+ {
+  "ref": "16:20",
+  "surah": "An-Naḥl",
+  "ayah": "وَالَّذِينَ يَدْعُونَ مِنْ دُونِ اللَّهِ لَا يَخْلُقُونَ شَيْئًا وَهُمْ يُخْلَقُونَ",
+  "gloss": [
+   {
+    "ar": "وَالَّذِينَ يَدْعُونَ",
+    "tr": "dan orang-orang yang (mereka) menyeru/menyembah"
+   },
+   {
+    "ar": "مِنْ دُونِ اللَّهِ",
+    "tr": "dari selain Allah"
+   },
+   {
+    "ar": "لَا",
+    "tr": "tidak"
+   },
+   {
+    "ar": "يَخْلُقُونَ",
+    "target": true
+   },
+   {
+    "ar": "شَيْئًا",
+    "tr": "sesuatu"
+   },
+   {
+    "ar": "وَهُمْ يُخْلَقُونَ",
+    "tr": "dan/sedang mereka mereka diciptakan"
+   }
+  ],
+  "targetWord": "يَخْلُقُونَ",
+  "morphemes": [
+   {
+    "text": "يَخْلُقُونَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "mereka dapat menciptakan",
+    "mereka telah menciptakan",
+    "dia dapat menciptakan",
+    "mereka diciptakan"
+   ],
+   "correct": 0,
+   "note": "يَخْلُقُونَ membawa واو الجماعة (هم, 'mereka') dengan fatḥah pada خ — kata kerja kini aktif: 'mereka [tidak] dapat menciptakan apa-apa'."
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع (kata kerja kini aktif)",
+    "فعل مضارع مبني للمجهول (kata kerja kini pasif)",
+    "فعل ماضي (kata kerja lampau)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "يَخْلُقُونَ mengekalkan baris fatḥah yang aktif pada خ (bandingkan يُخْلَقُونَ, yang berbaris ḍammah) — مضارع aktif, bukan pasif."
+  }
+ },
+ {
+  "ref": "21:16",
+  "surah": "Al-Anbiyāʾ",
+  "ayah": "وَمَا خَلَقْنَا السَّمَاءَ وَالْأَرْضَ وَمَا بَيْنَهُمَا لَاعِبِينَ",
+  "gloss": [
+   {
+    "ar": "وَمَا",
+    "tr": "dan Kami"
+   },
+   {
+    "ar": "خَلَقْنَا",
+    "target": true
+   },
+   {
+    "ar": "السَّمَاءَ وَالْأَرْضَ",
+    "tr": "langit dan bumi"
+   },
+   {
+    "ar": "وَمَا بَيْنَهُمَا",
+    "tr": "dan apa-apa antara keduanya"
+   },
+   {
+    "ar": "لَاعِبِينَ",
+    "tr": "bermain-main"
+   }
+  ],
+  "targetWord": "خَلَقْنَا",
+  "morphemes": [
+   {
+    "text": "خَلَقْنَا",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "tidak menciptakan",
+    "tidak sedang menciptakan",
+    "mereka tidak menciptakan",
+    "aku tidak menciptakan"
+   ],
+   "correct": 0,
+   "note": "خَلَقْنَا menyambungkan ـنَا terus kepada pangkal masa lampau خَلَقَ — masa lampau, orang pertama jamak: 'Kami telah menciptakan'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "Akhiran pelaku ـنَا bersambung terus pada pangkal masa lampau — pola ini hanya berlaku pada فعل ماضي."
+  }
+ },
+ {
+  "ref": "17:99",
+  "surah": "Al-Isrāʾ",
+  "ayah": "أَوَلَمْ يَرَوْا أَنَّ اللَّهَ الَّذِي خَلَقَ السَّمَاوَاتِ وَالْأَرْضَ قَادِرٌ عَلَىٰ أَنْ يَخْلُقَ مِثْلَهُمْ",
+  "gloss": [
+   {
+    "ar": "أَوَلَمْ يَرَوْا",
+    "tr": "ataukah tidak mereka memperhatikan"
+   },
+   {
+    "ar": "أَنَّ اللَّهَ",
+    "tr": "bahwasanya Allah"
+   },
+   {
+    "ar": "الَّذِي خَلَقَ",
+    "tr": "yang telah menciptakan"
+   },
+   {
+    "ar": "السَّمَاوَاتِ وَالْأَرْضَ",
+    "tr": "langit(jamak) dan bumi"
+   },
+   {
+    "ar": "قَادِرٌ",
+    "tr": "berkuasa"
+   },
+   {
+    "ar": "عَلَىٰ",
+    "tr": "untuk"
+   },
+   {
+    "ar": "أَنْ",
+    "tr": "bahwa"
+   },
+   {
+    "ar": "يَخْلُقَ",
+    "target": true
+   },
+   {
+    "ar": "مِثْلَهُمْ",
+    "tr": "serupa dengan mereka"
+   }
+  ],
+  "targetWord": "يَخْلُقَ",
+  "morphemes": [
+   {
+    "text": "يَخْلُقَ",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "menciptakan",
+    "telah menciptakan",
+    "mereka menciptakan",
+    "diciptakan"
+   ],
+   "correct": 0,
+   "note": "أَنْ يَخْلُقَ selepas قَادِرٌ عَلَىٰ membentuk klausa tujuan/objek — 'berkuasa menciptakan yang serupa dengan mereka', dengan فاعل هو tersembunyi merujuk kepada اللَّه."
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع منصوب (kata kerja kini manṣūb (ringan), selepas أَنْ)",
+    "فعل ماضي (kata kerja lampau)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "أَنْ menjadikan kata kerja mudāriʿ selepasnya dalam keadaan منصوب — يَخْلُقَ menggugurkan ḍammah رفع kepada fatḥah, dan tetap sebagai فعل مضارع."
+  }
+ },
+ {
+  "ref": "52:35",
+  "surah": "Aṭ-Ṭūr",
+  "ayah": "أَمْ خُلِقُوا مِنْ غَيْرِ شَيْءٍ أَمْ هُمُ الْخَالِقُونَ",
+  "gloss": [
+   {
+    "ar": "أَمْ",
+    "tr": "ataukah/apakah"
+   },
+   {
+    "ar": "خُلِقُوا",
+    "target": true
+   },
+   {
+    "ar": "مِنْ غَيْرِ شَيْءٍ",
+    "tr": "dari selain sesuatu"
+   },
+   {
+    "ar": "أَمْ",
+    "tr": "ataukah/apakah"
+   },
+   {
+    "ar": "هُمُ الْخَالِقُونَ",
+    "tr": "mereka yang menciptakan"
+   }
+  ],
+  "targetWord": "خُلِقُوا",
+  "morphemes": [
+   {
+    "text": "خُلِقُوا",
+    "type": "fiil"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "mereka diciptakan",
+    "dia diciptakan",
+    "mereka menciptakan",
+    "mereka sedang diciptakan"
+   ],
+   "correct": 0,
+   "note": "خُلِقُوا berbaris ḍammah-kasrah (pasif) dengan واو الجماعة menandakan هم — masa lampau, pasif: 'adakah mereka diciptakan tanpa sesuatu pun?'"
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي مبني للمجهول (kata kerja lampau pasif)",
+    "فعل مضارع مبني للمجهول (kata kerja kini pasif)",
+    "فعل ماضي (kata kerja lampau aktif)",
+    "اسم مفعول (kata nama objek)"
+   ],
+   "correct": 0,
+   "note": "خُلِقُوا mengikut pola pasif ḍammah-kasrah bagi خُلِقَ, dengan واو الجماعة (هم) ditambah — فعل ماضي pasif."
+  }
+ }
+];
+
+/* ============ LEVEL 2 — target words with an attached pronoun ============ */
+const LEVEL2_BANK = [
+ {
+  "ref": "2:21",
+  "surah": "Al-Baqarah",
+  "ayah": "يَا أَيُّهَا النَّاسُ اعْبُدُوا رَبَّكُمُ الَّذِي خَلَقَكُمْ وَالَّذِينَ مِنْ قَبْلِكُمْ",
+  "gloss": [
+   {
+    "ar": "يَا أَيُّهَا النَّاسُ",
+    "tr": "wahai manusia"
+   },
+   {
+    "ar": "اعْبُدُوا",
+    "tr": "sembahlah"
+   },
+   {
+    "ar": "رَبَّكُمُ",
+    "tr": "Tuhan kalian"
+   },
+   {
+    "ar": "الَّذِي",
+    "tr": "yang"
+   },
+   {
+    "ar": "خَلَقَكُمْ",
+    "target": true
+   },
+   {
+    "ar": "وَالَّذِينَ مِنْ قَبْلِكُمْ",
+    "tr": "dan orang-orang yang dari sebelum kalian"
+   }
+  ],
+  "targetWord": "خَلَقَكُمْ",
+  "morphemes": [
+   {
+    "text": "خَلَقَ",
+    "type": "fiil"
+   },
+   {
+    "text": "كُمْ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "menciptakan kalian",
+    "menciptakan dia",
+    "menciptakan engkau (seorang)",
+    "sedang menciptakan kalian"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ membawa pelaku tersembunyi هو ('Dia'), dan dhomir objek ـكُمْ, 'kamu semua' — 'Dia telah menciptakan kamu semua'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "مصدر (kata terbitan)"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berbaris fatḥah sepenuhnya tanpa huruf mudāriʿ — فعل ماضي; ـكُمْ yang bersambung selepasnya hanyalah dhomir objek, bukan sebahagian daripada tasrif kata kerja itu sendiri."
+  }
+ },
+ {
+  "ref": "18:37",
+  "surah": "Al-Kahf",
+  "ayah": "قَالَ لَهُ صَاحِبُهُ وَهُوَ يُحَاوِرُهُ أَكَفَرْتَ بِالَّذِي خَلَقَكَ مِنْ تُرَابٍ",
+  "gloss": [
+   {
+    "ar": "قَالَ لَهُ صَاحِبُهُ",
+    "tr": "berkata kepadanya kawannya"
+   },
+   {
+    "ar": "وَهُوَ يُحَاوِرُهُ",
+    "tr": "dan dia bercakap-cakap dengannya"
+   },
+   {
+    "ar": "أَكَفَرْتَ",
+    "tr": "apakah kamu ingkar"
+   },
+   {
+    "ar": "بِالَّذِي",
+    "tr": "dengan yang"
+   },
+   {
+    "ar": "خَلَقَكَ",
+    "target": true
+   },
+   {
+    "ar": "مِنْ تُرَابٍ",
+    "tr": "dari tanah"
+   }
+  ],
+  "targetWord": "خَلَقَكَ",
+  "morphemes": [
+   {
+    "text": "خَلَقَ",
+    "type": "fiil"
+   },
+   {
+    "text": "كَ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "telah menciptakan kamu",
+    "telah menciptakan dia",
+    "telah menciptakan aku",
+    "sedang menciptakan kamu"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ membawa pelaku tersembunyi هو, dan dhomir objek ـكَ, 'engkau' (lelaki tunggal) — 'Dia telah menciptakan engkau'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berbaris fatḥah sepenuhnya — فعل ماضي; ـكَ ialah dhomir objek orang kedua yang bersambung dengannya."
+  }
+ },
+ {
+  "ref": "6:94",
+  "surah": "Al-Anʿām",
+  "ayah": "وَلَقَدْ جِئْتُمُونَا فُرَادَىٰ كَمَا خَلَقْنَاكُمْ أَوَّلَ مَرَّةٍ",
+  "gloss": [
+   {
+    "ar": "وَلَقَدْ جِئْتُمُونَا",
+    "tr": "dan sesungguhnya kamu datang kepada Kami"
+   },
+   {
+    "ar": "فُرَادَىٰ",
+    "tr": "sendiri-sendiri"
+   },
+   {
+    "ar": "كَمَا",
+    "tr": "seperti/sebagaimana"
+   },
+   {
+    "ar": "خَلَقْنَاكُمْ",
+    "target": true
+   },
+   {
+    "ar": "أَوَّلَ مَرَّةٍ",
+    "tr": "pertama kali"
+   }
+  ],
+  "targetWord": "خَلَقْنَاكُمْ",
+  "morphemes": [
+   {
+    "text": "خَلَقْنَا",
+    "type": "fiil"
+   },
+   {
+    "text": "كُمْ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "Kami menciptakan kamu",
+    "mereka menciptakan kamu",
+    "Kami menciptakan dia",
+    "Kami sedang menciptakan kamu"
+   ],
+   "correct": 0,
+   "note": "خَلَقْنَاكُمْ membawa dua dhomir bersambung: ـنَا ialah pelaku ('Kami'), dan ـكُمْ ialah objek ('kamu semua') — 'Kami telah menciptakan kamu semua'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "مصدر (kata terbitan)"
+   ],
+   "correct": 0,
+   "note": "Akhiran pelaku ـنَا bersambung terus pada pangkal masa lampau خَلَقَ — pola ini hanya berlaku pada فعل ماضي; ـكُمْ kemudian ditambah sebagai objek."
+  }
+ },
+ {
+  "ref": "7:12",
+  "surah": "Al-Aʿrāf",
+  "ayah": "قَالَ أَنَا خَيْرٌ مِنْهُ خَلَقْتَنِي مِنْ نَارٍ وَخَلَقْتَهُ مِنْ طِينٍ",
+  "gloss": [
+   {
+    "ar": "قَالَ",
+    "tr": "(iblis) berkata"
+   },
+   {
+    "ar": "أَنَا خَيْرٌ مِنْهُ",
+    "tr": "saya lebih baik daripadanya"
+   },
+   {
+    "ar": "خَلَقْتَنِي",
+    "target": true
+   },
+   {
+    "ar": "مِنْ نَارٍ",
+    "tr": "dari api"
+   },
+   {
+    "ar": "وَخَلَقْتَهُ",
+    "tr": "dan Engkau ciptakan dia"
+   },
+   {
+    "ar": "مِنْ طِينٍ",
+    "tr": "dari tanah"
+   }
+  ],
+  "targetWord": "خَلَقْتَنِي",
+  "morphemes": [
+   {
+    "text": "خَلَقْتَ",
+    "type": "fiil"
+   },
+   {
+    "text": "نِي",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "Engkau ciptakan saya",
+    "Engkau ciptakan dia",
+    "saya ciptakan Engkau",
+    "Engkau ciptakan kami"
+   ],
+   "correct": 0,
+   "note": "خَلَقْتَنِي membawa dua dhomir bersambung: ـتَ ialah pelaku ('Engkau'), dan ـنِي ialah objek ('saya') — Iblis berkata kepada Allah: 'Engkau telah menciptakan saya'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "Akhiran pelaku ـتَ bersambung terus pada pangkal masa lampau خَلَقَ — pola ini hanya berlaku pada فعل ماضي; ـنِي kemudian ditambah sebagai objek."
+  }
+ },
+ {
+  "ref": "41:37",
+  "surah": "Fuṣṣilat",
+  "ayah": "وَاسْجُدُوا لِلَّهِ الَّذِي خَلَقَهُنَّ",
+  "gloss": [
+   {
+    "ar": "وَاسْجُدُوا",
+    "tr": "dan bersujudlah"
+   },
+   {
+    "ar": "لِلَّهِ",
+    "tr": "kepada Allah"
+   },
+   {
+    "ar": "الَّذِي",
+    "tr": "yang"
+   },
+   {
+    "ar": "خَلَقَهُنَّ",
+    "target": true
+   }
+  ],
+  "targetWord": "خَلَقَهُنَّ",
+  "morphemes": [
+   {
+    "text": "خَلَقَ",
+    "type": "fiil"
+   },
+   {
+    "text": "هُنَّ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "menciptakan semuanya",
+    "menciptakan mereka (lelaki)",
+    "menciptakan dia (perempuan)",
+    "sedang menciptakan semuanya"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ membawa pelaku tersembunyi هو, dan dhomir objek ـهُنَّ, 'mereka' (jamak perempuan — merujuk kembali kepada matahari, bulan dan bintang) — 'Dia telah menciptakan semuanya'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "مصدر (kata terbitan)"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berbaris fatḥah sepenuhnya — فعل ماضي; ـهُنَّ ialah dhomir objek jamak perempuan yang bersambung dengannya."
+  }
+ },
+ {
+  "ref": "56:59",
+  "surah": "Al-Wāqiʿah",
+  "ayah": "أَأَنْتُمْ تَخْلُقُونَهُ أَمْ نَحْنُ الْخَالِقُونَ",
+  "gloss": [
+   {
+    "ar": "أَأَنْتُمْ",
+    "tr": "apakah kamu"
+   },
+   {
+    "ar": "تَخْلُقُونَهُ",
+    "target": true
+   },
+   {
+    "ar": "أَمْ نَحْنُ",
+    "tr": "atau Kami"
+   },
+   {
+    "ar": "الْخَالِقُونَ",
+    "tr": "yang menciptakannya"
+   }
+  ],
+  "targetWord": "تَخْلُقُونَهُ",
+  "morphemes": [
+   {
+    "text": "تَخْلُقُونَ",
+    "type": "fiil"
+   },
+   {
+    "text": "هُ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "kamu menciptakannya",
+    "dia menciptakannya",
+    "kamu telah menciptakannya",
+    "kami menciptakannya"
+   ],
+   "correct": 0,
+   "note": "تَخْلُقُونَ membawa واو الجماعة (أنتم, 'kamu semua') serta dhomir objek ـهُ, 'nya' (merujuk kepada air mani yang disebut sebelumnya) — 'adakah kamu yang menciptakannya?'"
+  },
+  "p2": {
+   "opts": [
+    "فعل مضارع (kata kerja kini)",
+    "فعل ماضي (kata kerja lampau)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم فاعل (kata nama pelaku)"
+   ],
+   "correct": 0,
+   "note": "تَخْلُقُونَ dimulakan dengan huruf mudāriʿ ت dan mengekalkan واو الجماعة — masa kini, orang kedua jamak; ـهُ yang bersambung selepasnya hanyalah dhomir objek."
+  }
+ },
+ {
+  "ref": "3:59",
+  "surah": "Āl ʿImrān",
+  "ayah": "خَلَقَهُ مِنْ تُرَابٍ ثُمَّ قَالَ لَهُ كُنْ فَيَكُونُ",
+  "gloss": [
+   {
+    "ar": "خَلَقَهُ",
+    "target": true
+   },
+   {
+    "ar": "مِنْ تُرَابٍ",
+    "tr": "dari tanah"
+   },
+   {
+    "ar": "ثُمَّ قَالَ لَهُ",
+    "tr": "kemudian Dia berfirman kepadanya"
+   },
+   {
+    "ar": "كُنْ",
+    "tr": "jadilah"
+   },
+   {
+    "ar": "فَيَكُونُ",
+    "tr": "maka jadilah dia"
+   }
+  ],
+  "targetWord": "خَلَقَهُ",
+  "morphemes": [
+   {
+    "text": "خَلَقَ",
+    "type": "fiil"
+   },
+   {
+    "text": "هُ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "Dia menjadikannya",
+    "Dia menjadikan mereka",
+    "Dia menjadikan aku",
+    "Dia sedang menjadikannya"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ membawa pelaku tersembunyi هو, dan dhomir objek ـهُ, 'nya' — merujuk kepada Nabi Adam (عليه السلام): 'Dia menciptakannya daripada tanah'."
+  },
+  "p2": {
+   "opts": [
+    "فعل ماضي (kata kerja lampau)",
+    "فعل مضارع (kata kerja kini)",
+    "فعل أمر (kata kerja perintah)",
+    "اسم مفعول (kata nama objek)"
+   ],
+   "correct": 0,
+   "note": "خَلَقَ berbaris fatḥah sepenuhnya — فعل ماضي; ـهُ yang bersambung selepasnya ialah dhomir objek, bukan sebahagian daripada tasrif kata kerja itu sendiri."
+  }
+ },
+ {
+  "ref": "31:28",
+  "surah": "Luqmān",
+  "ayah": "مَا خَلْقُكُمْ وَلَا بَعْثُكُمْ إِلَّا كَنَفْسٍ وَاحِدَةٍ إِنَّ اللَّهَ سَمِيعٌ بَصِيرٌ",
+  "gloss": [
+   {
+    "ar": "مَا",
+    "tr": "tidak"
+   },
+   {
+    "ar": "خَلْقُكُمْ",
+    "target": true
+   },
+   {
+    "ar": "وَلَا بَعْثُكُمْ",
+    "tr": "dan tidak kebangkitanmu"
+   },
+   {
+    "ar": "إِلَّا كَنَفْسٍ وَاحِدَةٍ",
+    "tr": "kecuali seperti jiwa satu"
+   },
+   {
+    "ar": "إِنَّ اللَّهَ سَمِيعٌ بَصِيرٌ",
+    "tr": "sesungguhnya Allah Maha Mendengar Maha Melihat"
+   }
+  ],
+  "targetWord": "خَلْقُكُمْ",
+  "morphemes": [
+   {
+    "text": "خَلْقُ",
+    "type": "ism"
+   },
+   {
+    "text": "كُمْ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "menciptakan kalian",
+    "menciptakan dia",
+    "menciptakan mereka",
+    "menciptakan kami"
+   ],
+   "correct": 0,
+   "note": "خَلْقُ membawa akhiran ـكُمْ — dhomir milik orang kedua jamak, 'kamu' — 'penciptaan kamu (dan kebangkitan kamu) hanyalah seperti (penciptaan) satu jiwa'."
+  },
+  "p2": {
+   "opts": [
+    "مصدر (kata terbitan)",
+    "اسم فاعل (kata nama pelaku)",
+    "فعل ماضي (kata kerja lampau)",
+    "اسم (kata nama, tunggal)"
+   ],
+   "correct": 0,
+   "note": "خَلْق ialah مصدر (kata terbitan) bagi خَلَقَ — ia menamakan perbuatan abstrak 'penciptaan' itu sendiri, di sini dengan dhomir milik bersambung."
+  }
+ },
+ {
+  "ref": "43:19",
+  "surah": "Az-Zukhruf",
+  "ayah": "وَجَعَلُوا الْمَلَائِكَةَ الَّذِينَ هُمْ عِبَادُ الرَّحْمَٰنِ إِنَاثًا أَشَهِدُوا خَلْقَهُمْ",
+  "gloss": [
+   {
+    "ar": "وَجَعَلُوا الْمَلَائِكَةَ",
+    "tr": "dan mereka menjadikan malaikat-malaikat"
+   },
+   {
+    "ar": "الَّذِينَ هُمْ عِبَادُ الرَّحْمَٰنِ",
+    "tr": "orang-orang yang mereka itu hamba-hamba Maha Pengasih"
+   },
+   {
+    "ar": "إِنَاثًا",
+    "tr": "orang-orang perempuan"
+   },
+   {
+    "ar": "أَشَهِدُوا",
+    "tr": "apakah mereka menyaksikan"
+   },
+   {
+    "ar": "خَلْقَهُمْ",
+    "target": true
+   }
+  ],
+  "targetWord": "خَلْقَهُمْ",
+  "morphemes": [
+   {
+    "text": "خَلْقَ",
+    "type": "ism"
+   },
+   {
+    "text": "هُمْ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "penciptaan mereka",
+    "penciptaannya",
+    "penciptaan kamu",
+    "penciptaan kami"
+   ],
+   "correct": 0,
+   "note": "خَلْقَ membawa akhiran ـهُمْ — dhomir milik orang ketiga jamak, 'mereka' — 'adakah mereka menyaksikan penciptaan [para malaikat] itu?'"
+  },
+  "p2": {
+   "opts": [
+    "مصدر (kata terbitan)",
+    "اسم فاعل (kata nama pelaku)",
+    "فعل ماضي (kata kerja lampau)",
+    "اسم (kata nama, jamak)"
+   ],
+   "correct": 0,
+   "note": "خَلْق ialah مصدر bagi خَلَقَ, di sini dengan dhomir milik 'mereka' bersambung — ia tetap kata terbitan, bukan kata kerja."
+  }
+ },
+ {
+  "ref": "13:16",
+  "surah": "Ar-Raʿd",
+  "ayah": "أَمْ جَعَلُوا لِلَّهِ شُرَكَاءَ خَلَقُوا كَخَلْقِهِ فَتَشَابَهَ الْخَلْقُ عَلَيْهِمْ",
+  "gloss": [
+   {
+    "ar": "أَمْ جَعَلُوا لِلَّهِ شُرَكَاءَ",
+    "tr": "atau mereka menjadikan bagi Allah beberapa sekutu"
+   },
+   {
+    "ar": "خَلَقُوا",
+    "tr": "mereka menciptakan"
+   },
+   {
+    "ar": "كَخَلْقِهِ",
+    "target": true
+   },
+   {
+    "ar": "فَتَشَابَهَ الْخَلْقُ عَلَيْهِمْ",
+    "tr": "maka/lalu serupa ciptaan atas mereka"
+   }
+  ],
+  "targetWord": "خَلْقِهِ",
+  "morphemes": [
+   {
+    "text": "كَ",
+    "type": "harf"
+   },
+   {
+    "text": "خَلْقِ",
+    "type": "ism"
+   },
+   {
+    "text": "هِ",
+    "type": "pronoun"
+   }
+  ],
+  "p1Label": "Terjemahkan perkataan",
+  "p1": {
+   "opts": [
+    "seperti ciptaanNya",
+    "seperti ciptaan mereka",
+    "seperti ciptaanmu",
+    "seperti ciptaan-ciptaan-Nya"
+   ],
+   "correct": 0,
+   "note": "خَلْقِ membawa akhiran ـهِ — dhomir milik orang ketiga lelaki tunggal, 'Nya', didahului oleh harf كَ ('seperti') — 'seperti ciptaan-Nya'."
+  },
+  "p2": {
+   "opts": [
+    "مصدر (kata terbitan)",
+    "اسم فاعل (kata nama pelaku)",
+    "فعل ماضي (kata kerja lampau)",
+    "اسم (kata nama, tunggal)"
+   ],
+   "correct": 0,
+   "note": "خَلْق ialah مصدر bagi خَلَقَ — di sini didahului oleh harf كَ dan diikuti oleh dhomir milik, tetapi pada asasnya tetap kata terbitan, bukan kata kerja."
+  }
+ }
+];
+
+/* ============ ENGINE ============ */
+let quiz = [];
+let current = 0;
+let answers = [];
+let checked = false;
+let assistiveOn = false;
+let studentName = '';
+let studentClass = '';
+let currentLevel = 1;
+
+/* ⚠️ TEACHER SETUP: Google Apps Script Web App URL for auto-submitting results. */
+const SHEET_WEBAPP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildOptionShuffle(optsArr, correctIdx){
+  const idxArr = optsArr.map((_,i)=>i);
+  const shuffled = shuffleArr(idxArr);
+  return { order: shuffled, newCorrect: shuffled.indexOf(correctIdx) };
+}
+
+function morphClass(type){
+  if(type==='harf') return 'morph-harf';
+  if(type==='pronoun') return 'morph-pronoun';
+  return 'morph-fiil';
+}
+function morphRoleLabel(type){
+  return {harf:'Harf', fiil:"Fe'il", ism:'Isim', pronoun:'Dhomir (dhomir bersambung)'}[type] || type;
+}
+function buildMorphSpans(morphemes){
+  return morphemes.map(m=>`<span class="${morphClass(m.type)}">${m.text}</span>`).join('');
+}
+function buildLegendChips(morphemes){
+  const seen = [];
+  morphemes.forEach(m=>{ if(!seen.includes(m.type)) seen.push(m.type); });
+  return seen.map(t=>`<span class="legend-chip ${morphClass(t)}">${morphRoleLabel(t)}</span>`).join('');
+}
+
+function startQuiz(level){
+  const nameVal = document.getElementById('studentName').value.trim();
+  const classVal = document.getElementById('studentClass').value.trim();
+  if(!nameVal || !classVal){
+    alert('Sila masukkan nama dan kelas anda sebelum bermula.');
+    return;
+  }
+  studentName = nameVal;
+  studentClass = classVal;
+  currentLevel = level;
+
+  const bank = level === 2 ? LEVEL2_BANK : LEVEL1_BANK;
+  quiz = shuffleArr(bank).map(q=>{
+    const p1Shuf = buildOptionShuffle(q.p1.opts, q.p1.correct);
+    const p2Shuf = buildOptionShuffle(q.p2.opts, q.p2.correct);
+    return {...q, p1Shuf, p2Shuf};
+  });
+  current = 0;
+  answers = quiz.map(()=>({p1:null,p2:null}));
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  renderQuestion();
+}
+
+function goToIntro(){
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+}
+
+function renderQuestion(){
+  checked = false;
+  assistiveOn = false;
+  const q = quiz[current];
+  document.getElementById('qCounter').textContent = `Soalan ${current+1} / ${quiz.length}`;
+  document.getElementById('progressFill').style.width = `${((current+1)/quiz.length)*100}%`;
+
+  const hasBreakdown = q.morphemes && q.morphemes.length > 1;
+
+  let glossHtml = '';
+  q.gloss.forEach(w=>{
+    if(w.target){
+      glossHtml += `<div class="gloss-item blank"><div class="ar">${w.ar}</div><div class="tr">?</div></div>`;
+    } else {
+      glossHtml += `<div class="gloss-item"><div class="ar">${w.ar}</div><div class="tr">${w.tr}</div></div>`;
+    }
+  });
+
+  function optionsHtml(name, optsArr, order, chosen, part){
+    return order.map((origIdx,pos)=>{
+      const label = optsArr[origIdx];
+      return `<label class="option" data-part="${part}" data-idx="${pos}">
+        <input type="radio" name="${name}" value="${pos}" ${chosen===pos?'checked':''} onchange="selectOption('${part}',${pos})">
+        <span>${label}</span>
+      </label>`;
+    }).join('');
+  }
+
+  document.getElementById('questionCard').innerHTML = `
+    <div class="ayah-ref">Tahap ${currentLevel} · Sūrah ${q.surah} — ${q.ref}</div>
+    <div class="ayah-box">${q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`)}</div>
+    <div class="assist-row">
+      <button class="btn assist-btn" id="assistBtn" onclick="toggleAssistive()" ${hasBreakdown?'':'disabled title="Perkataan ini tiada harf atau dhomir bersambung yang berasingan untuk dipecahkan."'}>
+        ${hasBreakdown ? '🔍 Tunjuk Pecahan Perkataan' : 'Tiada imbuhan untuk dipecahkan'}
+      </button>
+      <span id="assistLegend"></span>
+    </div>
+    <div class="gloss-title">Perkataan demi perkataan (terjemahan perkataan sasaran disembunyikan) · quran.com (Bahasa Indonesia)</div>
+    <div class="gloss-table">${glossHtml}</div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Bahagian 1</span>${q.p1Label}</div>
+      <div class="options" id="p1Options">
+        ${optionsHtml('p1', q.p1.opts, q.p1Shuf.order, answers[current].p1, 'p1')}
+      </div>
+      <div class="explain" id="p1Explain">${q.p1.note}</div>
+    </div>
+
+    <div class="part">
+      <div class="part-label"><span class="tag">Bahagian 2</span>Apakah jenis perkataan ini? (تصريف)</div>
+      <div class="options" id="p2Options">
+        ${optionsHtml('p2', q.p2.opts, q.p2Shuf.order, answers[current].p2, 'p2')}
+      </div>
+      <div class="explain" id="p2Explain">${q.p2.note}</div>
+    </div>
+  `;
+
+  document.getElementById('checkBtn').classList.remove('hidden');
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+function toggleAssistive(){
+  const q = quiz[current];
+  if(!q.morphemes || q.morphemes.length<=1) return;
+  assistiveOn = !assistiveOn;
+  updateAssistiveDisplay();
+}
+
+function updateAssistiveDisplay(){
+  const q = quiz[current];
+  const fullToken = q.gloss.find(w=>w.target).ar;
+  const ayahBoxEl = document.querySelector('.ayah-box');
+  const blankArEl = document.querySelector('.gloss-item.blank .ar');
+  const legendEl = document.getElementById('assistLegend');
+  const btn = document.getElementById('assistBtn');
+
+  if(assistiveOn && q.morphemes && q.morphemes.length>1){
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(fullToken, buildMorphSpans(q.morphemes));
+    if(blankArEl) blankArEl.innerHTML = buildMorphSpans(q.morphemes);
+    if(legendEl) legendEl.innerHTML = buildLegendChips(q.morphemes);
+    if(btn) btn.innerHTML = '✕ Sembunyi Pecahan Perkataan';
+  } else {
+    if(ayahBoxEl) ayahBoxEl.innerHTML = q.ayah.replace(q.targetWord, `<span class="target-word">${q.targetWord}</span>`);
+    if(blankArEl) blankArEl.innerHTML = fullToken;
+    if(legendEl) legendEl.innerHTML = '';
+    if(btn && q.morphemes && q.morphemes.length>1) btn.innerHTML = '🔍 Tunjuk Pecahan Perkataan';
+  }
+}
+
+function selectOption(part, pos){
+  if(checked) return;
+  answers[current][part] = pos;
+}
+
+function checkAnswers(){
+  const q = quiz[current];
+  if(answers[current].p1===null || answers[current].p2===null){
+    alert('Sila jawab kedua-dua bahagian sebelum menyemak.');
+    return;
+  }
+  checked = true;
+
+  function markPart(part, shuf, containerId, explainId){
+    const chosenPos = answers[current][part];
+    const container = document.getElementById(containerId);
+    const opts = container.querySelectorAll('.option');
+    opts.forEach((el,pos)=>{
+      el.classList.add('locked');
+      if(pos === shuf.newCorrect) el.classList.add('correct');
+      else if(pos === chosenPos) el.classList.add('incorrect');
+    });
+    document.getElementById(explainId).classList.add('show');
+    return chosenPos === shuf.newCorrect;
+  }
+
+  let pts = 0;
+  if(markPart('p1', q.p1Shuf, 'p1Options', 'p1Explain')) pts++;
+  if(markPart('p2', q.p2Shuf, 'p2Options', 'p2Explain')) pts++;
+
+  quiz[current]._earned = pts;
+  quiz[current]._max = 2;
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  if(current < quiz.length-1){
+    current++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+let lastSubmitPayload = null;
+
+function showResults(){
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+
+  const scoreTotal = quiz.reduce((s,q)=>s+(q._earned||0),0);
+  const scoreMax = quiz.reduce((s,q)=>s+(q._max||0),0);
+  const pct = scoreMax ? Math.round((scoreTotal/scoreMax)*100) : 0;
+
+  document.getElementById('resultsHeading').textContent = `Syabas, ${studentName}! (Tahap ${currentLevel})`;
+  document.getElementById('scorePct').textContent = pct+'%';
+  document.getElementById('scoreFrac').textContent = `${scoreTotal} / ${scoreMax} mata`;
+
+  let html = '';
+  const detailParts = [];
+  quiz.forEach((q,i)=>{
+    const full = q._earned === q._max;
+    html += `<div class="review-item">
+      <span class="ref">${i+1}. Sūrah ${q.surah} ${q.ref}</span> — <span class="arabic">${q.targetWord}</span>
+      — <span class="${full?'status-ok':'status-bad'}">${q._earned}/${q._max}</span>
+    </div>`;
+    detailParts.push(`${q.ref} (${q._earned}/${q._max})`);
+  });
+  document.getElementById('reviewList').innerHTML = html;
+
+  lastSubmitPayload = {
+    name: studentName,
+    className: studentClass,
+    level: currentLevel,
+    score: scoreTotal,
+    scoreMax: scoreMax,
+    percentage: pct,
+    details: detailParts.join('; '),
+    submittedAt: new Date().toISOString()
+  };
+  submitResult(lastSubmitPayload);
+}
+
+async function submitResult(data){
+  const statusEl = document.getElementById('submitStatus');
+  if(!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.indexOf('PASTE_YOUR') !== -1){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.textContent = '⚠️ Keputusan tidak dihantar — pautan Google Sheet belum disediakan. Sila maklumkan kepada guru anda.';
+    }
+    return;
+  }
+  if(statusEl){
+    statusEl.className = 'submit-status';
+    statusEl.textContent = '⏳ Menghantar keputusan…';
+  }
+  try{
+    await fetch(SHEET_WEBAPP_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    });
+    if(statusEl){
+      statusEl.className = 'submit-status ok';
+      statusEl.textContent = '✅ Keputusan telah dihantar.';
+    }
+  }catch(err){
+    if(statusEl){
+      statusEl.className = 'submit-status warn';
+      statusEl.innerHTML = '⚠️ Keputusan tidak dapat dihantar — semak sambungan internet anda. <button class="btn gold" style="padding:5px 12px;font-size:0.78rem;" onclick="retrySubmit()">Cuba Semula</button>';
+    }
+  }
+}
+
+function retrySubmit(){
+  if(lastSubmitPayload) submitResult(lastSubmitPayload);
+}
+</script>
+</body>
+</html>
