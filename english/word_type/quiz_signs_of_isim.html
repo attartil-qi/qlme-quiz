@@ -67,6 +67,7 @@
   .after-label{display:block; font-weight:600; color:var(--emerald); margin:12px 0 6px; font-size:.9rem;}
   .feedback .interlinear{margin-bottom:4px;}
   .feedback .iword .ar{color:var(--emerald);}
+  .q-gloss{border-style:solid; border-color:var(--gold-light); margin-bottom:6px;}
   .trans{background:#fffefb; border:1px solid var(--gold-light); border-radius:10px; padding:10px 12px; color:var(--emerald);}
   .trans .vn{color:var(--gold); font-weight:600; margin-right:4px;}
   .opt{display:flex; align-items:center; gap:12px; padding:11px 14px; border:1.5px solid var(--gold-light);
@@ -120,6 +121,7 @@
       <p class="qhint" id="qHint"></p>
       <div id="ayahWrap" class="hidden">
         <div class="ayah-box arabic" id="ayahBox"></div>
+        <div class="interlinear q-gloss hidden" id="qGloss"></div>
         <div class="ayah-ref" id="ayahRef"></div>
       </div>
       <div id="optionsBox"></div>
@@ -246,8 +248,9 @@ function ayahText(verses, firstNum, numbered){
 
 /* ================= QUESTIONS =================
    Source: the teacher's Google Form "SIGNS OF ISIM". Questions and options stay in the form's
-   order (teacher's decision: no shuffling). Word-by-word and full translations of ayat are shown
-   only after the student answers, as in the form. Correct options are listed by index.
+   order (teacher's decision: no shuffling). As in the form: Q9 shows the ayah alone, with its
+   word-by-word and full translation revealed after answering; Q10 shows the word-by-word
+   translation in the question, with the full translation revealed after answering. Correct options are listed by index.
    One point per question; multi-answer questions score only when the selection is exactly right. */
 const QUESTIONS = [
   {n:1, multi:true, pick:5,
@@ -304,7 +307,7 @@ const QUESTIONS = [
    correct:[3],
    note:{en:"4: <span class=\"arabic\">ٱلْكِتَـٰبَ، ٱلْحِكْمَةَ، ٱلتَّوْرَىٰةَ، ٱلْإِنجِيلَ</span>. Each begins with ال, even with the joining <span class=\"arabic\">وَ</span> in front. <span class=\"arabic\">وَيُعَلِّمُهُ</span> (and He will teach him) is a fe‘il.",
          ms:"4: <span class=\"arabic\">ٱلْكِتَـٰبَ، ٱلْحِكْمَةَ، ٱلتَّوْرَىٰةَ، ٱلْإِنجِيلَ</span>. Setiap satu bermula dengan ال, walaupun ada <span class=\"arabic\">وَ</span> di hadapannya. <span class=\"arabic\">وَيُعَلِّمُهُ</span> ialah fe‘il."}},
-  {n:10, verses:SURAH_AT_TIN, tr:TR_AT_TIN, firstAyah:1, numbered:true, ref:"Surah At-Tīn 95:1–8",
+  {n:10, verses:SURAH_AT_TIN, tr:TR_AT_TIN, firstAyah:1, numbered:true, glossInQuestion:true, ref:"Surah At-Tīn 95:1–8",
    prompt:{en:"Based on the 2 signs of a noun (isim) that you have learned, how many nouns (isim) are there in Surah At-Tin?", ms:"Berdasarkan 2 tanda isim yang telah anda pelajari, berapakah bilangan isim dalam Surah At-Tin?"},
    options:["11","12","13","14"],
    correct:[2],
@@ -364,6 +367,9 @@ function renderStep(){
   if(q.verses){
     $('ayahWrap').classList.remove('hidden');
     $('ayahBox').textContent = ayahText(q.verses, q.firstAyah, q.numbered);
+    $('ayahBox').classList.toggle('hidden', !!q.glossInQuestion);
+    const qg=$('qGloss'); qg.innerHTML=''; qg.classList.toggle('hidden', !q.glossInQuestion);
+    if(q.glossInQuestion) qg.appendChild(buildGloss(q));
     $('ayahRef').textContent = q.ref;
   } else {
     $('ayahWrap').classList.add('hidden');
@@ -408,18 +414,10 @@ function checkAnswer(){
 // Word-by-word glosses and the full translation, revealed only after the student answers.
 function afterAnswerTranslation(q){
   const wrap=document.createElement('div');
-  const l1=document.createElement('span'); l1.className='after-label'; l1.textContent=T.wbwLabel; wrap.appendChild(l1);
-  const gb=document.createElement('div'); gb.className='interlinear';
-  q.verses.forEach((v,vi)=>{
-    v.forEach(([ar,gl])=>{
-      const d=document.createElement('div'); d.className='iword';
-      d.innerHTML=`<span class="ar"></span><span class="gl"></span>`;
-      d.querySelector('.ar').textContent=fixQ(ar); d.querySelector('.gl').textContent=L(gl);
-      gb.appendChild(d);
-    });
-    if(q.numbered){ const n=document.createElement('span'); n.className='iverse'; n.textContent=`﴿${AR_NUM(q.firstAyah+vi)}﴾`; gb.appendChild(n); }
-  });
-  wrap.appendChild(gb);
+  if(!q.glossInQuestion){
+    const l1=document.createElement('span'); l1.className='after-label'; l1.textContent=T.wbwLabel; wrap.appendChild(l1);
+    const gb=document.createElement('div'); gb.className='interlinear'; gb.appendChild(buildGloss(q)); wrap.appendChild(gb);
+  }
   const l2=document.createElement('span'); l2.className='after-label'; l2.textContent=T.trLabel; wrap.appendChild(l2);
   const tr=document.createElement('div'); tr.className='trans';
   q.tr.forEach((t,i)=>{
@@ -429,6 +427,21 @@ function afterAnswerTranslation(q){
   });
   wrap.appendChild(tr);
   return wrap;
+}
+
+// Arabic words with their glosses underneath (plus ayah-end markers when numbered).
+function buildGloss(q){
+  const gb=document.createDocumentFragment();
+  q.verses.forEach((v,vi)=>{
+    v.forEach(([ar,gl])=>{
+      const d=document.createElement('div'); d.className='iword';
+      d.innerHTML=`<span class="ar"></span><span class="gl"></span>`;
+      d.querySelector('.ar').textContent=fixQ(ar); d.querySelector('.gl').textContent=L(gl);
+      gb.appendChild(d);
+    });
+    if(q.numbered){ const n=document.createElement('span'); n.className='iverse'; n.textContent=`﴿${AR_NUM(q.firstAyah+vi)}﴾`; gb.appendChild(n); }
+  });
+  return gb;
 }
 
 function nextQuestion(){
