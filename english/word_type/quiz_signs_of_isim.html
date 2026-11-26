@@ -64,6 +64,11 @@
   .iword .ar{font-family:'UthmanicHafs','Amiri',serif; font-size:1.45rem;}
   .iword .gl{font-size:.72rem; color:var(--teal-dark); text-align:center; direction:ltr;}
   .iverse{font-family:'UthmanicHafs','Amiri',serif; font-size:1.2rem; color:var(--gold); align-self:center;}
+  .after-label{display:block; font-weight:600; color:var(--emerald); margin:12px 0 6px; font-size:.9rem;}
+  .feedback .interlinear{margin-bottom:4px;}
+  .feedback .iword .ar{color:var(--emerald);}
+  .trans{background:#fffefb; border:1px solid var(--gold-light); border-radius:10px; padding:10px 12px; color:var(--emerald);}
+  .trans .vn{color:var(--gold); font-weight:600; margin-right:4px;}
   .opt{display:flex; align-items:center; gap:12px; padding:11px 14px; border:1.5px solid var(--gold-light);
     border-radius:10px; margin-bottom:9px; cursor:pointer; background:#fffefb;}
   .opt:hover{border-color:var(--teal);}
@@ -116,8 +121,6 @@
       <div id="ayahWrap" class="hidden">
         <div class="ayah-box arabic" id="ayahBox"></div>
         <div class="ayah-ref" id="ayahRef"></div>
-        <span class="toggle-link" id="glossToggle"></span>
-        <div class="interlinear hidden" id="glossBox"></div>
       </div>
       <div id="optionsBox"></div>
       <div id="feedbackBox"></div>
@@ -170,7 +173,7 @@ const UI = {
     beginQuiz:"Begin Quiz",
     question:"Question", of:"of",
     chooseOne:"Choose one answer.", chooseMany:"Choose all correct answers.", chooseN:n=>`Choose ${n} answers.`,
-    showGloss:"Show word-by-word translation", hideGloss:"Hide word-by-word translation",
+    wbwLabel:"Word-by-word translation", trLabel:"Translation (Dr. Mustafa Khattab, The Clear Quran)",
     checkAnswers:"Check Answer", nextQuestion:"Next Question →", seeResults:"See My Results →",
     correct:"Correct!", incorrect:"Not quite.",
     done:"Quiz Complete", points:(s,m)=>`${s} / ${m} points`, review:"Your answers",
@@ -188,7 +191,7 @@ const UI = {
     beginQuiz:"Mula Kuiz",
     question:"Soalan", of:"daripada",
     chooseOne:"Pilih satu jawapan.", chooseMany:"Pilih semua jawapan yang betul.", chooseN:n=>`Pilih ${n} jawapan.`,
-    showGloss:"Tunjuk terjemahan setiap perkataan", hideGloss:"Sembunyikan terjemahan setiap perkataan",
+    wbwLabel:"Terjemahan perkataan demi perkataan", trLabel:"Terjemahan Sheikh Abdullah Basmeih",
     checkAnswers:"Semak Jawapan", nextQuestion:"Soalan Seterusnya →", seeResults:"Lihat Keputusan →",
     correct:"Betul!", incorrect:"Belum tepat.",
     done:"Kuiz Selesai", points:(s,m)=>`${s} / ${m} markah`, review:"Jawapan anda",
@@ -218,6 +221,22 @@ const SURAH_AT_TIN = [
   [["فَمَا",{en:"Then what",ms:"maka apakah"}],["يُكَذِّبُكَ",{en:"causes you to deny",ms:"mendustakanmu"}],["بَعْدُ",{en:"after (this)",ms:"sesudah"}],["بِٱلدِّينِ",{en:"the judgment",ms:"hari pembalasan/agama"}]],
   [["أَلَيْسَ",{en:"Is not",ms:"bukankah"}],["ٱللَّهُ",{en:"Allah",ms:"Allah"}],["بِأَحْكَمِ",{en:"(the) Most Just",ms:"lebih bijaksana/seadil-adilnya"}],["ٱلْحَـٰكِمِينَ",{en:"(of) the Judges",ms:"para hakim"}]]
 ];
+/* Full translations, quoted verbatim from quran.com:
+   en = Dr. Mustafa Khattab, The Clear Quran (id 131); ms = Sheikh Abdullah Basmeih (id 39). */
+const TR_3_48 = [
+  {en:"And Allah will teach him writing and wisdom, the Torah and the Gospel,",
+   ms:"Dan Allah akan mengajarnya ilmu menulis, dan hukum-hukum aturan ugama, dan juga kandungan kitab-kitab Taurat dan Injil."}
+];
+const TR_AT_TIN = [
+  {en:"By the fig and the olive ˹of Jerusalem˺,", ms:"Demi buah Tiin dan Zaitun,"},
+  {en:"and Mount Sinai,", ms:"Dan Gunung Tursina,"},
+  {en:"and this secure city ˹of Mecca˺!", ms:"Serta negeri (Makkah) yang aman ini, -"},
+  {en:"Indeed, We created humans in the best form.", ms:"Sesungguhnya Kami telah menciptakan manusia dalam bentuk yang sebaik-baiknya (dan berkelengkapan sesuai dengan keadaannya)."},
+  {en:"But We will reduce them to the lowest of the low ˹in Hell˺,", ms:"Kemudian (jika ia panjang umur sehingga tua atau menyalahgunakan kelengkapan itu), Kami kembalikan dia ke serendah-rendah peringkat orang-orang yang rendah,"},
+  {en:"except those who believe and do good—they will have a never-ending reward.", ms:"Kecuali orang-orang yang beriman dan beramal soleh, maka mereka beroleh pahala yang tidak putus-putus."},
+  {en:"Now, what makes you deny the ˹final˺ Judgment?", ms:"(Jika demikian kekuasaanKu), maka apa pula yang menjadikan engkau seorang pendusta, (berkata tidak benar) mengenai hari pembalasan, sesudah (ternyata dalil-dalil yang membuktikan kekuasaanKu mengadakan hari pembalasan) itu?"},
+  {en:"Is Allah not the most just of all judges?", ms:"Bukankah Allah (yang demikian kekuasaanNya) seadil-adil Hakim?"}
+];
 const AR_NUM = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 // Fix for the KFGQPC font: U+06DF (small circle on silent alif) draws as a placeholder; U+0652 draws correctly.
 const fixQ = s => s.replace(/۟/g, 'ْ');
@@ -226,7 +245,9 @@ function ayahText(verses, firstNum, numbered){
 }
 
 /* ================= QUESTIONS =================
-   Source: the teacher's Google Form "SIGNS OF ISIM". Correct options are listed by index.
+   Source: the teacher's Google Form "SIGNS OF ISIM". Questions and options stay in the form's
+   order (teacher's decision: no shuffling). Word-by-word and full translations of ayat are shown
+   only after the student answers, as in the form. Correct options are listed by index.
    One point per question; multi-answer questions score only when the selection is exactly right. */
 const QUESTIONS = [
   {n:1, multi:true, pick:5,
@@ -277,23 +298,22 @@ const QUESTIONS = [
    correct:[0,1,2,4],
    note:{en:"<span class=\"arabic\">حَاسِدٍ</span> and <span class=\"arabic\">غَاسِقٍ</span> end in tanwin; <span class=\"arabic\">ٱلْعَـٰلَمِينَ</span> and <span class=\"arabic\">ٱلنَّاسِ</span> begin with ال. <span class=\"arabic\">نَعْبُدُ</span> (we worship) and <span class=\"arabic\">ٱهْدِنَا</span> (guide us) are fe‘il.",
          ms:"<span class=\"arabic\">حَاسِدٍ</span> dan <span class=\"arabic\">غَاسِقٍ</span> bertanwin; <span class=\"arabic\">ٱلْعَـٰلَمِينَ</span> dan <span class=\"arabic\">ٱلنَّاسِ</span> bermula dengan ال. <span class=\"arabic\">نَعْبُدُ</span> dan <span class=\"arabic\">ٱهْدِنَا</span> ialah fe‘il."}},
-  {n:9, verses:AYAH_3_48, firstAyah:48, numbered:false, ref:"Āl ʿImrān 3:48",
+  {n:9, verses:AYAH_3_48, tr:TR_3_48, firstAyah:48, numbered:false, ref:"Āl ʿImrān 3:48",
    prompt:{en:"How many nouns (isim) are there in this sentence?", ms:"Berapakah bilangan isim dalam ayat ini?"},
    options:["1","2","3","4"],
    correct:[3],
    note:{en:"4: <span class=\"arabic\">ٱلْكِتَـٰبَ، ٱلْحِكْمَةَ، ٱلتَّوْرَىٰةَ، ٱلْإِنجِيلَ</span>. Each begins with ال, even with the joining <span class=\"arabic\">وَ</span> in front. <span class=\"arabic\">وَيُعَلِّمُهُ</span> (and He will teach him) is a fe‘il.",
          ms:"4: <span class=\"arabic\">ٱلْكِتَـٰبَ، ٱلْحِكْمَةَ، ٱلتَّوْرَىٰةَ، ٱلْإِنجِيلَ</span>. Setiap satu bermula dengan ال, walaupun ada <span class=\"arabic\">وَ</span> di hadapannya. <span class=\"arabic\">وَيُعَلِّمُهُ</span> ialah fe‘il."}},
-  {n:10, verses:SURAH_AT_TIN, firstAyah:1, numbered:true, ref:"Surah At-Tīn 95:1–8",
+  {n:10, verses:SURAH_AT_TIN, tr:TR_AT_TIN, firstAyah:1, numbered:true, ref:"Surah At-Tīn 95:1–8",
    prompt:{en:"Based on the 2 signs of a noun (isim) that you have learned, how many nouns (isim) are there in Surah At-Tin?", ms:"Berdasarkan 2 tanda isim yang telah anda pelajari, berapakah bilangan isim dalam Surah At-Tin?"},
    options:["11","12","13","14"],
    correct:[2],
-   note:{en:"13 words carry one of the two signs: <span class=\"arabic\">ٱلتِّينِ، ٱلزَّيْتُونِ</span> (ayah 1); <span class=\"arabic\">ٱلْبَلَدِ، ٱلْأَمِينِ</span> (3); <span class=\"arabic\">ٱلْإِنسَـٰنَ، تَقْوِيمٍۢ</span> (4); <span class=\"arabic\">ٱلَّذِينَ، ٱلصَّـٰلِحَـٰتِ، أَجْرٌ، مَمْنُونٍۢ</span> (6); <span class=\"arabic\">ٱلدِّينِ</span> (7); <span class=\"arabic\">ٱللَّهُ، ٱلْحَـٰكِمِينَ</span> (8). ال still counts when a <span class=\"arabic\">وَ</span> or <span class=\"arabic\">بِ</span> is attached in front. Words like <span class=\"arabic\">هَـٰذَا</span> and <span class=\"arabic\">طُورِ</span> are also isim, but they show neither of these two signs, so they are not counted here.",
-         ms:"13 perkataan mempunyai salah satu daripada dua tanda: <span class=\"arabic\">ٱلتِّينِ، ٱلزَّيْتُونِ</span> (ayat 1); <span class=\"arabic\">ٱلْبَلَدِ، ٱلْأَمِينِ</span> (3); <span class=\"arabic\">ٱلْإِنسَـٰنَ، تَقْوِيمٍۢ</span> (4); <span class=\"arabic\">ٱلَّذِينَ، ٱلصَّـٰلِحَـٰتِ، أَجْرٌ، مَمْنُونٍۢ</span> (6); <span class=\"arabic\">ٱلدِّينِ</span> (7); <span class=\"arabic\">ٱللَّهُ، ٱلْحَـٰكِمِينَ</span> (8). ال tetap dikira walaupun ada <span class=\"arabic\">وَ</span> atau <span class=\"arabic\">بِ</span> di hadapannya. Perkataan seperti <span class=\"arabic\">هَـٰذَا</span> dan <span class=\"arabic\">طُورِ</span> juga isim, tetapi tidak menunjukkan dua tanda ini, jadi tidak dikira di sini."}}
+   note:{en:"13 words carry one of the two signs:<br>Ayah 1: <span class=\"arabic\">ٱلتِّينِ، ٱلزَّيْتُونِ</span><br>Ayah 3: <span class=\"arabic\">ٱلْبَلَدِ، ٱلْأَمِينِ</span><br>Ayah 4: <span class=\"arabic\">ٱلْإِنسَـٰنَ، تَقْوِيمٍۢ</span><br>Ayah 6: <span class=\"arabic\">ٱلَّذِينَ، ٱلصَّـٰلِحَـٰتِ، أَجْرٌ، مَمْنُونٍۢ</span><br>Ayah 7: <span class=\"arabic\">ٱلدِّينِ</span><br>Ayah 8: <span class=\"arabic\">ٱللَّهُ، ٱلْحَـٰكِمِينَ</span><br>ال still counts when a <span class=\"arabic\">وَ</span> or <span class=\"arabic\">بِ</span> is attached in front. Words like <span class=\"arabic\">هَـٰذَا</span> and <span class=\"arabic\">طُورِ</span> are also isim, but they show neither of these two signs, so they are not counted here.",
+         ms:"13 perkataan mempunyai salah satu daripada dua tanda:<br>Ayat 1: <span class=\"arabic\">ٱلتِّينِ، ٱلزَّيْتُونِ</span><br>Ayat 3: <span class=\"arabic\">ٱلْبَلَدِ، ٱلْأَمِينِ</span><br>Ayat 4: <span class=\"arabic\">ٱلْإِنسَـٰنَ، تَقْوِيمٍۢ</span><br>Ayat 6: <span class=\"arabic\">ٱلَّذِينَ، ٱلصَّـٰلِحَـٰتِ، أَجْرٌ، مَمْنُونٍۢ</span><br>Ayat 7: <span class=\"arabic\">ٱلدِّينِ</span><br>Ayat 8: <span class=\"arabic\">ٱللَّهُ، ٱلْحَـٰكِمِينَ</span><br>ال tetap dikira walaupun ada <span class=\"arabic\">وَ</span> atau <span class=\"arabic\">بِ</span> di hadapannya. Perkataan seperti <span class=\"arabic\">هَـٰذَا</span> dan <span class=\"arabic\">طُورِ</span> juga isim, tetapi tidak menunjukkan dua tanda ini, jadi tidak dikira di sini."}}
 ];
 
 /* ================= ENGINE ================= */
 const $ = id => document.getElementById(id);
-function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 
 let state = null;
 
@@ -319,10 +339,6 @@ $('homeBtn').addEventListener('click', ()=>{ show('screen-start'); startReady();
 $('checkBtn').addEventListener('click', checkAnswer);
 $('nextBtn').addEventListener('click', nextQuestion);
 $('retrySubmitBtn').addEventListener('click', ()=>submitResults(state.payload));
-$('glossToggle').addEventListener('click', ()=>{
-  const box=$('glossBox'); box.classList.toggle('hidden');
-  $('glossToggle').textContent = box.classList.contains('hidden') ? T.showGloss : T.hideGloss;
-});
 
 function show(id){ ['screen-start','screen-quiz','screen-result'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); window.scrollTo(0,0); }
 
@@ -330,7 +346,7 @@ function startQuiz(){
   if(!($('stuName').value.trim() && $('stuClass').value.trim())) return;
   state = {
     name:$('stuName').value.trim(), cls:$('stuClass').value.trim(),
-    steps: shuffle(QUESTIONS).map(q=>({q, order: shuffle(q.options.map((_,i)=>i)), right:null})),
+    steps: QUESTIONS.map(q=>({q, order: q.options.map((_,i)=>i), right:null})),
     current:0
   };
   show('screen-quiz');
@@ -349,17 +365,6 @@ function renderStep(){
     $('ayahWrap').classList.remove('hidden');
     $('ayahBox').textContent = ayahText(q.verses, q.firstAyah, q.numbered);
     $('ayahRef').textContent = q.ref;
-    const gb = $('glossBox'); gb.innerHTML=''; gb.classList.add('hidden');
-    q.verses.forEach((v,vi)=>{
-      v.forEach(([ar,gl])=>{
-        const d=document.createElement('div'); d.className='iword';
-        d.innerHTML=`<span class="ar"></span><span class="gl"></span>`;
-        d.querySelector('.ar').textContent=fixQ(ar); d.querySelector('.gl').textContent=L(gl);
-        gb.appendChild(d);
-      });
-      if(q.numbered){ const n=document.createElement('span'); n.className='iverse'; n.textContent=`﴿${AR_NUM(q.firstAyah+vi)}﴾`; gb.appendChild(n); }
-    });
-    $('glossToggle').textContent = T.showGloss;
   } else {
     $('ayahWrap').classList.add('hidden');
   }
@@ -392,11 +397,38 @@ function checkAnswer(){
     else if(picked.includes(i)) lab.classList.add('wrong');
   });
   $('feedbackBox').innerHTML = `<div class="feedback ${right?'good':'bad'}"><b>${right?T.correct:T.incorrect}</b><span class="note">${L(q.note)}</span></div>`;
+  if(q.verses) $('feedbackBox').firstChild.appendChild(afterAnswerTranslation(q));
   $('checkBtn').classList.add('hidden');
   const last = state.current === state.steps.length-1;
   $('nextBtn').textContent = last ? T.seeResults : T.nextQuestion;
   $('nextBtn').classList.remove('hidden');
   if(last){ $('progressFill').style.width='100%'; finishQuiz(); }  // auto-submit on the last check
+}
+
+// Word-by-word glosses and the full translation, revealed only after the student answers.
+function afterAnswerTranslation(q){
+  const wrap=document.createElement('div');
+  const l1=document.createElement('span'); l1.className='after-label'; l1.textContent=T.wbwLabel; wrap.appendChild(l1);
+  const gb=document.createElement('div'); gb.className='interlinear';
+  q.verses.forEach((v,vi)=>{
+    v.forEach(([ar,gl])=>{
+      const d=document.createElement('div'); d.className='iword';
+      d.innerHTML=`<span class="ar"></span><span class="gl"></span>`;
+      d.querySelector('.ar').textContent=fixQ(ar); d.querySelector('.gl').textContent=L(gl);
+      gb.appendChild(d);
+    });
+    if(q.numbered){ const n=document.createElement('span'); n.className='iverse'; n.textContent=`﴿${AR_NUM(q.firstAyah+vi)}﴾`; gb.appendChild(n); }
+  });
+  wrap.appendChild(gb);
+  const l2=document.createElement('span'); l2.className='after-label'; l2.textContent=T.trLabel; wrap.appendChild(l2);
+  const tr=document.createElement('div'); tr.className='trans';
+  q.tr.forEach((t,i)=>{
+    const p=document.createElement('div');
+    if(q.numbered){ const n=document.createElement('span'); n.className='vn'; n.textContent=(q.firstAyah+i)+'.'; p.appendChild(n); }
+    p.appendChild(document.createTextNode(L(t))); tr.appendChild(p);
+  });
+  wrap.appendChild(tr);
+  return wrap;
 }
 
 function nextQuestion(){
